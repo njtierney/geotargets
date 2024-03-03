@@ -1,0 +1,86 @@
+format_shapefile <- targets::tar_format(
+  read = function(path) {
+    terra::vect(
+      paste0(
+        "/vsizip/",
+        file.path(
+          path,
+          replace_dot_zip_with_shp(path)
+        )
+      )
+    )
+  },
+  write = function(object, path) {
+    terra::writeVector(
+      x = object,
+      filename = replace_dot_zip_with_shp(path),
+      filetype = "ESRI Shapefile",
+      overwrite = TRUE
+    )
+    zf <- list.files(
+      pattern = replace_dot_zip(
+        x = path,
+        replacement = ""
+      )
+    )
+    utils::zip(
+      zipfile = path,
+      files = zf
+    )
+    unlink(zf)
+  },
+  marshal = function(object) terra::wrap(object),
+  unmarshal = function(object) terra::unwrap(object)
+)
+
+tar_shapefile <- function(name,
+                          command,
+                          pattern = NULL,
+                          tidy_eval = targets::tar_option("tidy_eval"),
+                          library = targets::tar_option_get("library"),
+                          repository = targets::tar_option_get("repository"),
+                          iteration = targets::tar_option_get("iteration"),
+                          error = targets::tar_option_get("error"),
+                          memory = targets::tar_option_get("memory"),
+                          garbage_collection = targets::tar_option_get("garbage_collection"),
+                          deployment = targets::tar_option_get("deployment"),
+                          priority = targets::tar_option_get("priority"),
+                          resources = targets::tar_option_get("resources"),
+                          storage = targets::tar_option_get("storage"),
+                          retrieval = targets::tar_option_get("retrieval"),
+                          cue = targets::tar_option_get("cue")) {
+  name <- targets::tar_deparse_language(substitute(name))
+
+  envir <- tar_option_get("envir")
+
+  command <- targets::tar_tidy_eval(
+    expr = as.expression(substitute(command)),
+    envir = envir,
+    tidy_eval = tidy_eval
+  )
+  pattern <- targets::tar_tidy_eval(
+    expr = as.expression(substitute(pattern)),
+    envir = envir,
+    tidy_eval = tidy_eval
+  )
+
+  targets::tar_target_raw(
+    name = name,
+    command = command,
+    pattern = pattern,
+    packages = packages,
+    library = library,
+    format = format_shapefile,
+    repository = repository,
+    iteration = iteration,
+    error = error,
+    memory = memory,
+    garbage_collection = garbage_collection,
+    deployment = deployment,
+    priority = priority,
+    resources = resources,
+    storage = storage,
+    retrieval = retrieval,
+    cue = cue
+  )
+}
