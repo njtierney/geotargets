@@ -16,6 +16,9 @@ knitr::opts_chunk$set(
 # geotargets
 
 <!-- badges: start -->
+[![R Targetopia](https://img.shields.io/badge/R_Targetopia-member-blue?style=flat&labelColor=gray)](https://wlandau.github.io/targetopia/)
+[![R-CMD-check](https://github.com/njtierney/geotargets/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/njtierney/geotargets/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/njtierney/geotargets/branch/master/graph/badge.svg)](https://app.codecov.io/gh/njtierney/geotargets?branch=master)
 <!-- badges: end -->
 
 The goal of geotargets is to extend targets to work with geospatial data, like shapefiles and rasters.

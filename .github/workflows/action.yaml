@@ -1,0 +1,72 @@
+name: 'check-r-package'
+description: 'Action to check R package with rcmdcheck. Assumes that rcmdcheck has already been installed.'
+author: 'Jim Hester'
+inputs:
+  args:
+    description: 'Arguments to pass to the `args` parameter of rcmdcheck. Must be an R expression. Note that it often needs to be quoted in YAML, see the README for details.'
+    default: 'c("--no-manual", "--as-cran")'
+  build_args:
+    description: 'Arguments to pass to the `build_args` parameter of rcmdcheck. Note that it often needs to be quoted in YAML, see the README for details.'
+    default: '"--no-manual"'
+  error-on:
+    description: 'What type of result should cause a build error? Note that it often needs to be quoted in YAML, see the README for details.'
+    default: '"warning"'
+  check-dir:
+    description: 'Where should the check output go? Note that it often needs to be quoted in YAML, see the README for details.'
+    default: '"check"'
+  working-directory:
+    description: 'Using the working-directory keyword, you can specify the working directory of where "rcmdcheck::rcmdcheck" is run.'
+    default: '.'
+  upload-snapshots:
+    description: 'Whether to upload all testthat snapshots as an artifact.'
+    default: false
+  upload-results:
+    description: 'Whether to upload check results for successful runs too.'
+    default: false
+  artifact-name:
+    description: |
+      Use this to override the default artifact name for the check results.
+  snapshot-artifact-name:
+    description: |
+      Use this to override the default artifact name for testthat snapshots.
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check
+      id: rcmdcheck
+      run: |
+        ## --------------------------------------------------------------------
+        options(crayon.enabled = TRUE)
+        cat("LOGNAME=", Sys.info()[["user"]], "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
+        if (Sys.getenv("_R_CHECK_FORCE_SUGGESTS_", "") == "") Sys.setenv("_R_CHECK_FORCE_SUGGESTS_" = "false")
+        if (Sys.getenv("_R_CHECK_CRAN_INCOMING_", "") == "") Sys.setenv("_R_CHECK_CRAN_INCOMING_" = "false")
+        cat("check-dir-path=", file.path(getwd(), (${{ inputs.check-dir }})), "\n", file = Sys.getenv("GITHUB_OUTPUT"), sep = "", append = TRUE)
+        check_results <- rcmdcheck::rcmdcheck(args = (${{ inputs.args }}), build_args = (${{ inputs.build_args }}), error_on = (${{ inputs.error-on }}), check_dir = (${{ inputs.check-dir }}))
+      shell: Rscript {0}
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: Show testthat output
+      if: always()
+      run: |
+        ## --------------------------------------------------------------------
+        echo ::group::Show testthat output
+        find check -name 'testthat.Rout*' -exec cat '{}' \; || true
+        echo ::endgroup::
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: Upload check results
+      if: failure() || inputs.upload-results != 'false'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name || format('{0}-{1}-r{2}-{3}-results', runner.os, runner.arch, matrix.config.r, matrix.config.id || strategy.job-index ) }}
+        path: ${{ steps.rcmdcheck.outputs.check-dir-path }}
+
+    - name: Upload snapshots
+      if: inputs.upload-snapshots != 'false'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.snapshot-artifact-name || format('{0}-{1}-r{2}-{3}-testthat-snapshots', runner.os, runner.arch, matrix.config.r, matrix.config.id || strategy.job-index ) }}
+        path: ${{ steps.rcmdcheck.outputs.check-dir-path }}/**/tests*/testthat/_snaps
+        if-no-files-found: ignore
