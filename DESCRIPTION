@@ -4,17 +4,16 @@ Version: 0.0.0.9000
 Authors@R: c(
     person(
       given = "Nicholas", 
-      last = "Tierney", 
+      family = "Tierney", 
       email = "nicholas.tierney@gmail.com", 
       role = c("aut", "cre"),
-      comment = c(ORCID = "https://orcid.org/0000-0003-1460-8722")
+      comment = c(ORCID = "0000-0003-1460-8722")
       ),
     person(
-      given = "",
-      last = "",
-      email = "",
+      given = "Eric",
+      family = "Scott",
       role = c("aut"),
-      comment = c(ORCID = "https://orcid.org/XXXX")
+      comment = c(ORCID = "0000-0002-7430-7879")
     )
     )
 Description: Provides extensions for various geospatial file formats, 
