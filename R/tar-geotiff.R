@@ -1,7 +1,7 @@
 tar_geotiff <- function(name,
                         command,
                         pattern = NULL,
-                        tidy_eval = targets::tar_option("tidy_eval"),
+                        tidy_eval = targets::tar_option_get("tidy_eval"),
                         library = targets::tar_option_get("library"),
                         repository = targets::tar_option_get("repository"),
                         iteration = targets::tar_option_get("iteration"),
@@ -16,7 +16,7 @@ tar_geotiff <- function(name,
                         cue = targets::tar_option_get("cue")) {
   name <- targets::tar_deparse_language(substitute(name))
 
-  envir <- tar_option_get("envir")
+  envir <- targets::tar_option_get("envir")
 
   command <- targets::tar_tidy_eval(
     expr = as.expression(substitute(command)),
