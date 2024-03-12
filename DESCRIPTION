@@ -30,6 +30,8 @@ Imports:
     terra
 Suggests: 
     testthat (>= 3.0.0)
+Depends:
+    R (>= 4.1.0)
 Config/testthat/edition: 3
 URL: https://github.com/njtierney/geotargets
 BugReports: https://github.com/njtierney/geotargets/issues
