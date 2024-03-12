@@ -1,4 +1,4 @@
-format_shapefile <- targets::tar_format(
+format_terra_vect_shapefile <- targets::tar_format(
   read = function(path) {
     terra::vect(
       paste0(
@@ -33,7 +33,7 @@ format_shapefile <- targets::tar_format(
   unmarshal = function(object) terra::unwrap(object)
 )
 
-tar_shapefile <- function(name,
+tar_terra_vect <- function(name,
                           command,
                           pattern = NULL,
                           tidy_eval = targets::tar_option("tidy_eval"),
@@ -70,7 +70,7 @@ tar_shapefile <- function(name,
     pattern = pattern,
     packages = packages,
     library = library,
-    format = format_shapefile,
+    format = format_terra_vect_shapefile,
     repository = repository,
     iteration = iteration,
     error = error,
