@@ -19,7 +19,7 @@ Authors@R: c(
 Description: Provides extensions for various geospatial file formats, 
   including shapefiles, rasters, and more. See the vignettes for worked 
   examples and demonstrations and explanations of how to use the various
-  package extensions
+  package extensions.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Language: en-GB
