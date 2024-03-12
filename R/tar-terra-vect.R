@@ -33,6 +33,13 @@ format_terra_vect_shapefile <- targets::tar_format(
   unmarshal = function(object) terra::unwrap(object)
 )
 
+#' Targets format for terra vectors
+#'
+#' Provides targets format for `terra::vect` objects
+#'
+#' @inheritParams targets::tar_target
+#'
+#' @export
 tar_terra_vect <- function(name,
                           command,
                           pattern = NULL,

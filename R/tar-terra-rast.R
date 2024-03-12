@@ -1,9 +1,31 @@
+#' Targets format for terra rasters
+#'
+#' Provides targets format for `terra::rast`
+#'
+#' @inheritParams targets::tar_target
+#'
 #' @export
+#' @examples
+#' if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
+#' targets::tar_dir({ # tar_dir() runs code from a temporary directory.
+#' library(geotargets)
+#' targets::tar_script({
+#'   list(
+#'       geotargets::tar_terra_rast(
+#'           test,
+#'           system.file("ex/elev.tif", package="terra") |> terra::rast()
+#'       )
+#'   )
+#'   })
+#'    targets::tar_make()
+#' x <- targets::tar_read(test)
+#' })
+#' }
 tar_terra_rast <- function(name,
                            command,
                            pattern = NULL,
-                           packages = targets::tar_option_get("packages"),
                            tidy_eval = targets::tar_option_get("tidy_eval"),
+                           packages = targets::tar_option_get("packages"),
                            library = targets::tar_option_get("library"),
                            repository = targets::tar_option_get("repository"),
                            iteration = targets::tar_option_get("iteration"),
