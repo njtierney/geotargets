@@ -1,37 +1,37 @@
-format_terra_vect_shapefile <- targets::tar_format(
-  read = function(path) {
-    terra::vect(
-      paste0(
-        "/vsizip/",
-        file.path(
-          path,
-          replace_dot_zip_with_shp(path)
-        )
-      )
-    )
-  },
-  write = function(object, path) {
-    terra::writeVector(
-      x = object,
-      filename = replace_dot_zip_with_shp(path),
-      filetype = "ESRI Shapefile",
-      overwrite = TRUE
-    )
-    zf <- list.files(
-      pattern = replace_dot_zip(
-        x = path,
-        replacement = ""
-      )
-    )
-    utils::zip(
-      zipfile = path,
-      files = zf
-    )
-    unlink(zf)
-  },
-  marshal = function(object) terra::wrap(object),
-  unmarshal = function(object) terra::unwrap(object)
-)
+# format_terra_vect_shapefile <- targets::tar_format(
+#   read = function(path) {
+#     terra::vect(
+#       paste0(
+#         "/vsizip/",
+#         file.path(
+#           path,
+#           replace_dot_zip_with_shp(path)
+#         )
+#       )
+#     )
+#   },
+#   write = function(object, path) {
+#     terra::writeVector(
+#       x = object,
+#       filename = replace_dot_zip_with_shp(path),
+#       filetype = "ESRI Shapefile",
+#       overwrite = TRUE
+#     )
+#     zf <- list.files(
+#       pattern = replace_dot_zip(
+#         x = path,
+#         replacement = ""
+#       )
+#     )
+#     utils::zip(
+#       zipfile = path,
+#       files = zf
+#     )
+#     unlink(zf)
+#   },
+#   marshal = function(object) terra::wrap(object),
+#   unmarshal = function(object) terra::unwrap(object)
+# )
 
 #' Targets format for terra vectors
 #'
@@ -72,13 +72,27 @@ tar_terra_vect <- function(name,
     tidy_eval = tidy_eval
   )
 
+  format_terra_shapefile_zip <- tar_format(
+      read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),
+      write = function(object, path) {
+          terra::writeVector(
+              x = object,
+              filename = paste0(path, ".shz"),
+              filetype = "ESRI Shapefile"
+          )
+          file.rename(paste0(path, ".shz"), path)
+      },
+      marshal = function(object) terra::wrap(object),
+      unmarshal = function(object) terra::unwrap(object)
+  )
+
   targets::tar_target_raw(
     name = name,
     command = command,
     pattern = pattern,
     packages = packages,
     library = library,
-    format = format_terra_vect_shapefile,
+    format = format_terra_shapefile_zip,
     repository = repository,
     iteration = iteration,
     error = error,

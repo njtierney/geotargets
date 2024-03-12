@@ -14,6 +14,12 @@ Authors@R: c(
       family = "Scott",
       role = c("aut"),
       comment = c(ORCID = "0000-0002-7430-7879")
+    ),
+    person(
+      given = "Andrew",
+      family = "Brown",
+      role = c("ctb"),
+      comment = c(ORCID = "0000-0002-4565-533X")
     )
     )
 Description: Provides extensions for various geospatial file formats, 
