@@ -22,6 +22,7 @@ Useful links:
 Authors:
 \itemize{
   \item Eric Scott (\href{https://orcid.org/0000-0002-7430-7879}{ORCID})
+  \item Andrew Brown (\href{https://orcid.org/0000-0002-4565-533X}{ORCID})
 }
 
 }

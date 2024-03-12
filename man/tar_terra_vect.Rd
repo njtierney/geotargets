@@ -209,3 +209,27 @@ rules that decide whether the target is up to date.}
 \description{
 Provides targets format for \code{terra::vect} objects
 }
+\examples{
+if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
+  targets::tar_dir({ # tar_dir() runs code from a temporary directory.
+    targets::tar_script({
+      lux_area <- function(projection = "EPSG:4326") {
+        terra::project(
+          terra::vect(system.file("ex", "lux.shp",
+            package = "terra"
+          )),
+          projection
+        )
+      }
+      list(
+        geotargets::tar_terra_vect(
+          terra_vect_example,
+          lux_area()
+        )
+      )
+    })
+    targets::tar_make()
+    x <- targets::tar_read(terra_vect_example)
+  })
+}
+}

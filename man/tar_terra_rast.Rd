@@ -211,18 +211,18 @@ Provides targets format for \code{terra::rast}
 }
 \examples{
 if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
-targets::tar_dir({ # tar_dir() runs code from a temporary directory.
-library(geotargets)
-targets::tar_script({
-  list(
-      geotargets::tar_terra_rast(
-          test,
-          system.file("ex/elev.tif", package="terra") |> terra::rast()
-      )
-  )
-  })
+ targets::tar_dir({ # tar_dir() runs code from a temporary directory.
+   library(geotargets)
+   targets::tar_script({
+     list(
+       geotargets::tar_terra_rast(
+         terra_rast_example,
+         system.file("ex/elev.tif", package = "terra") |> terra::rast()
+       )
+     )
+   })
    targets::tar_make()
-x <- targets::tar_read(test)
-})
+   x <- targets::tar_read(terra_rast_example)
+ })
 }
 }
