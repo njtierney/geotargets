@@ -93,10 +93,7 @@ aggregation happens with \code{vctrs::vec_c()}.
 \item \code{"list"}, branching happens with \verb{[[]]} and aggregation happens with
 \code{list()}.
 \item \code{"group"}: \code{dplyr::group_by()}-like functionality to branch over
-subsets of a non-dynamic data frame.
-For \code{iteration = "group"}, the target must not by dynamic
-(the \code{pattern} argument of \code{\link[targets:tar_target]{tar_target()}} must be left \code{NULL}).
-The target's return value must be a data
+subsets of a data frame. The target's return value must be a data
 frame with a special \code{tar_group} column of consecutive integers
 from 1 through the number of groups. Each integer designates a group,
 and a branch is created for each collection of rows in a group.
@@ -141,13 +138,10 @@ and the latter conserves local storage.}
 \item{garbage_collection}{Logical, whether to run \code{base::gc()}
 just before the target runs.}
 
-\item{deployment}{Character of length 1. If \code{deployment} is
-\code{"main"}, then the target will run on the central controlling R process.
-Otherwise, if \code{deployment} is \code{"worker"} and you set up the pipeline
-with distributed/parallel computing, then
-the target runs on a parallel worker. For more on distributed/parallel
-computing in \code{targets}, please visit
-\url{https://books.ropensci.org/targets/crew.html}.}
+\item{deployment}{Character of length 1, only relevant to
+\code{\link[targets:tar_make_clustermq]{tar_make_clustermq()}} and \code{\link[targets:tar_make_future]{tar_make_future()}}. If \code{"worker"},
+the target runs on a parallel worker. If \code{"main"},
+the target runs on the host machine / process managing the pipeline.}
 
 \item{priority}{Numeric of length 1 between 0 and 1. Controls which
 targets get deployed first when multiple competing targets are ready

@@ -2,12 +2,15 @@
 % Please edit documentation in R/tar-terra-rast.R
 \name{tar_terra_rast}
 \alias{tar_terra_rast}
-\title{Targets format for terra rasters}
+\title{Create a terra \emph{SpatRaster} Target}
 \usage{
 tar_terra_rast(
   name,
   command,
   pattern = NULL,
+  filetype = NULL,
+  gdal = NULL,
+  ...,
   tidy_eval = targets::tar_option_get("tidy_eval"),
   packages = targets::tar_option_get("packages"),
   library = targets::tar_option_get("library"),
@@ -25,29 +28,17 @@ tar_terra_rast(
 )
 }
 \arguments{
-\item{name}{Symbol, name of the target. A target
-name must be a valid name for a symbol in R, and it
-must not start with a dot. Subsequent targets
-can refer to this name symbolically to induce a dependency relationship:
-e.g. \code{tar_target(downstream_target, f(upstream_target))} is a
-target named \code{downstream_target} which depends on a target
-\code{upstream_target} and a function \code{f()}. In addition, a target's
-name determines its random number generator seed. In this way,
-each target runs with a reproducible seed so someone else
-running the same pipeline should get the same results,
-and no two targets in the same pipeline share the same seed.
-(Even dynamic branches have different names and thus different seeds.)
-You can recover the seed of a completed target
-with \code{tar_meta(your_target, seed)} and run \code{\link[targets:tar_seed_set]{tar_seed_set()}}
-on the result to locally recreate the target's initial RNG state.}
+\item{name}{Character of length 1, name of the target.}
 
-\item{command}{R code to run the target.}
+\item{command}{An R expression. See \verb{[targets::tar_target()]} for details}
 
-\item{pattern}{Language to define branching for a target.
-For example, in a pipeline with numeric vector targets \code{x} and \code{y},
-\code{tar_target(z, x + y, pattern = map(x, y))} implicitly defines
-branches of \code{z} that each compute \code{x[1] + y[1]}, \code{x[2] + y[2]},
-and so on. See the user manual for details.}
+\item{pattern}{Language to define branching for a target. See \verb{[targets::tar_target()]} for details.}
+
+\item{filetype}{character. File format expressed as GDAL driver names passed to \code{terra::writeRaster()}}
+
+\item{gdal}{character. GDAL driver specific datasource creation options passed to \code{terra::writeRaster()}}
+
+\item{...}{Additional arguments not yet used}
 
 \item{tidy_eval}{Logical, whether to enable tidy evaluation
 when interpreting \code{command} and \code{pattern}. If \code{TRUE}, you can use the
@@ -93,10 +84,7 @@ aggregation happens with \code{vctrs::vec_c()}.
 \item \code{"list"}, branching happens with \verb{[[]]} and aggregation happens with
 \code{list()}.
 \item \code{"group"}: \code{dplyr::group_by()}-like functionality to branch over
-subsets of a non-dynamic data frame.
-For \code{iteration = "group"}, the target must not by dynamic
-(the \code{pattern} argument of \code{\link[targets:tar_target]{tar_target()}} must be left \code{NULL}).
-The target's return value must be a data
+subsets of a data frame. The target's return value must be a data
 frame with a special \code{tar_group} column of consecutive integers
 from 1 through the number of groups. Each integer designates a group,
 and a branch is created for each collection of rows in a group.
@@ -141,13 +129,10 @@ and the latter conserves local storage.}
 \item{garbage_collection}{Logical, whether to run \code{base::gc()}
 just before the target runs.}
 
-\item{deployment}{Character of length 1. If \code{deployment} is
-\code{"main"}, then the target will run on the central controlling R process.
-Otherwise, if \code{deployment} is \code{"worker"} and you set up the pipeline
-with distributed/parallel computing, then
-the target runs on a parallel worker. For more on distributed/parallel
-computing in \code{targets}, please visit
-\url{https://books.ropensci.org/targets/crew.html}.}
+\item{deployment}{Character of length 1, only relevant to
+\code{\link[targets:tar_make_clustermq]{tar_make_clustermq()}} and \code{\link[targets:tar_make_future]{tar_make_future()}}. If \code{"worker"},
+the target runs on a parallel worker. If \code{"main"},
+the target runs on the host machine / process managing the pipeline.}
 
 \item{priority}{Numeric of length 1 between 0 and 1. Controls which
 targets get deployed first when multiple competing targets are ready
@@ -207,7 +192,7 @@ explicitly from another language.
 rules that decide whether the target is up to date.}
 }
 \description{
-Provides targets format for \code{terra::rast}
+Creates a target for a terra \emph{SpatRaster} object.
 }
 \examples{
 if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
@@ -225,4 +210,7 @@ if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
    x <- targets::tar_read(terra_rast_example)
  })
 }
+}
+\seealso{
+\code{\link[targets:tar_target_raw]{targets::tar_target_raw()}}
 }

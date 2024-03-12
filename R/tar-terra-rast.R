@@ -1,9 +1,17 @@
-#' Targets format for terra rasters
+#' Create a terra _SpatRaster_ Target
 #'
-#' Provides targets format for `terra::rast`
+#' Creates a target for a terra _SpatRaster_ object.
+#'
+#' @param name Character of length 1, name of the target.
+#' @param command An R expression. See `[targets::tar_target()]` for details
+#' @param pattern Language to define branching for a target. See `[targets::tar_target()]` for details.
+#' @param filetype character. File format expressed as GDAL driver names passed to `terra::writeRaster()`
+#' @param gdal character. GDAL driver specific datasource creation options passed to `terra::writeRaster()`
+#' @param ... Additional arguments not yet used
 #'
 #' @inheritParams targets::tar_target
 #'
+#' @seealso [targets::tar_target_raw()]
 #' @export
 #' @examples
 #' if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
@@ -24,6 +32,9 @@
 tar_terra_rast <- function(name,
                            command,
                            pattern = NULL,
+                           filetype = NULL,
+                           gdal = NULL,
+                           ...,
                            tidy_eval = targets::tar_option_get("tidy_eval"),
                            packages = targets::tar_option_get("packages"),
                            library = targets::tar_option_get("library"),
@@ -38,6 +49,7 @@ tar_terra_rast <- function(name,
                            storage = targets::tar_option_get("storage"),
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue")) {
+
     name <- targets::tar_deparse_language(substitute(name))
 
     envir <- targets::tar_option_get("envir")
@@ -47,25 +59,21 @@ tar_terra_rast <- function(name,
         envir = envir,
         tidy_eval = tidy_eval
     )
+
     pattern <- targets::tar_tidy_eval(
         expr = as.expression(substitute(pattern)),
         envir = envir,
         tidy_eval = tidy_eval
     )
 
-    format_terra_rast_geotiff <- targets::tar_format(
-        read = function(path) terra::rast(path),
-        write = function(object, path) {
-            terra::writeRaster(
-                x = object,
-                filename = path,
-                overwrite = TRUE,
-                filetype = "GTiff"
-            )
-        },
-        marshal = function(object) terra::wrap(object),
-        unmarshal = function(object) terra::unwrap(object)
-    )
+    # could pull defaults from geotargets package options
+    if (is.null(filetype)) {
+        filetype <- "GTiff"
+    }
+
+    if (is.null(gdal)) {
+        gdal <- "ENCODING=UTF-8"
+    }
 
     targets::tar_target_raw(
         name = name,
@@ -73,7 +81,7 @@ tar_terra_rast <- function(name,
         pattern = pattern,
         packages = packages,
         library = library,
-        format = format_terra_rast_geotiff,
+        format = create_format_terra_raster(filetype = filetype, gdal = gdal, ...),
         repository = repository,
         iteration = iteration,
         error = error,
@@ -87,3 +95,44 @@ tar_terra_rast <- function(name,
         cue = cue
     )
 }
+
+#' @param filetype File format expressed as GDAL driver names passed to `terra::writeRaster()`
+#' @param gdal GDAL driver specific datasource creation options passed to `terra::writeRaster()`
+#' @param ... Additional arguments not yet used
+#' @noRd
+create_format_terra_raster <- function(filetype, gdal, ...) {
+
+    if (!requireNamespace("terra")) {
+        stop("package 'terra' is required", call. = FALSE)
+    }
+
+    # get list of drivers available for writing depending on what the user's GDAL supports
+    drv <- terra::gdal(drivers = TRUE)
+    drv <- drv[drv$type == "raster" & grepl("write", drv$can), ]
+
+    filetype <- match.arg(filetype, drv$name)
+
+    if (is.null(filetype)) {
+        filetype <- "GTiff"
+    }
+
+    .write_terra_raster <- function(object, path) {
+        terra::writeRaster(
+            object,
+            path,
+            filetype = NULL,
+            overwrite = TRUE,
+            gdal = NULL
+        )
+    }
+    body(.write_terra_raster)[[2]][["filetype"]] <- filetype
+    body(.write_terra_raster)[[2]][["gdal"]] <- gdal
+
+    targets::tar_format(
+        read = function(path) terra::rast(path),
+        write = .write_terra_raster,
+        marshal = function(object) terra::wrap(object),
+        unmarshal = function(object) terra::unwrap(object)
+    )
+}
+
