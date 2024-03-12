@@ -2,9 +2,6 @@
 #'
 #' Creates a target for a terra _SpatRaster_ object.
 #'
-#' @param name Character of length 1, name of the target.
-#' @param command An R expression. See `[targets::tar_target()]` for details
-#' @param pattern Language to define branching for a target. See `[targets::tar_target()]` for details.
 #' @param filetype character. File format expressed as GDAL driver names passed to `terra::writeRaster()`
 #' @param gdal character. GDAL driver specific datasource creation options passed to `terra::writeRaster()`
 #' @param ... Additional arguments not yet used

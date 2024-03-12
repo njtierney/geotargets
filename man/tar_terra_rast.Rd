@@ -28,11 +28,29 @@ tar_terra_rast(
 )
 }
 \arguments{
-\item{name}{Character of length 1, name of the target.}
+\item{name}{Symbol, name of the target. A target
+name must be a valid name for a symbol in R, and it
+must not start with a dot. Subsequent targets
+can refer to this name symbolically to induce a dependency relationship:
+e.g. \code{tar_target(downstream_target, f(upstream_target))} is a
+target named \code{downstream_target} which depends on a target
+\code{upstream_target} and a function \code{f()}. In addition, a target's
+name determines its random number generator seed. In this way,
+each target runs with a reproducible seed so someone else
+running the same pipeline should get the same results,
+and no two targets in the same pipeline share the same seed.
+(Even dynamic branches have different names and thus different seeds.)
+You can recover the seed of a completed target
+with \code{tar_meta(your_target, seed)} and run \code{\link[targets:tar_seed_set]{tar_seed_set()}}
+on the result to locally recreate the target's initial RNG state.}
 
-\item{command}{An R expression. See \verb{[targets::tar_target()]} for details}
+\item{command}{R code to run the target.}
 
-\item{pattern}{Language to define branching for a target. See \verb{[targets::tar_target()]} for details.}
+\item{pattern}{Language to define branching for a target.
+For example, in a pipeline with numeric vector targets \code{x} and \code{y},
+\code{tar_target(z, x + y, pattern = map(x, y))} implicitly defines
+branches of \code{z} that each compute \code{x[1] + y[1]}, \code{x[2] + y[2]},
+and so on. See the user manual for details.}
 
 \item{filetype}{character. File format expressed as GDAL driver names passed to \code{terra::writeRaster()}}
 
