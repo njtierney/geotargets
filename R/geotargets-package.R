@@ -4,3 +4,11 @@
 ## usethis namespace: start
 ## usethis namespace: end
 NULL
+
+# clear CRAN checks spotting floating global variables
+#' @importFrom utils globalVariables
+utils::globalVariables(
+  c(
+    "packages"
+  )
+)

@@ -1,5 +1,5 @@
 Package: geotargets
-Title: Targets extensions for geospatial 
+Title: Targets extensions for geospatial formats
 Version: 0.0.0.9000
 Authors@R: c(
     person(
@@ -17,7 +17,7 @@ Authors@R: c(
     )
     )
 Description: Provides extensions for various geospatial file formats, 
-  including shapefiles, rasters, and more. See the vignettes for worked 
+  such as shapefiles and rasters. See the vignettes for worked 
   examples and demonstrations and explanations of how to use the various
   package extensions.
 License: MIT + file LICENSE
@@ -27,8 +27,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 Imports: 
     targets,
-    terra,
-    utils
+    terra
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
