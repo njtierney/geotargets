@@ -39,4 +39,4 @@ Currently geotargets provides:
 - `tar_terra_rast`
 - `tar_terra_vect`
 
-But these are under development.
+These are under active development.
