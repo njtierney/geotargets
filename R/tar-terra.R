@@ -5,7 +5,6 @@ tar_terra_rast <- function(name,
                            packages = targets::tar_option_get("packages"),
                            tidy_eval = targets::tar_option_get("tidy_eval"),
                            library = targets::tar_option_get("library"),
-                           format = format_terra_rast(),
                            repository = targets::tar_option_get("repository"),
                            iteration = targets::tar_option_get("iteration"),
                            error = targets::tar_option_get("error"),
@@ -32,13 +31,27 @@ tar_terra_rast <- function(name,
         tidy_eval = tidy_eval
     )
 
+    format_terra_rast_geotiff <- targets::tar_format(
+        read = function(path) terra::rast(path),
+        write = function(object, path) {
+            terra::writeRaster(
+                x = object,
+                filename = path,
+                overwrite = TRUE,
+                filetype = "GTiff"
+            )
+        },
+        marshal = function(object) terra::wrap(object),
+        unmarshal = function(object) terra::unwrap(object)
+    )
+
     targets::tar_target_raw(
         name = name,
         command = command,
         pattern = pattern,
         packages = packages,
         library = library,
-        format = format,
+        format = format_terra_rast_geotiff,
         repository = repository,
         iteration = iteration,
         error = error,
