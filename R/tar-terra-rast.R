@@ -107,11 +107,11 @@ create_format_terra_raster <- function(filetype, gdal, ...) {
     drv <- terra::gdal(drivers = TRUE)
     drv <- drv[drv$type == "raster" & grepl("write", drv$can), ]
 
-    filetype <- match.arg(filetype, drv$name)
-
     if (is.null(filetype)) {
         filetype <- "GTiff"
     }
+
+    filetype <- match.arg(filetype, drv$name)
 
     .write_terra_raster <- function(object, path) {
         terra::writeRaster(
