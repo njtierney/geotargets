@@ -51,7 +51,7 @@ tar_shapefile <- function(name,
                           cue = targets::tar_option_get("cue")) {
   name <- targets::tar_deparse_language(substitute(name))
 
-  envir <- tar_option_get("envir")
+  envir <- targets::tar_option_get("envir")
 
   command <- targets::tar_tidy_eval(
     expr = as.expression(substitute(command)),
