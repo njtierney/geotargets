@@ -95,7 +95,7 @@ tar_terra_vect <- function(name,
     tidy_eval = tidy_eval
   )
 
-  format_terra_shapefile_zip <- tar_format(
+  format_terra_shapefile_zip <- targets::tar_format(
       read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),
       write = function(object, path) {
           terra::writeVector(
