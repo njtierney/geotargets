@@ -37,6 +37,9 @@
 #'
 #' Provides targets format for `terra::vect` objects
 #'
+#' @param filetype character. File format expressed as GDAL driver names passed to `terra::writeVector()`
+#' @param gdal character. GDAL driver specific datasource creation options passed to `terra::writeVector()`
+#' @param ... Additional arguments not yet used
 #' @inheritParams targets::tar_target
 #'
 #' @export
@@ -66,6 +69,9 @@
 tar_terra_vect <- function(name,
                           command,
                           pattern = NULL,
+                          filetype = NULL,
+                          gdal = NULL,
+                          ...,
                           packages = targets::tar_option_get("packages"),
                           tidy_eval = targets::tar_option_get("tidy_eval"),
                           library = targets::tar_option_get("library"),
@@ -95,19 +101,33 @@ tar_terra_vect <- function(name,
     tidy_eval = tidy_eval
   )
 
-  format_terra_shapefile_zip <- targets::tar_format(
-      read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),
-      write = function(object, path) {
-          terra::writeVector(
-              x = object,
-              filename = paste0(path, ".shz"),
-              filetype = "ESRI Shapefile"
-          )
-          file.rename(paste0(path, ".shz"), path)
-      },
-      marshal = function(object) terra::wrap(object),
-      unmarshal = function(object) terra::unwrap(object)
-  )
+  # TODO: pull defaults from geotargets package options
+  if (is.null(filetype)) {
+      filetype <- "GeoJSON"
+  }
+
+  if (is.null(gdal)) {
+      gdal <- "ENCODING=UTF-8"
+  }
+
+  if(filetype == "ESRI Shapefile") {
+      #special handling of ESRI shapefiles because the output is a dir of multiple files.
+      format <- targets::tar_format(
+          read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),
+          write = function(object, path) {
+              terra::writeVector(
+                  x = object,
+                  filename = paste0(path, ".shz"),
+                  filetype = "ESRI Shapefile"
+              )
+              file.rename(paste0(path, ".shz"), path)
+          },
+          marshal = function(object) terra::wrap(object),
+          unmarshal = function(object) terra::unwrap(object)
+      )
+  } else {
+      format <- create_format_terra_vect(filetype, gdal, ...)
+  }
 
   targets::tar_target_raw(
     name = name,
@@ -128,4 +148,45 @@ tar_terra_vect <- function(name,
     retrieval = retrieval,
     cue = cue
   )
+}
+
+
+#' @param filetype File format expressed as GDAL driver names passed to `terra::writeVector()`
+#' @param gdal GDAL driver specific datasource creation options passed to `terra::writeVector()`
+#' @param ... Additional arguments not yet used
+#' @noRd
+create_format_terra_vect <- function(filetype, gdal, ...) {
+
+    if (!requireNamespace("terra")) {
+        stop("package 'terra' is required", call. = FALSE)
+    }
+
+    # get list of drivers available for writing depending on what the user's GDAL supports
+    drv <- terra::gdal(drivers = TRUE)
+    drv <- drv[drv$type == "vector" & grepl("write", drv$can), ]
+
+    if (is.null(filetype)) {
+        filetype <- "GeoJSON"
+    }
+
+    filetype <- match.arg(filetype, drv$name)
+
+    .write_terra_vector <- function(object, path) {
+        terra::writeVector(
+            object,
+            path,
+            filetype = NULL,
+            overwrite = TRUE,
+            gdal = NULL
+        )
+    }
+    body(.write_terra_vector)[[2]][["filetype"]] <- filetype
+    body(.write_terra_vector)[[2]][["gdal"]] <- gdal
+
+    targets::tar_format(
+        read = function(path) terra::rast(path),
+        write = .write_terra_vector,
+        marshal = function(object) terra::wrap(object),
+        unmarshal = function(object) terra::unwrap(object)
+    )
 }
