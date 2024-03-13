@@ -2,7 +2,7 @@
 #'
 #' Get or set behavior for geospatial data target stores using geotargets-specific global options.
 #'
-#' @param x Character. Option name. See Details.
+#' @param option_name Character. Option name. See Details.
 #'
 #' @details
 #'
@@ -19,32 +19,32 @@
 #'
 #' @rdname geotargets-options
 #' @export
-geotargets_option_get <- function(x) {
-    if (!startsWith(x, "geotargets.")) {
-        x <- paste0("geotargets.", x)
+geotargets_option_get <- function(option_name) {
+    if (!startsWith(option_name, "geotargets.")) {
+        option_name <- paste0("geotargets.", option_name)
     }
 
-    value <- geotargets_env()[[x]]
+    option_value <- geotargets_env()[[option_name]]
 
-    switch(x,
+    switch(option_name,
            "geotargets.raster.gdal_creation_options" = {
                strsplit(Sys.getenv("GEOTARGETS_RASTER_GDAL_CREATION_OPTIONS",
-                                   unset = getOption(x, default = ifelse(is.null(value), "ENCODING=UTF-8", value))),
+                                   unset = getOption(option_name, default = ifelse(is.null(option_value), "ENCODING=UTF-8", option_value))),
                         ";")[[1]]
            },
            "geotargets.raster.gdal_driver_name" = {
                Sys.getenv("GEOTARGETS_RASTER_GDAL_DRIVER_NAME",
-                          unset = getOption(x, default = ifelse(is.null(value), "GTiff", value))
+                          unset = getOption(option_name, default = ifelse(is.null(option_value), "GTiff", option_value))
                )
            })
 }
 
-#' @param value Value to assign to option `x`.
+#' @param option_value Value to assign to option `x`.
 #' @rdname geotargets-options
 #' @export
-geotargets_option_set <- function(x, value) {
-    if (!startsWith(x, "geotargets.")) {
-        x <- paste0("geotargets.", x)
+geotargets_option_set <- function(option_name, option_value) {
+    if (!startsWith(option_name, "geotargets.")) {
+        option_name <- paste0("geotargets.", option_name)
     }
-    geotargets.env[[x]] <- value
+    geotargets.env[[option_name]] <- option_value
 }

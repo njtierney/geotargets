@@ -5,14 +5,14 @@
 \alias{geotargets_option_set}
 \title{Get or Set geotargets Options}
 \usage{
-geotargets_option_get(x)
+geotargets_option_get(option_name)
 
-geotargets_option_set(x, value)
+geotargets_option_set(option_name, option_value)
 }
 \arguments{
-\item{x}{Character. Option name. See Details.}
+\item{option_name}{Character. Option name. See Details.}
 
-\item{value}{Value to assign to option \code{x}.}
+\item{option_value}{Value to assign to option \code{x}.}
 }
 \description{
 Get or set behavior for geospatial data target stores using geotargets-specific global options.
