@@ -5,6 +5,6 @@ geotargets_env <- function() {
 }
 
 .onAttach <- function(lib, pkg) {
-    geotargets.env$geotargets.raster.gdal_creation_options <- "ENCODING=UTF-8"
-    geotargets.env$geotargets.raster.gdal_driver_name <- "GTiff"
+    geotargets.env$geotargets.gdal.raster.creation_options <- "ENCODING=UTF-8"
+    geotargets.env$geotargets.gdal.raster.driver_name <- "GTiff"
 }
