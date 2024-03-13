@@ -30,7 +30,7 @@ remotes::install_github("njtierney/geotargets")
 
 Currently geotargets provides:
 
-- `tar_geotiff`
-- `tar_shapefile`
+- `tar_terra_rast`
+- `tar_terra_vect`
 
-But these are under development.
+These are under active development.

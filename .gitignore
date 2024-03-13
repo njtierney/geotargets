@@ -4,3 +4,11 @@
 .httr-oauth
 .DS_Store
 .quarto
+.Rprofile
+
+_targets_packages.R
+_targets
+_targets.R
+_targets.Rmd
+_targets_r
+_targets.yaml

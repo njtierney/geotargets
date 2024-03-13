@@ -4,3 +4,10 @@
 ^\.github$
 ^codecov\.yml$
 ^LICENSE\.md$
+
+^_targets$
+^_targets_r$
+^_targets\.R$
+^_targets_packages\.R$
+^_targets\.Rmd$
+^_targets\.yaml$
