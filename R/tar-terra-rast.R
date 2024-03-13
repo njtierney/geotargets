@@ -117,9 +117,9 @@ create_format_terra_raster <- function(filetype, gdal, ...) {
         terra::writeRaster(
             object,
             path,
-            filetype = NULL,
+            filetype = geotargets::geotargets_option_get("raster.gdal_driver_name"),
             overwrite = TRUE,
-            gdal = NULL
+            gdal = geotargets::geotargets_option_get("raster.gdal_creation_options")
         )
     }
     body(.write_terra_raster)[[2]][["filetype"]] <- filetype
