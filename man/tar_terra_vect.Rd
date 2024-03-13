@@ -8,6 +8,9 @@ tar_terra_vect(
   name,
   command,
   pattern = NULL,
+  filetype = NULL,
+  gdal = NULL,
+  ...,
   packages = targets::tar_option_get("packages"),
   tidy_eval = targets::tar_option_get("tidy_eval"),
   library = targets::tar_option_get("library"),
@@ -48,6 +51,12 @@ For example, in a pipeline with numeric vector targets \code{x} and \code{y},
 \code{tar_target(z, x + y, pattern = map(x, y))} implicitly defines
 branches of \code{z} that each compute \code{x[1] + y[1]}, \code{x[2] + y[2]},
 and so on. See the user manual for details.}
+
+\item{filetype}{character. File format expressed as GDAL driver names passed to \code{terra::writeVector()}}
+
+\item{gdal}{character. GDAL driver specific datasource creation options passed to \code{terra::writeVector()}}
+
+\item{...}{Additional arguments not yet used}
 
 \item{packages}{Character vector of packages to load right before
 the target runs or the output data is reloaded for
