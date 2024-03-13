@@ -102,10 +102,10 @@ create_format_terra_raster <- function(filetype, gdal, ...) {
     drv <- terra::gdal(drivers = TRUE)
     drv <- drv[drv$type == "raster" & grepl("write", drv$can), ]
 
-    filetype <- filetype %||% geotargets_option_get("raster.gdal_driver_name")
+    filetype <- filetype %||% geotargets_option_get("gdal.raster.driver_name")
     filetype <- rlang::arg_match0(filetype, drv$name)
 
-    gdal <- gdal %||% geotargets_option_get("raster.gdal_creation_options")
+    gdal <- gdal %||% geotargets_option_get("gdal.raster.creation_options")
 
     # NOTE: Option getting functions are set in the .write_terra_raster function template
     #       to resolve issue with body<- not working in some evaluation contexts ({covr}).
@@ -114,9 +114,9 @@ create_format_terra_raster <- function(filetype, gdal, ...) {
         terra::writeRaster(
             object,
             path,
-            filetype = geotargets::geotargets_option_get("raster.gdal_driver_name"),
+            filetype = geotargets::geotargets_option_get("gdal.raster.driver_name"),
             overwrite = TRUE,
-            gdal = geotargets::geotargets_option_get("raster.gdal_creation_options")
+            gdal = geotargets::geotargets_option_get("gdal.raster.creation_options")
         )
     }
 
