@@ -65,11 +65,11 @@ tar_terra_rast <- function(name,
 
     # could pull defaults from geotargets package options
     if (is.null(filetype)) {
-        filetype <- "GTiff"
+        filetype <- geotargets::geotargets_option_get("raster.gdal_driver_name")
     }
 
     if (is.null(gdal)) {
-        gdal <- "ENCODING=UTF-8"
+        gdal <- geotargets::geotargets_option_get("raster.gdal_creation_options")
     }
 
     targets::tar_target_raw(
@@ -108,7 +108,7 @@ create_format_terra_raster <- function(filetype, gdal, ...) {
     drv <- drv[drv$type == "raster" & grepl("write", drv$can), ]
 
     if (is.null(filetype)) {
-        filetype <- "GTiff"
+        filetype <- geotargets::geotargets_option_get("raster.gdal_driver_name")
     }
 
     filetype <- match.arg(filetype, drv$name)
