@@ -110,7 +110,7 @@ tar_terra_vect <- function(name,
       gdal <- "ENCODING=UTF-8"
   }
 
-  if(filetype == "ESRI Shapefile") {
+  if (filetype == "ESRI Shapefile") {
       #special handling of ESRI shapefiles because the output is a dir of multiple files.
       format <- targets::tar_format(
           read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),
@@ -118,7 +118,9 @@ tar_terra_vect <- function(name,
               terra::writeVector(
                   x = object,
                   filename = paste0(path, ".shz"),
-                  filetype = "ESRI Shapefile"
+                  filetype = "ESRI Shapefile",
+                  options = gdal,
+                  overwrite = TRUE
               )
               file.rename(paste0(path, ".shz"), path)
           },
@@ -126,7 +128,7 @@ tar_terra_vect <- function(name,
           unmarshal = function(object) terra::unwrap(object)
       )
   } else {
-      format <- create_format_terra_vect(filetype, gdal, ...)
+      format <- create_format_terra_vect(filetype, options = gdal, ...)
   }
 
   targets::tar_target_raw(
@@ -135,7 +137,7 @@ tar_terra_vect <- function(name,
     pattern = pattern,
     packages = packages,
     library = library,
-    format = format_terra_shapefile_zip,
+    format = format,
     repository = repository,
     iteration = iteration,
     error = error,
@@ -152,10 +154,10 @@ tar_terra_vect <- function(name,
 
 
 #' @param filetype File format expressed as GDAL driver names passed to `terra::writeVector()`
-#' @param gdal GDAL driver specific datasource creation options passed to `terra::writeVector()`
+#' @param options GDAL driver specific datasource creation options passed to `terra::writeVector()`
 #' @param ... Additional arguments not yet used
 #' @noRd
-create_format_terra_vect <- function(filetype, gdal, ...) {
+create_format_terra_vect <- function(filetype, options, ...) {
 
     if (!requireNamespace("terra")) {
         stop("package 'terra' is required", call. = FALSE)
@@ -177,14 +179,14 @@ create_format_terra_vect <- function(filetype, gdal, ...) {
             path,
             filetype = NULL,
             overwrite = TRUE,
-            gdal = NULL
+            options = NULL
         )
     }
     body(.write_terra_vector)[[2]][["filetype"]] <- filetype
-    body(.write_terra_vector)[[2]][["gdal"]] <- gdal
+    body(.write_terra_vector)[[2]][["options"]] <- options
 
     targets::tar_format(
-        read = function(path) terra::rast(path),
+        read = function(path) terra::vect(path),
         write = .write_terra_vector,
         marshal = function(object) terra::wrap(object),
         unmarshal = function(object) terra::unwrap(object)
