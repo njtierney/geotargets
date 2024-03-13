@@ -26,17 +26,32 @@ geotargets_option_get <- function(option_name) {
 
     option_value <- geotargets_env()[[option_name]]
 
+    get_option <- function(option_name, option_value, name){
+        getOption(option_name, default = option_value %||% name)
+    }
+
+    get_geotargets_raster_gdal_creation_options <- function(option_name, option_value) {
+        gdal_creation_options <- Sys.getenv(
+            x = "GEOTARGETS_RASTER_GDAL_CREATION_OPTIONS",
+            unset = get_option(option_name, option_value, "ENCODING=UTF-8")
+        )
+        the_option <- strsplit(gdal_creation_options, ";")[[1]]
+        the_option
+    }
+
+    get_geotargets_raster_gdal_driver_name <- function(option_name, option_value) {
+        Sys.getenv(
+            x = "GEOTARGETS_RASTER_GDAL_DRIVER_NAME",
+            unset = get_option(option_name, option_value, "GTiff")
+        )
+    }
+
     switch(option_name,
-           "geotargets.raster.gdal_creation_options" = {
-               strsplit(Sys.getenv("GEOTARGETS_RASTER_GDAL_CREATION_OPTIONS",
-                                   unset = getOption(option_name, default = ifelse(is.null(option_value), "ENCODING=UTF-8", option_value))),
-                        ";")[[1]]
-           },
-           "geotargets.raster.gdal_driver_name" = {
-               Sys.getenv("GEOTARGETS_RASTER_GDAL_DRIVER_NAME",
-                          unset = getOption(option_name, default = ifelse(is.null(option_value), "GTiff", option_value))
-               )
-           })
+           "geotargets.raster.gdal_creation_options" =
+               get_geotargets_raster_gdal_creation_options(option_name, option_value),
+           "geotargets.raster.gdal_driver_name" =
+               get_geotargets_raster_gdal_driver_name(option_name, option_value)
+    )
 }
 
 #' @param option_value Value to assign to option `x`.
