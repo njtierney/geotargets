@@ -33,15 +33,19 @@
 #   unmarshal = function(object) terra::unwrap(object)
 # )
 
-#' Targets format for terra vectors
+#' Create a terra _SpatVector_ target
 #'
-#' Provides targets format for `terra::vect` objects
+#' Provides a target format for [terra::SpatVector-class] objects.
 #'
-#' @param filetype character. File format expressed as GDAL driver names passed to `terra::writeVector()`
-#' @param gdal character. GDAL driver specific datasource creation options passed to `terra::writeVector()`
+#' @param filetype character. File format expressed as GDAL driver names passed to [terra::writeVector()]. See 'Note' for more details
+#' @param gdal character. GDAL driver specific datasource creation options passed to [terra::writeVector()].
 #' @param ... Additional arguments not yet used
 #' @inheritParams targets::tar_target
 #'
+#' @note Although you may pass any supported GDAL vector driver to the
+#'   `filetype` argument, not all formats are guaranteed to work with
+#'   `geotargets`.  At the moment, we have tested `GeoJSON` and `ESRI Shapefile`
+#'   which both appear to work generally.
 #' @export
 #' @examples
 #' if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
@@ -67,89 +71,75 @@
 #'   })
 #' }
 tar_terra_vect <- function(name,
-                          command,
-                          pattern = NULL,
-                          filetype = NULL,
-                          gdal = NULL,
-                          ...,
-                          packages = targets::tar_option_get("packages"),
-                          tidy_eval = targets::tar_option_get("tidy_eval"),
-                          library = targets::tar_option_get("library"),
-                          repository = targets::tar_option_get("repository"),
-                          iteration = targets::tar_option_get("iteration"),
-                          error = targets::tar_option_get("error"),
-                          memory = targets::tar_option_get("memory"),
-                          garbage_collection = targets::tar_option_get("garbage_collection"),
-                          deployment = targets::tar_option_get("deployment"),
-                          priority = targets::tar_option_get("priority"),
-                          resources = targets::tar_option_get("resources"),
-                          storage = targets::tar_option_get("storage"),
-                          retrieval = targets::tar_option_get("retrieval"),
-                          cue = targets::tar_option_get("cue")) {
-  name <- targets::tar_deparse_language(substitute(name))
+                           command,
+                           pattern = NULL,
+                           filetype = NULL,
+                           gdal = NULL,
+                           ...,
+                           packages = targets::tar_option_get("packages"),
+                           tidy_eval = targets::tar_option_get("tidy_eval"),
+                           library = targets::tar_option_get("library"),
+                           repository = targets::tar_option_get("repository"),
+                           iteration = targets::tar_option_get("iteration"),
+                           error = targets::tar_option_get("error"),
+                           memory = targets::tar_option_get("memory"),
+                           garbage_collection = targets::tar_option_get("garbage_collection"),
+                           deployment = targets::tar_option_get("deployment"),
+                           priority = targets::tar_option_get("priority"),
+                           resources = targets::tar_option_get("resources"),
+                           storage = targets::tar_option_get("storage"),
+                           retrieval = targets::tar_option_get("retrieval"),
+                           cue = targets::tar_option_get("cue")) {
+    name <- targets::tar_deparse_language(substitute(name))
 
-  envir <- targets::tar_option_get("envir")
+    envir <- targets::tar_option_get("envir")
 
-  command <- targets::tar_tidy_eval(
-    expr = as.expression(substitute(command)),
-    envir = envir,
-    tidy_eval = tidy_eval
-  )
-  pattern <- targets::tar_tidy_eval(
-    expr = as.expression(substitute(pattern)),
-    envir = envir,
-    tidy_eval = tidy_eval
-  )
+    command <- targets::tar_tidy_eval(
+        expr = as.expression(substitute(command)),
+        envir = envir,
+        tidy_eval = tidy_eval
+    )
+    pattern <- targets::tar_tidy_eval(
+        expr = as.expression(substitute(pattern)),
+        envir = envir,
+        tidy_eval = tidy_eval
+    )
 
-  # TODO: pull defaults from geotargets package options
-  if (is.null(filetype)) {
-      filetype <- "GeoJSON"
-  }
+    # TODO: pull defaults from geotargets package options
+    if (is.null(filetype)) {
+        filetype <- "GeoJSON"
+    }
 
-  if (is.null(gdal)) {
-      gdal <- "ENCODING=UTF-8"
-  }
+    if (is.null(gdal)) {
+        gdal <- "ENCODING=UTF-8"
+    }
 
-  if (filetype == "ESRI Shapefile") {
-      #special handling of ESRI shapefiles because the output is a dir of multiple files.
-      format <- targets::tar_format(
-          read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),
-          write = function(object, path) {
-              terra::writeVector(
-                  x = object,
-                  filename = paste0(path, ".shz"),
-                  filetype = "ESRI Shapefile",
-                  options = gdal,
-                  overwrite = TRUE
-              )
-              file.rename(paste0(path, ".shz"), path)
-          },
-          marshal = function(object) terra::wrap(object),
-          unmarshal = function(object) terra::unwrap(object)
-      )
-  } else {
-      format <- create_format_terra_vect(filetype, options = gdal, ...)
-  }
+    if (filetype == "ESRI Shapefile") {
+        #special handling of ESRI shapefiles because the output is a dir of multiple files.
+        format <- create_format_terra_vect_shz(options = gdal, ...)
+    } else {
+        format <- create_format_terra_vect(filetype, options = gdal, ...)
+    }
 
-  targets::tar_target_raw(
-    name = name,
-    command = command,
-    pattern = pattern,
-    packages = packages,
-    library = library,
-    format = format,
-    repository = repository,
-    iteration = iteration,
-    error = error,
-    memory = memory,
-    garbage_collection = garbage_collection,
-    deployment = deployment,
-    priority = priority,
-    resources = resources,
-    storage = storage,
-    retrieval = retrieval,
-    cue = cue
-  )
+    targets::tar_target_raw(
+        name = name,
+        command = command,
+        pattern = pattern,
+        packages = packages,
+        library = library,
+        format = format,
+        repository = repository,
+        iteration = iteration,
+        error = error,
+        memory = memory,
+        garbage_collection = garbage_collection,
+        deployment = deployment,
+        priority = priority,
+        resources = resources,
+        storage = storage,
+        retrieval = retrieval,
+        cue = cue
+    )
 }
 
 
@@ -187,6 +177,36 @@ create_format_terra_vect <- function(filetype, options, ...) {
 
     targets::tar_format(
         read = function(path) terra::vect(path),
+        write = .write_terra_vector,
+        marshal = function(object) terra::wrap(object),
+        unmarshal = function(object) terra::unwrap(object)
+    )
+}
+
+#' Special handling for ESRI Shapefiles
+#' @param options GDAL driver specific datasource creation options passed to `terra::writeVector()`
+#' @param ... Additional arguments not yet used
+#' @noRd
+create_format_terra_vect_shz <- function(options, ...) {
+
+    if (!requireNamespace("terra")) {
+        stop("package 'terra' is required", call. = FALSE)
+    }
+
+    .write_terra_vector <- function(object, path) {
+        terra::writeVector(
+            x = object,
+            filename = paste0(path, ".shz"),
+            filetype = "ESRI Shapefile",
+            overwrite = TRUE,
+            options = NULL
+        )
+        file.rename(paste0(path, ".shz"), path)
+    }
+    body(.write_terra_vector)[[2]][["options"]] <- options
+
+    targets::tar_format(
+        read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),
         write = .write_terra_vector,
         marshal = function(object) terra::wrap(object),
         unmarshal = function(object) terra::unwrap(object)
