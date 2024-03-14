@@ -52,9 +52,9 @@ For example, in a pipeline with numeric vector targets \code{x} and \code{y},
 branches of \code{z} that each compute \code{x[1] + y[1]}, \code{x[2] + y[2]},
 and so on. See the user manual for details.}
 
-\item{filetype}{character. File format expressed as GDAL driver names passed to \code{terra::writeRaster()}}
+\item{filetype}{character. File format expressed as GDAL driver names passed to \code{\link[terra:writeRaster]{terra::writeRaster()}}}
 
-\item{gdal}{character. GDAL driver specific datasource creation options passed to \code{terra::writeRaster()}}
+\item{gdal}{character. GDAL driver specific datasource creation options passed to \code{\link[terra:writeRaster]{terra::writeRaster()}}}
 
 \item{...}{Additional arguments not yet used}
 
@@ -216,7 +216,7 @@ explicitly from another language.
 rules that decide whether the target is up to date.}
 }
 \description{
-Creates a target for a terra \emph{SpatRaster} object.
+Provides a target forma for \link[terra:SpatRaster-class]{terra::SpatRaster} objects.
 }
 \examples{
 if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {

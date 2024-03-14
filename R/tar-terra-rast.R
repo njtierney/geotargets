@@ -1,9 +1,9 @@
 #' Create a terra _SpatRaster_ Target
 #'
-#' Creates a target for a terra _SpatRaster_ object.
+#' Provides a target forma for [terra::SpatRaster-class] objects.
 #'
-#' @param filetype character. File format expressed as GDAL driver names passed to `terra::writeRaster()`
-#' @param gdal character. GDAL driver specific datasource creation options passed to `terra::writeRaster()`
+#' @param filetype character. File format expressed as GDAL driver names passed to [terra::writeRaster()]
+#' @param gdal character. GDAL driver specific datasource creation options passed to [terra::writeRaster()]
 #' @param ... Additional arguments not yet used
 #'
 #' @inheritParams targets::tar_target
