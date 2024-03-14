@@ -114,12 +114,12 @@ tar_terra_vect <- function(name,
         gdal <- "ENCODING=UTF-8"
     }
 
-    if (filetype == "ESRI Shapefile") {
-        #special handling of ESRI shapefiles because the output is a dir of multiple files.
-        format <- create_format_terra_vect_shz(options = gdal, ...)
-    } else {
-        format <- create_format_terra_vect(filetype, options = gdal, ...)
-    }
+format <- ifelse(
+  test = filetype == "ESRI Shapefile",
+  #special handling of ESRI shapefiles because the output is a dir of multiple files.
+  yes = create_format_terra_vect_shz(options = gdal, ...),
+  no =  create_format_terra_vect(filetype, options = gdal, ...)
+)
 
     targets::tar_target_raw(
         name = name,
