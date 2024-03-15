@@ -11,3 +11,4 @@
 ^_targets_packages\.R$
 ^_targets\.Rmd$
 ^_targets\.yaml$
+^CODE_OF_CONDUCT\.md$
