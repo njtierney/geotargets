@@ -28,10 +28,8 @@
 #' @rdname geotargets-options
 #' @export
 geotargets_option_get <- function(option_name) {
-    if (!startsWith(option_name, "geotargets.")) {
-        option_name <- paste0("geotargets.", option_name)
-    }
 
+    option_name <- geotargets_repair_option_name(option_name)
     option_value <- geotargets_env()[[option_name]]
 
     get_option <- function(option_name, option_value, name){
@@ -69,6 +67,7 @@ geotargets_option_get <- function(option_name) {
             unset = get_option(option_name, option_value, "GeoJSON")
         )
     }
+
     switch(option_name,
            "geotargets.gdal.raster.creation_options" =
                get_geotargets_gdal_raster_creation_options(option_name, option_value),
@@ -85,8 +84,12 @@ geotargets_option_get <- function(option_name) {
 #' @rdname geotargets-options
 #' @export
 geotargets_option_set <- function(option_name, option_value) {
+    option_name <- geotargets_repair_option_name(option_name)
+    geotargets.env[[option_name]] <- option_value
+}
+
+geotargets_repair_option_name <- function(option_name) {
     if (!startsWith(option_name, "geotargets.")) {
         option_name <- paste0("geotargets.", option_name)
     }
-    geotargets.env[[option_name]] <- option_value
 }
