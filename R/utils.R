@@ -1,11 +1,5 @@
-replace_dot_zip <- function(x, replacement) {
-  gsub(
-    pattern = "\\.zip",
-    replacement = replacement,
-    x = basename(x)
-  )
-}
-
-replace_dot_zip_with_shp <- function(x) {
-  replace_dot_zip(x, ".shp")
+geotargets_repair_option_name <- function(option_name) {
+  if (!startsWith(option_name, "geotargets.")) {
+    option_name <- paste0("geotargets.", option_name)
+  }
 }

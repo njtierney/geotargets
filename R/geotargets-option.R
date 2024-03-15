@@ -87,9 +87,3 @@ geotargets_option_set <- function(option_name, option_value) {
     option_name <- geotargets_repair_option_name(option_name)
     geotargets.env[[option_name]] <- option_value
 }
-
-geotargets_repair_option_name <- function(option_name) {
-    if (!startsWith(option_name, "geotargets.")) {
-        option_name <- paste0("geotargets.", option_name)
-    }
-}
