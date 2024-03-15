@@ -10,7 +10,7 @@
 #'
 #'  - `"geotargets.gdal.raster.driver"` - character. Length 1. Set the driver used for raster data in target store (default: `"GTiff"`). Options for driver names can be found here: <https://gdal.org/drivers/raster/index.html>
 #'
-#'  - `"geotargets.gdal.raster.creation_options"` - character. Set the GDAL creation options used when writing raster files to target store (default: `"ENCODING=UTF-8"`). You may specify multiple values e.g. `c("COMPRESS=DEFLATE", "TFW=YES")`. Each GDAL driver supports a unique set of creation options. For example, with the default `"GTiff"` driver: <https://gdal.org/drivers/raster/gtiff.html#creation-options>
+#'  - `"geotargets.gdal.raster.creation_options"` - character. Set the GDAL creation options used when writing raster files to target store (default: `""`). You may specify multiple values e.g. `c("COMPRESS=DEFLATE", "TFW=YES")`. Each GDAL driver supports a unique set of creation options. For example, with the default `"GTiff"` driver: <https://gdal.org/drivers/raster/gtiff.html#creation-options>
 #'
 #'  - `"geotargets.gdal.vector.driver"` - character. Length 1. Set the file type used for vector data in target store (default: `"GeoJSON"`).
 #'
@@ -39,7 +39,7 @@ geotargets_option_get <- function(option_name) {
     get_geotargets_gdal_raster_creation_options <- function(option_name, option_value) {
         gdal_creation_options <- Sys.getenv(
             x = "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
-            unset = get_option(option_name, option_value, "ENCODING=UTF-8")
+            unset = get_option(option_name, option_value, "")
         )
         the_option <- strsplit(gdal_creation_options, ";")[[1]]
         the_option
