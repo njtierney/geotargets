@@ -10,12 +10,12 @@
 #'
 #'  - `"geotargets.gdal.raster.creation_options"` - set the GDAL creation options used when writing raster files to target store (default: `"ENCODING=UTF-8"`)
 #'
-#'  - `"geotargets.gdal.raster.driver_name"` - set the file type used for raster data in target store (default: `"GTiff"`)
+#'  - `"geotargets.gdal.raster.driver"` - set the file type used for raster data in target store (default: `"GTiff"`)
 #'
 #'  Each option can be overridden with a system environment variable. Options include:
 #'
 #'   - `GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS`
-#'   - `GEOTARGETS_GDAL_RASTER_DRIVER_NAME`
+#'   - `GEOTARGETS_GDAL_RASTER_DRIVER`
 #'
 #' @rdname geotargets-options
 #' @export
@@ -39,9 +39,9 @@ geotargets_option_get <- function(option_name) {
         the_option
     }
 
-    get_geotargets_gdal_raster_driver_name <- function(option_name, option_value) {
+    get_geotargets_gdal_raster_driver <- function(option_name, option_value) {
         Sys.getenv(
-            x = "GEOTARGETS_GDAL_RASTER_DRIVER_NAME",
+            x = "GEOTARGETS_GDAL_RASTER_DRIVER",
             unset = get_option(option_name, option_value, "GTiff")
         )
     }
@@ -49,8 +49,8 @@ geotargets_option_get <- function(option_name) {
     switch(option_name,
            "geotargets.gdal.raster.creation_options" =
                get_geotargets_gdal_raster_creation_options(option_name, option_value),
-           "geotargets.gdal.raster.driver_name" =
-               get_geotargets_gdal_raster_driver_name(option_name, option_value)
+           "geotargets.gdal.raster.driver" =
+               get_geotargets_gdal_raster_driver(option_name, option_value)
     )
 }
 

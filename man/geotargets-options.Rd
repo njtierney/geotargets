@@ -21,13 +21,13 @@ Get or set behavior for geospatial data target stores using geotargets-specific 
 \subsection{Available Options}{
 \itemize{
 \item \code{"geotargets.gdal.raster.creation_options"} - set the GDAL creation options used when writing raster files to target store (default: \code{"ENCODING=UTF-8"})
-\item \code{"geotargets.gdal.raster.driver_name"} - set the file type used for raster data in target store (default: \code{"GTiff"})
+\item \code{"geotargets.gdal.raster.driver"} - set the file type used for raster data in target store (default: \code{"GTiff"})
 }
 
 Each option can be overridden with a system environment variable. Options include:
 \itemize{
 \item \code{GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS}
-\item \code{GEOTARGETS_GDAL_RASTER_DRIVER_NAME}
+\item \code{GEOTARGETS_GDAL_RASTER_DRIVER}
 }
 }
 }
