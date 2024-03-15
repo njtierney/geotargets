@@ -64,8 +64,8 @@ tar_terra_rast <- function(name,
     )
 
     # if not specified by user, pull the corresponding geotargets option
-    filetype <- filetype %||% geotargets_option_get("raster.gdal_driver_name")
-    gdal <- gdal %||% geotargets_option_get("raster.gdal_creation_options")
+    filetype <- filetype %||% geotargets_option_get("gdal.raster.driver")
+    gdal <- gdal %||% geotargets_option_get("gdal.raster.creation_options")
 
     targets::tar_target_raw(
         name = name,
@@ -102,7 +102,7 @@ create_format_terra_raster <- function(filetype, gdal, ...) {
     drv <- terra::gdal(drivers = TRUE)
     drv <- drv[drv$type == "raster" & grepl("write", drv$can), ]
 
-    filetype <- filetype %||% geotargets_option_get("gdal.raster.driver_name")
+    filetype <- filetype %||% geotargets_option_get("gdal.raster.driver")
     filetype <- rlang::arg_match0(filetype, drv$name)
 
     gdal <- gdal %||% geotargets_option_get("gdal.raster.creation_options")
@@ -114,7 +114,7 @@ create_format_terra_raster <- function(filetype, gdal, ...) {
         terra::writeRaster(
             object,
             path,
-            filetype = geotargets::geotargets_option_get("gdal.raster.driver_name"),
+            filetype = geotargets::geotargets_option_get("gdal.raster.driver"),
             overwrite = TRUE,
             gdal = geotargets::geotargets_option_get("gdal.raster.creation_options")
         )

@@ -20,14 +20,20 @@ Get or set behavior for geospatial data target stores using geotargets-specific 
 \details{
 \subsection{Available Options}{
 \itemize{
-\item \code{"geotargets.gdal.raster.creation_options"} - set the GDAL creation options used when writing raster files to target store (default: \code{"ENCODING=UTF-8"})
-\item \code{"geotargets.gdal.raster.driver_name"} - set the file type used for raster data in target store (default: \code{"GTiff"})
+\item \code{"geotargets.gdal.raster.driver"} - character. Length 1. Set the driver used for raster data in target store (default: \code{"GTiff"}). Options for driver names can be found here: \url{https://gdal.org/drivers/raster/index.html}
+\item \code{"geotargets.gdal.raster.creation_options"} - character. Set the GDAL creation options used when writing raster files to target store (default: \code{""}). You may specify multiple values e.g. \code{c("COMPRESS=DEFLATE", "TFW=YES")}. Each GDAL driver supports a unique set of creation options. For example, with the default \code{"GTiff"} driver: \url{https://gdal.org/drivers/raster/gtiff.html#creation-options}
+\item \code{"geotargets.gdal.vector.driver"} - character. Length 1. Set the file type used for vector data in target store (default: \code{"GeoJSON"}).
+\item \code{"geotargets.gdal.vector.creation_options"} - character. Set the GDAL layer creation options used when writing vector files to target store (default: \code{"ENCODING=UTF-8"}). You may specify multiple values e.g. \code{c("WRITE_BBOX=YES", "COORDINATE_PRECISION=10")}. Each GDAL driver supports a unique set of creation options. For example, with the default \code{"GeoJSON"} driver: \url{https://gdal.org/drivers/vector/geojson.html#layer-creation-options}
 }
 
 Each option can be overridden with a system environment variable. Options include:
 \itemize{
+\item \code{GEOTARGETS_GDAL_RASTER_DRIVER}
 \item \code{GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS}
-\item \code{GEOTARGETS_GDAL_RASTER_DRIVER_NAME}
+\item \code{GEOTARGETS_GDAL_VECTOR_DRIVER}
+\item \code{GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS}
 }
+
+When specifying options that support multiple values using a system environment variable, the separate options should be delimited with a semicolon (";"). For example: \code{"COMPRESS=DEFLATE;TFW=YES"}.
 }
 }
