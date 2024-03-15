@@ -49,7 +49,9 @@ tar_terra_rast <- function(name,
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue")) {
 
-    rlang::check_installed("terra")
+    if (!requireNamespace("terra")) {
+        stop("package 'terra' is required", call. = FALSE)
+    }
     name <- targets::tar_deparse_language(substitute(name))
 
     envir <- targets::tar_option_get("envir")
