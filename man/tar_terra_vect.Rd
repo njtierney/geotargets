@@ -52,9 +52,11 @@ For example, in a pipeline with numeric vector targets \code{x} and \code{y},
 branches of \code{z} that each compute \code{x[1] + y[1]}, \code{x[2] + y[2]},
 and so on. See the user manual for details.}
 
-\item{filetype}{character. File format expressed as GDAL driver names passed to \code{\link[terra:writeVector]{terra::writeVector()}}. See 'Note' for more details}
+\item{filetype}{character. File format expressed as GDAL driver names passed
+to \code{\link[terra:writeVector]{terra::writeVector()}}. See 'Note' for more details}
 
-\item{gdal}{character. GDAL driver specific datasource creation options passed to \code{\link[terra:writeVector]{terra::writeVector()}}.}
+\item{gdal}{character. GDAL driver specific datasource creation options
+passed to \code{\link[terra:writeVector]{terra::writeVector()}}.}
 
 \item{...}{Additional arguments not yet used}
 

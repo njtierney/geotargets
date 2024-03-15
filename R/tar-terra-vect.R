@@ -1,9 +1,11 @@
-#' Targets format for terra vectors
+#' Create a terra _SpatVector_ target
 #'
 #' Provides a target format for [terra::SpatVector-class] objects.
 #'
-#' @param filetype character. File format expressed as GDAL driver names passed to [terra::writeVector()]. See 'Note' for more details
-#' @param gdal character. GDAL driver specific datasource creation options passed to [terra::writeVector()].
+#' @param filetype character. File format expressed as GDAL driver names passed
+#'   to [terra::writeVector()]. See 'Note' for more details
+#' @param gdal character. GDAL driver specific datasource creation options
+#'   passed to [terra::writeVector()].
 #' @param ... Additional arguments not yet used
 #' @inheritParams targets::tar_target
 #'
@@ -108,8 +110,10 @@ format <- ifelse(
 }
 
 
-#' @param filetype File format expressed as GDAL driver names passed to `terra::writeVector()`
-#' @param options GDAL driver specific datasource creation options passed to `terra::writeVector()`
+#' @param filetype File format expressed as GDAL driver names passed to
+#'   `terra::writeVector()`
+#' @param options GDAL driver specific datasource creation options passed to
+#'   `terra::writeVector()`
 #' @param ... Additional arguments not yet used
 #' @noRd
 create_format_terra_vect <- function(filetype, options, ...) {
@@ -149,7 +153,8 @@ create_format_terra_vect <- function(filetype, options, ...) {
 }
 
 #' Special handling for ESRI Shapefiles
-#' @param options GDAL driver specific datasource creation options passed to `terra::writeVector()`
+#' @param options GDAL driver specific datasource creation options passed to
+#'   `terra::writeVector()`
 #' @param ... Additional arguments not yet used
 #' @noRd
 create_format_terra_vect_shz <- function(options, ...) {
