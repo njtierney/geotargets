@@ -72,21 +72,16 @@ tar_terra_vect <- function(name,
         tidy_eval = tidy_eval
     )
 
-    # TODO: pull defaults from geotargets package options
-    if (is.null(filetype)) {
-        filetype <- "GeoJSON"
-    }
+    # if not specified by user, pull the corresponding geotargets option
+    filetype <- filetype %||% geotargets_option_get("gdal.vector.driver")
+    gdal <- gdal %||% geotargets_option_get("gdal.vector.creation_options")
 
-    if (is.null(gdal)) {
-        gdal <- "ENCODING=UTF-8"
-    }
-
-format <- ifelse(
-  test = filetype == "ESRI Shapefile",
-  #special handling of ESRI shapefiles because the output is a dir of multiple files.
-  yes = create_format_terra_vect_shz(options = gdal, ...),
-  no =  create_format_terra_vect(filetype, options = gdal, ...)
-)
+    format <- ifelse(
+        test = filetype == "ESRI Shapefile",
+        #special handling of ESRI shapefiles because the output is a dir of multiple files.
+        yes = create_format_terra_vect_shz(options = gdal, ...),
+        no =  create_format_terra_vect(filetype, options = gdal, ...)
+    )
 
     targets::tar_target_raw(
         name = name,
