@@ -7,7 +7,7 @@
 #' @param ... Additional arguments not yet used
 #'
 #' @inheritParams targets::tar_target
-#'
+#' @importFrom rlang %||% arg_match0
 #' @seealso [targets::tar_target_raw()]
 #' @export
 #' @examples
@@ -63,14 +63,9 @@ tar_terra_rast <- function(name,
         tidy_eval = tidy_eval
     )
 
-    # could pull defaults from geotargets package options
-    if (is.null(filetype)) {
-        filetype <- "GTiff"
-    }
-
-    if (is.null(gdal)) {
-        gdal <- "ENCODING=UTF-8"
-    }
+    # if not specified by user, pull the corresponding geotargets option
+    filetype <- filetype %||% geotargets_option_get("gdal.raster.driver")
+    gdal <- gdal %||% geotargets_option_get("gdal.raster.creation_options")
 
     targets::tar_target_raw(
         name = name,
@@ -107,21 +102,24 @@ create_format_terra_raster <- function(filetype, gdal, ...) {
     drv <- terra::gdal(drivers = TRUE)
     drv <- drv[drv$type == "raster" & grepl("write", drv$can), ]
 
-    if (is.null(filetype)) {
-        filetype <- "GTiff"
-    }
+    filetype <- filetype %||% geotargets_option_get("gdal.raster.driver")
+    filetype <- rlang::arg_match0(filetype, drv$name)
 
-    filetype <- match.arg(filetype, drv$name)
+    gdal <- gdal %||% geotargets_option_get("gdal.raster.creation_options")
 
+    # NOTE: Option getting functions are set in the .write_terra_raster function template
+    #       to resolve issue with body<- not working in some evaluation contexts ({covr}).
+    # TODO: It should be fine to have filetype and gdal as NULL
     .write_terra_raster <- function(object, path) {
         terra::writeRaster(
             object,
             path,
-            filetype = NULL,
+            filetype = geotargets::geotargets_option_get("gdal.raster.driver"),
             overwrite = TRUE,
-            gdal = NULL
+            gdal = geotargets::geotargets_option_get("gdal.raster.creation_options")
         )
     }
+
     body(.write_terra_raster)[[2]][["filetype"]] <- filetype
     body(.write_terra_raster)[[2]][["gdal"]] <- gdal
 

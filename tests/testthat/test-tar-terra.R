@@ -1,5 +1,6 @@
 # test_that() #Included to make RStudio recognize this file as a test
 targets::tar_test("tar_terra_rast() works", {
+  geotargets::geotargets_option_set("raster_gdal_creation_options", c("COMPRESS=DEFLATE", "TFW=YES"))
   targets::tar_script({
     list(
       geotargets::tar_terra_rast(

@@ -1,39 +1,4 @@
-# format_terra_vect_shapefile <- targets::tar_format(
-#   read = function(path) {
-#     terra::vect(
-#       paste0(
-#         "/vsizip/",
-#         file.path(
-#           path,
-#           replace_dot_zip_with_shp(path)
-#         )
-#       )
-#     )
-#   },
-#   write = function(object, path) {
-#     terra::writeVector(
-#       x = object,
-#       filename = replace_dot_zip_with_shp(path),
-#       filetype = "ESRI Shapefile",
-#       overwrite = TRUE
-#     )
-#     zf <- list.files(
-#       pattern = replace_dot_zip(
-#         x = path,
-#         replacement = ""
-#       )
-#     )
-#     utils::zip(
-#       zipfile = path,
-#       files = zf
-#     )
-#     unlink(zf)
-#   },
-#   marshal = function(object) terra::wrap(object),
-#   unmarshal = function(object) terra::unwrap(object)
-# )
-
-#' Create a terra _SpatVector_ target
+#' Targets format for terra vectors
 #'
 #' Provides a target format for [terra::SpatVector-class] objects.
 #'
