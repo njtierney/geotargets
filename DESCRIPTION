@@ -36,7 +36,9 @@ Imports:
     targets,
     terra
 Suggests: 
-    testthat (>= 3.0.0)
+    sf,
+    stars,
+    testthat (>= 3.0.0),
 Depends:
     R (>= 4.1.0)
 Config/testthat/edition: 3

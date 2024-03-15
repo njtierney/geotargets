@@ -2,8 +2,10 @@
 
 export(geotargets_option_get)
 export(geotargets_option_set)
+export(tar_stars)
 export(tar_terra_rast)
 export(tar_terra_vect)
 importFrom(rlang,"%||%")
 importFrom(rlang,arg_match0)
+importFrom(rlang,is_installed)
 importFrom(utils,globalVariables)
