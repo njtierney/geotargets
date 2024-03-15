@@ -75,8 +75,14 @@ tar_terra_vect <- function(name,
         tidy_eval = tidy_eval
     )
 
+    # get list of drivers available for writing depending on what the user's GDAL supports
+    drv <- terra::gdal(drivers = TRUE)
+    drv <- drv[drv$type == "vector" & grepl("write", drv$can), ]
+
     # if not specified by user, pull the corresponding geotargets option
     filetype <- filetype %||% geotargets_option_get("gdal.vector.driver")
+    filetype <- rlang::arg_match0(filetype, drv$name)
+
     gdal <- gdal %||% geotargets_option_get("gdal.vector.creation_options")
 
     format <- ifelse(
@@ -115,16 +121,6 @@ tar_terra_vect <- function(name,
 #' @param ... Additional arguments not yet used
 #' @noRd
 create_format_terra_vect <- function(filetype, options, ...) {
-    # get list of drivers available for writing depending on what the user's GDAL supports
-    drv <- terra::gdal(drivers = TRUE)
-    drv <- drv[drv$type == "vector" & grepl("write", drv$can), ]
-
-    if (is.null(filetype)) {
-        filetype <- "GeoJSON"
-    }
-
-    filetype <- match.arg(filetype, drv$name)
-
     .write_terra_vector <- function(object, path) {
         terra::writeVector(
             object,
