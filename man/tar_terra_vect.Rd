@@ -2,12 +2,15 @@
 % Please edit documentation in R/tar-terra-vect.R
 \name{tar_terra_vect}
 \alias{tar_terra_vect}
-\title{Targets format for terra vectors}
+\title{Create a terra \emph{SpatVector} target}
 \usage{
 tar_terra_vect(
   name,
   command,
   pattern = NULL,
+  filetype = NULL,
+  gdal = NULL,
+  ...,
   packages = targets::tar_option_get("packages"),
   tidy_eval = targets::tar_option_get("tidy_eval"),
   library = targets::tar_option_get("library"),
@@ -48,6 +51,14 @@ For example, in a pipeline with numeric vector targets \code{x} and \code{y},
 \code{tar_target(z, x + y, pattern = map(x, y))} implicitly defines
 branches of \code{z} that each compute \code{x[1] + y[1]}, \code{x[2] + y[2]},
 and so on. See the user manual for details.}
+
+\item{filetype}{character. File format expressed as GDAL driver names passed
+to \code{\link[terra:writeVector]{terra::writeVector()}}. See 'Note' for more details}
+
+\item{gdal}{character. GDAL driver specific datasource creation options
+passed to \code{\link[terra:writeVector]{terra::writeVector()}}.}
+
+\item{...}{Additional arguments not yet used}
 
 \item{packages}{Character vector of packages to load right before
 the target runs or the output data is reloaded for
@@ -207,7 +218,13 @@ explicitly from another language.
 rules that decide whether the target is up to date.}
 }
 \description{
-Provides targets format for \code{terra::vect} objects
+Provides a target format for \link[terra:SpatVector-class]{terra::SpatVector} objects.
+}
+\note{
+Although you may pass any supported GDAL vector driver to the
+\code{filetype} argument, not all formats are guaranteed to work with
+\code{geotargets}.  At the moment, we have tested \code{GeoJSON} and \verb{ESRI Shapefile}
+which both appear to work generally.
 }
 \examples{
 if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
