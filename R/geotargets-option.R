@@ -57,8 +57,8 @@ geotargets_option_get <- function(option_name) {
             x = "GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS",
             unset = get_option(option_name, option_value, "ENCODING=UTF-8")
         )
-        the_option <- strsplit(gdal_creation_options, ";")[[1]]
-        the_option
+        the_options <- strsplit(gdal_creation_options, ";")[[1]]
+        the_options
     }
 
     get_geotargets_gdal_vector_driver <- function(option_name, option_value) {
