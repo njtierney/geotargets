@@ -50,8 +50,8 @@ remotes::install_github("njtierney/geotargets")
 
 `geotargets` is still undergoing development, and we would love for
 people to use the package to kick the tyres. We are using it in our own
-work, but feel it is appropriate that users use the package with the
-understanding the API could change in subtle or breaking ways.
+work, but want users to know that the API could change in subtle or
+breaking ways.
 
 # Examples
 
@@ -66,7 +66,7 @@ when you are doing work with terra raster or terra vector data.
 It is a bit tricky to implement targets workflows in a README, but if
 you would like to see and download working examples for yourself, see
 the repo,
-[demo-geotargets](https://github.com/njtierney/demo-geotargets)
+[demo-geotargets](https://github.com/njtierney/demo-geotargets).
 
 ## `tar_terra_rast()`: targets with terra rasters
 
