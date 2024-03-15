@@ -49,6 +49,7 @@ tar_terra_rast <- function(name,
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue")) {
 
+    rlang::check_installed("terra")
     name <- targets::tar_deparse_language(substitute(name))
 
     envir <- targets::tar_option_get("envir")
@@ -95,11 +96,6 @@ tar_terra_rast <- function(name,
 #' @param ... Additional arguments not yet used
 #' @noRd
 create_format_terra_raster <- function(filetype, gdal, ...) {
-
-    if (!requireNamespace("terra")) {
-        stop("package 'terra' is required", call. = FALSE)
-    }
-
     # get list of drivers available for writing depending on what the user's GDAL supports
     drv <- terra::gdal(drivers = TRUE)
     drv <- drv[drv$type == "raster" & grepl("write", drv$can), ]

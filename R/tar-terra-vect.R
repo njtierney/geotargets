@@ -57,6 +57,7 @@ tar_terra_vect <- function(name,
                            storage = targets::tar_option_get("storage"),
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue")) {
+    rlang::check_installed("terra")
     name <- targets::tar_deparse_language(substitute(name))
 
     envir <- targets::tar_option_get("envir")
@@ -112,11 +113,6 @@ tar_terra_vect <- function(name,
 #' @param ... Additional arguments not yet used
 #' @noRd
 create_format_terra_vect <- function(filetype, options, ...) {
-
-    if (!requireNamespace("terra")) {
-        stop("package 'terra' is required", call. = FALSE)
-    }
-
     # get list of drivers available for writing depending on what the user's GDAL supports
     drv <- terra::gdal(drivers = TRUE)
     drv <- drv[drv$type == "vector" & grepl("write", drv$can), ]
@@ -153,11 +149,6 @@ create_format_terra_vect <- function(filetype, options, ...) {
 #' @param ... Additional arguments not yet used
 #' @noRd
 create_format_terra_vect_shz <- function(options, ...) {
-
-    if (!requireNamespace("terra")) {
-        stop("package 'terra' is required", call. = FALSE)
-    }
-
     .write_terra_vector <- function(object, path) {
         terra::writeVector(
             x = object,
