@@ -64,8 +64,8 @@ tar_terra_rast <- function(name,
     )
 
     # if not specified by user, pull the corresponding geotargets option
-    filetype <- filetype %||% geotargets_option_get("raster.gdal_driver")
-    gdal <- gdal %||% geotargets_option_get("raster.gdal_creation_options")
+    filetype <- filetype %||% geotargets_option_get("gdal.raster.driver")
+    gdal <- gdal %||% geotargets_option_get("gdal.raster.creation_options")
 
     targets::tar_target_raw(
         name = name,
