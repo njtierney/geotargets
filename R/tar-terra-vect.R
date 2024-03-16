@@ -131,9 +131,9 @@ create_format_terra_vect <- function(filetype, options, ...) {
         terra::writeVector(
             object,
             path,
-            filetype = NULL,
+            filetype = geotargets::geotargets_option_get("gdal.vector.driver"),
             overwrite = TRUE,
-            options = NULL
+            options = geotargets::geotargets_option_get("gdal.vector.creation_options")
         )
     }
     body(.write_terra_vector)[[2]][["filetype"]] <- filetype
