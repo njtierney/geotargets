@@ -5,7 +5,7 @@ targets::tar_test("tar_terra_rast() works", {
     list(
       geotargets::tar_terra_rast(
         test_terra_rast,
-        system.file("ex/elev.tif", package = "terra") |> terra::rast()
+        terra::rast(system.file("ex/elev.tif", package = "terra"))
       )
     )
   })
@@ -31,13 +31,20 @@ targets::tar_test("tar_terra_vect() works", {
       geotargets::tar_terra_vect(
         test_terra_vect,
         lux_area()
+      ),
+      geotargets::tar_terra_vect(
+          test_terra_vect_shz,
+          lux_area(),
+          filetype = "ESRI Shapefile"
       )
     )
   })
   targets::tar_make()
   x <- targets::tar_read(test_terra_vect)
+  y <- targets::tar_read(test_terra_vect_shz)
   expect_s4_class(x, "SpatVector")
-  expect_snapshot(
-      x
-  )
+  expect_s4_class(y, "SpatVector")
+  expect_snapshot(x)
+  expect_snapshot(y)
+  expect_equal(terra::values(x), terra::values(y))
 })
