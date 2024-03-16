@@ -26,3 +26,17 @@
       x    1 111  288776  89.99 UTM Zone 25, Southern Hem... FALSE [x]
       y    1 111 9120761 -89.99 UTM Zone 25, Southern Hem... FALSE [y]
 
+# tar_stars(mdim=TRUE) works
+
+    Code
+      x
+    Output
+      stars object with 2 dimensions and 1 attribute
+      attribute(s):
+                             Min.   1st Qu.    Median      Mean  3rd Qu.      Max.
+      test_stars_mdim  0.03524588 0.3224987 0.3772574 0.4289465 0.511113 0.9204841
+      dimension(s):
+        from to offset delta x/y
+      x    1  2      0     1 [x]
+      y    1  5      5    -1 [y]
+

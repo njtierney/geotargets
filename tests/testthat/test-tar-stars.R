@@ -18,7 +18,6 @@ targets::tar_test("tar_stars() works", {
   )
 })
 
-
 targets::tar_test("tar_stars_proxy() works", {
   geotargets::geotargets_option_set("gdal.raster.creation_options", c("COMPRESS=DEFLATE", "TFW=YES"))
   geotargets::geotargets_option_set("stars.proxy", TRUE) # needed for {covr} only
@@ -35,4 +34,26 @@ targets::tar_test("tar_stars_proxy() works", {
     x
   )
   geotargets::geotargets_option_set("stars.proxy", FALSE) # go back to default
+})
+
+
+targets::tar_test("tar_stars(mdim=TRUE) works", {
+  targets::tar_script({
+    geotargets::geotargets_option_set("gdal.raster.driver", "netCDF")
+    list(geotargets::tar_stars(test_stars_mdim, {
+      set.seed(135)
+      m <- matrix(runif(10), 2, 5)
+      names(dim(m)) <- c("stations", "time")
+      times <- as.Date("2022-05-01") + 1:5
+      pts <- sf::st_as_sfc(c("POINT(0 1)", "POINT(3 5)"))
+      s <- stars::st_as_stars(list(Precipitation = m)) |>
+            stars::st_set_dimensions(1, values = pts) |>
+            stars::st_set_dimensions(2, values = times)
+    }, driver = "netCDF", mdim = TRUE))
+  })
+
+  targets::tar_make()
+  x <- targets::tar_read(test_stars_mdim)
+  expect_s3_class(x, "stars")
+  expect_snapshot(x)
 })

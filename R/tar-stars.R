@@ -3,7 +3,8 @@
 #' Provides a target format for stars objects.
 #'
 #' @param proxy logical. Passed to [stars::read_stars()]. If `TRUE` the target an object of class `stars_proxy`. Otherwise, the object is class `stars`.
-#' @param driver character. File format expressed as GDAL driver names passed to [stars::write_stars()]. See [sf::st_drivers()].
+#' @param mdim logical. Use the [Multidimensional Raster Data Model](https://gdal.org/user/multidim_raster_data_model.html) via [stars::write_mdim()]? Default: `FALSE`. Only supported for some drivers, e.g. `"HDF5"`, `"netCDF"`, `"Zarr"`.
+#' @param driver character. File format expressed as GDAL driver names passed to [stars::write_stars()] or [stars::write_mdim()] See [sf::st_drivers()].
 #' @param options character. GDAL driver specific datasource creation options passed to [stars::write_stars()]
 #' @param ... Additional arguments not yet used
 #'
@@ -30,6 +31,7 @@ tar_stars <- function(name,
                       command,
                       pattern = NULL,
                       proxy = FALSE,
+                      mdim = FALSE,
                       driver = NULL,
                       options = NULL,
                       ...,
@@ -76,7 +78,7 @@ tar_stars <- function(name,
         pattern = pattern,
         packages = packages,
         library = library,
-        format = create_format_stars(driver = driver, options = options, proxy = proxy, ...),
+        format = create_format_stars(driver = driver, options = options, proxy = proxy, mdim = mdim, ...),
         repository = repository,
         iteration = iteration,
         error = error,
@@ -96,6 +98,7 @@ tar_stars <- function(name,
 tar_stars_proxy <- function(name,
                             command,
                             pattern = NULL,
+                            mdim = FALSE,
                             driver = NULL,
                             options = NULL,
                             ...,
@@ -142,7 +145,7 @@ tar_stars_proxy <- function(name,
         pattern = pattern,
         packages = packages,
         library = library,
-        format = create_format_stars(driver = driver, options = options, proxy = TRUE, ...),
+        format = create_format_stars(driver = driver, options = options, proxy = TRUE, mdim = mdim, ...),
         repository = repository,
         iteration = iteration,
         error = error,
@@ -158,11 +161,80 @@ tar_stars_proxy <- function(name,
 }
 
 
+#' @export
+#' @rdname tar_stars
+tar_stars_proxy <- function(name,
+                            command,
+                            pattern = NULL,
+                            mdim = FALSE,
+                            driver = NULL,
+                            options = NULL,
+                            ...,
+                            tidy_eval = targets::tar_option_get("tidy_eval"),
+                            packages = targets::tar_option_get("packages"),
+                            library = targets::tar_option_get("library"),
+                            repository = targets::tar_option_get("repository"),
+                            iteration = targets::tar_option_get("iteration"),
+                            error = targets::tar_option_get("error"),
+                            memory = targets::tar_option_get("memory"),
+                            garbage_collection = targets::tar_option_get("garbage_collection"),
+                            deployment = targets::tar_option_get("deployment"),
+                            priority = targets::tar_option_get("priority"),
+                            resources = targets::tar_option_get("resources"),
+                            storage = targets::tar_option_get("storage"),
+                            retrieval = targets::tar_option_get("retrieval"),
+                            cue = targets::tar_option_get("cue")) {
+
+    rlang::check_installed("stars")
+
+    name <- targets::tar_deparse_language(substitute(name))
+
+    envir <- targets::tar_option_get("envir")
+
+    command <- targets::tar_tidy_eval(
+        expr = as.expression(substitute(command)),
+        envir = envir,
+        tidy_eval = tidy_eval
+    )
+
+    pattern <- targets::tar_tidy_eval(
+        expr = as.expression(substitute(pattern)),
+        envir = envir,
+        tidy_eval = tidy_eval
+    )
+
+    # if not specified by user, pull the corresponding geotargets option
+    driver <- driver %||% geotargets_option_get("gdal.raster.driver")
+    options <- options %||% geotargets_option_get("gdal.raster.creation_options")
+
+    targets::tar_target_raw(
+        name = name,
+        command = command,
+        pattern = pattern,
+        packages = packages,
+        library = library,
+        format = create_format_stars(driver = driver, options = options, proxy = TRUE, mdim = mdim, ...),
+        repository = repository,
+        iteration = iteration,
+        error = error,
+        memory = memory,
+        garbage_collection = garbage_collection,
+        deployment = deployment,
+        priority = priority,
+        resources = resources,
+        storage = storage,
+        retrieval = retrieval,
+        cue = cue
+    )
+}
+
 #' @param driver character. File format expressed as GDAL driver names passed to [stars::write_stars()]. See [sf::st_drivers()].
 #' @param options character. GDAL driver specific datasource creation options passed to [stars::write_stars()]
+#' @param proxy logical. Passed to [stars::read_stars()]. If `TRUE` the target an object of class `stars_proxy`. Otherwise, the object is class `stars`.
+#' @param mdim logical. Use the [Multidimensional Raster Data Model](https://gdal.org/user/multidim_raster_data_model.html) via [stars::write_mdim()]? Default: `FALSE`. Only supported for some drivers, e.g. `"netCDF"` or `"Zarr"`.
 #' @param ... Additional arguments not yet used
 #' @noRd
-create_format_stars <- function(driver, options, proxy, ...) {
+create_format_stars <- function(driver, options, proxy, mdim, ...) {
 
     # get list of drivers available for writing depending on what the user's GDAL supports
     drv <- sf::st_drivers(what = "raster")
@@ -189,6 +261,21 @@ create_format_stars <- function(driver, options, proxy, ...) {
             overwrite = TRUE,
             options = geotargets::geotargets_option_get("gdal.raster.creation_options")
         )
+    }
+
+    # TODO: should multidimensional array use the same options as 2D?
+    .write_stars_mdim <- function(object, path) {
+        stars::write_mdim(
+            object,
+            path,
+            driver = geotargets::geotargets_option_get("gdal.raster.driver"),
+            overwrite = TRUE,
+            options = geotargets::geotargets_option_get("gdal.raster.creation_options")
+        )
+    }
+
+    if (isTRUE(mdim)) {
+        .write_stars <- .write_stars_mdim
     }
 
     body(.write_stars)[[2]][["driver"]] <- driver

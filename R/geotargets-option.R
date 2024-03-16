@@ -42,8 +42,11 @@ geotargets_option_get <- function(option_name) {
     get_geotargets_gdal_raster_creation_options <- function(option_name, option_value) {
         gdal_creation_options <- Sys.getenv(
             x = "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
-            unset = get_option(option_name, option_value, "")
+            unset = ""
         )
+        if (gdal_creation_options == "") {
+            gdal_creation_options <- get_option(option_name, option_value, "")
+        }
         the_option <- strsplit(gdal_creation_options, ";")[[1]]
         the_option
     }
@@ -58,8 +61,11 @@ geotargets_option_get <- function(option_name) {
     get_geotargets_gdal_vector_creation_options <- function(option_name, option_value) {
         gdal_creation_options <- Sys.getenv(
             x = "GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS",
-            unset = get_option(option_name, option_value, "ENCODING=UTF-8")
+            unset = ""
         )
+        if (gdal_creation_options == "") {
+            gdal_creation_options <- get_option(option_name, option_value, "ENCODING=UTF-8")
+        }
         the_options <- strsplit(gdal_creation_options, ";")[[1]]
         the_options
     }
