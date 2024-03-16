@@ -35,10 +35,6 @@ geotargets_option_get <- function(option_name) {
     option_name <- geotargets_repair_option_name(option_name)
     option_value <- geotargets_env()[[option_name]]
 
-    if (length(option_value) == 0) {
-        option_value <- NULL
-    }
-
     get_option <- function(option_name, option_value, name) {
         getOption(option_name, default = option_value %||% name)
     }
