@@ -12,3 +12,17 @@
       x    1 111  288776  89.99 UTM Zone 25, Southern Hem... FALSE [x]
       y    1 111 9120761 -89.99 UTM Zone 25, Southern Hem... FALSE [y]
 
+# tar_stars_proxy() works
+
+    Code
+      x
+    Output
+      stars_proxy object with 1 attribute in 1 file(s):
+      $test_stars_proxy
+      [1] "[...]/test_stars_proxy"
+      
+      dimension(s):
+        from  to  offset  delta                       refsys point x/y
+      x    1 111  288776  89.99 UTM Zone 25, Southern Hem... FALSE [x]
+      y    1 111 9120761 -89.99 UTM Zone 25, Southern Hem... FALSE [y]
+

@@ -10,4 +10,6 @@ geotargets_env <- function() {
 
     geotargets.env$geotargets.gdal.vector.creation_options <- geotargets_option_get("gdal.vector.creation_options")
     geotargets.env$geotargets.gdal.vector.driver <- geotargets_option_get("gdal.vector.driver")
+
+    geotargets.env$geotargets.stars.proxy <- geotargets_option_get("stars.proxy")
 }

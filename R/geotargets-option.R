@@ -16,12 +16,15 @@
 #'
 #'  - `"geotargets.gdal.vector.creation_options"` - character. Set the GDAL layer creation options used when writing vector files to target store (default: `"ENCODING=UTF-8"`). You may specify multiple values e.g. `c("WRITE_BBOX=YES", "COORDINATE_PRECISION=10")`. Each GDAL driver supports a unique set of creation options. For example, with the default `"GeoJSON"` driver: <https://gdal.org/drivers/vector/geojson.html#layer-creation-options>
 #'
+#' - `"geotargets.stars.proxy"` - logical. Control the object type read from a _stars_ target via `tar_stars()` with [stars::read_stars()]. Value `FALSE` (default) returns `stars` object; if `TRUE` a `stars_proxy` is returned.
+
 #'  Each option can be overridden with a system environment variable. Options include:
 #'
 #'   - `GEOTARGETS_GDAL_RASTER_DRIVER`
 #'   - `GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS`
 #'   - `GEOTARGETS_GDAL_VECTOR_DRIVER`
 #'   - `GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS`
+#'   - `GEOTARGETS_STARS_PROXY`
 #'
 #'  When specifying options that support multiple values using a system environment variable, the separate options should be delimited with a semicolon (";"). For example: `"COMPRESS=DEFLATE;TFW=YES"`.
 #'
@@ -32,7 +35,11 @@ geotargets_option_get <- function(option_name) {
     option_name <- geotargets_repair_option_name(option_name)
     option_value <- geotargets_env()[[option_name]]
 
-    get_option <- function(option_name, option_value, name){
+    if (length(option_value) == 0) {
+        option_value <- NULL
+    }
+
+    get_option <- function(option_name, option_value, name) {
         getOption(option_name, default = option_value %||% name)
     }
 
@@ -68,6 +75,13 @@ geotargets_option_get <- function(option_name) {
         )
     }
 
+    get_geotargets_stars_proxy <- function(option_name, option_value) {
+        as.logical(Sys.getenv(
+            x = "GEOTARGETS_STARS_PROXY",
+            unset = get_option(option_name, option_value, FALSE)
+        ))
+    }
+
     switch(option_name,
            "geotargets.gdal.raster.creation_options" =
                get_geotargets_gdal_raster_creation_options(option_name, option_value),
@@ -76,7 +90,9 @@ geotargets_option_get <- function(option_name) {
            "geotargets.gdal.vector.creation_options" =
                get_geotargets_gdal_vector_creation_options(option_name, option_value),
            "geotargets.gdal.vector.driver" =
-               get_geotargets_gdal_vector_driver(option_name, option_value)
+               get_geotargets_gdal_vector_driver(option_name, option_value),
+           "geotargets.stars.proxy" =
+               get_geotargets_stars_proxy(option_name, option_value)
     )
 }
 

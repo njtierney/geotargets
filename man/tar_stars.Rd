@@ -2,9 +2,34 @@
 % Please edit documentation in R/tar-stars.R
 \name{tar_stars}
 \alias{tar_stars}
+\alias{tar_stars_proxy}
 \title{Create a stars \emph{stars} Target}
 \usage{
 tar_stars(
+  name,
+  command,
+  pattern = NULL,
+  proxy = FALSE,
+  driver = NULL,
+  options = NULL,
+  ...,
+  tidy_eval = targets::tar_option_get("tidy_eval"),
+  packages = targets::tar_option_get("packages"),
+  library = targets::tar_option_get("library"),
+  repository = targets::tar_option_get("repository"),
+  iteration = targets::tar_option_get("iteration"),
+  error = targets::tar_option_get("error"),
+  memory = targets::tar_option_get("memory"),
+  garbage_collection = targets::tar_option_get("garbage_collection"),
+  deployment = targets::tar_option_get("deployment"),
+  priority = targets::tar_option_get("priority"),
+  resources = targets::tar_option_get("resources"),
+  storage = targets::tar_option_get("storage"),
+  retrieval = targets::tar_option_get("retrieval"),
+  cue = targets::tar_option_get("cue")
+)
+
+tar_stars_proxy(
   name,
   command,
   pattern = NULL,
@@ -51,6 +76,8 @@ For example, in a pipeline with numeric vector targets \code{x} and \code{y},
 \code{tar_target(z, x + y, pattern = map(x, y))} implicitly defines
 branches of \code{z} that each compute \code{x[1] + y[1]}, \code{x[2] + y[2]},
 and so on. See the user manual for details.}
+
+\item{proxy}{logical. Passed to \code{\link[stars:read_stars]{stars::read_stars()}}. If \code{TRUE} the target an object of class \code{stars_proxy}. Otherwise, the object is class \code{stars}.}
 
 \item{driver}{character. File format expressed as GDAL driver names passed to \code{\link[stars:write_stars]{stars::write_stars()}}. See \code{\link[sf:st_drivers]{sf::st_drivers()}}.}
 
