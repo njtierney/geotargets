@@ -127,17 +127,15 @@ create_format_terra_vect <- function(filetype, options, ...) {
 
     filetype <- match.arg(filetype, drv$name)
 
-    .write_terra_vector <- function(object, path) {
+    .write_terra_vector <- eval(substitute(function(object, path) {
         terra::writeVector(
             object,
             path,
-            filetype = NULL,
+            filetype = filetype,
             overwrite = TRUE,
-            options = NULL
+            options = options
         )
-    }
-    body(.write_terra_vector)[[2]][["filetype"]] <- filetype
-    body(.write_terra_vector)[[2]][["options"]] <- options
+    }, list(filetype = filetype, options = options)))
 
     targets::tar_format(
         read = function(path) terra::vect(path),
@@ -158,17 +156,16 @@ create_format_terra_vect_shz <- function(options, ...) {
         stop("package 'terra' is required", call. = FALSE)
     }
 
-    .write_terra_vector <- function(object, path) {
+    .write_terra_vector <- eval(substitute(function(object, path) {
         terra::writeVector(
             x = object,
             filename = paste0(path, ".shz"),
             filetype = "ESRI Shapefile",
             overwrite = TRUE,
-            options = NULL
+            options = options
         )
         file.rename(paste0(path, ".shz"), path)
-    }
-    body(.write_terra_vector)[[2]][["options"]] <- options
+    }, list(options = options)))
 
     targets::tar_format(
         read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),
