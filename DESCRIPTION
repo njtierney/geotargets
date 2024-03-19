@@ -38,6 +38,7 @@ Imports:
 Suggests: 
     sf,
     stars,
+    ncmeta,
     testthat (>= 3.0.0),
 Depends:
     R (>= 4.1.0)

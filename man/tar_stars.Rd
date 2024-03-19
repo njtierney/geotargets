@@ -11,8 +11,9 @@ tar_stars(
   pattern = NULL,
   proxy = FALSE,
   mdim = FALSE,
-  driver = NULL,
-  options = NULL,
+  ncdf = FALSE,
+  driver = geotargets_option_get("gdal.raster.driver"),
+  options = geotargets_option_get("gdal.raster.creation_options"),
   ...,
   tidy_eval = targets::tar_option_get("tidy_eval"),
   packages = targets::tar_option_get("packages"),
@@ -35,8 +36,9 @@ tar_stars_proxy(
   command,
   pattern = NULL,
   mdim = FALSE,
-  driver = NULL,
-  options = NULL,
+  ncdf = FALSE,
+  driver = geotargets_option_get("gdal.raster.driver"),
+  options = geotargets_option_get("gdal.raster.creation_options"),
   ...,
   tidy_eval = targets::tar_option_get("tidy_eval"),
   packages = targets::tar_option_get("packages"),
@@ -59,8 +61,9 @@ tar_stars_proxy(
   command,
   pattern = NULL,
   mdim = FALSE,
-  driver = NULL,
-  options = NULL,
+  ncdf = FALSE,
+  driver = geotargets_option_get("gdal.raster.driver"),
+  options = geotargets_option_get("gdal.raster.creation_options"),
   ...,
   tidy_eval = targets::tar_option_get("tidy_eval"),
   packages = targets::tar_option_get("packages"),
@@ -105,9 +108,11 @@ and so on. See the user manual for details.}
 
 \item{proxy}{logical. Passed to \code{\link[stars:read_stars]{stars::read_stars()}}. If \code{TRUE} the target an object of class \code{stars_proxy}. Otherwise, the object is class \code{stars}.}
 
-\item{mdim}{logical. Use the \href{https://gdal.org/user/multidim_raster_data_model.html}{Multidimensional Raster Data Model} via \code{\link[stars:mdim]{stars::write_mdim()}}? Default: \code{FALSE}. Only supported for some drivers, e.g. \code{"HDF5"}, \code{"netCDF"}, \code{"Zarr"}.}
+\item{mdim}{logical. Use the \href{https://gdal.org/user/multidim_raster_data_model.html}{Multidimensional Raster Data Model} via \code{\link[stars:mdim]{stars::write_mdim()}}? Default: \code{FALSE}. Only supported for some drivers, e.g. \code{"netCDF"} or \code{"Zarr"}.}
 
-\item{driver}{character. File format expressed as GDAL driver names passed to \code{\link[stars:write_stars]{stars::write_stars()}} or \code{\link[stars:mdim]{stars::write_mdim()}} See \code{\link[sf:st_drivers]{sf::st_drivers()}}.}
+\item{ncdf}{logical. Use the NetCDF library directly to read data via \code{\link[stars:read_ncdf]{stars::read_ncdf()}}? Default: \code{FALSE}. Only supported for \code{driver="netCDF"}.}
+
+\item{driver}{character. File format expressed as GDAL driver names passed to \code{\link[stars:write_stars]{stars::write_stars()}}. See \code{\link[sf:st_drivers]{sf::st_drivers()}}.}
 
 \item{options}{character. GDAL driver specific datasource creation options passed to \code{\link[stars:write_stars]{stars::write_stars()}}}
 
