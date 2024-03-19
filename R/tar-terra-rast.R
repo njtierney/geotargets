@@ -104,21 +104,29 @@ tar_terra_rast <- function(name,
 #' @param ... Additional arguments not yet used
 #' @noRd
 create_format_terra_raster <- function(filetype, gdal, ...) {
-    # NOTE: Option getting functions are set in the .write_terra_raster function template
-    #       to resolve issue with body<- not working in some evaluation contexts ({covr}).
-    # TODO: It should be fine to have filetype and gdal as NULL
-    .write_terra_raster <- function(object, path) {
+
+    if (!requireNamespace("terra")) {
+        stop("package 'terra' is required", call. = FALSE)
+    }
+
+    # get list of drivers available for writing depending on what the user's GDAL supports
+    drv <- terra::gdal(drivers = TRUE)
+    drv <- drv[drv$type == "raster" & grepl("write", drv$can), ]
+
+    filetype <- filetype %||% geotargets_option_get("gdal.raster.driver")
+    filetype <- rlang::arg_match0(filetype, drv$name)
+
+    gdal <- gdal %||% geotargets_option_get("gdal.raster.creation_options")
+
+    .write_terra_raster <- eval(substitute(function(object, path) {
         terra::writeRaster(
             object,
             path,
-            filetype = geotargets::geotargets_option_get("gdal.raster.driver"),
+            filetype = filetype,
             overwrite = TRUE,
-            gdal = geotargets::geotargets_option_get("gdal.raster.creation_options")
+            gdal = gdal
         )
-    }
-
-    body(.write_terra_raster)[[2]][["filetype"]] <- filetype
-    body(.write_terra_raster)[[2]][["gdal"]] <- gdal
+    }, list(filetype = filetype, gdal = gdal)))
 
     targets::tar_format(
         read = function(path) terra::rast(path),

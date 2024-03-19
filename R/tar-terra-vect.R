@@ -121,17 +121,30 @@ tar_terra_vect <- function(name,
 #' @param ... Additional arguments not yet used
 #' @noRd
 create_format_terra_vect <- function(filetype, options, ...) {
-    .write_terra_vector <- function(object, path) {
+
+    if (!requireNamespace("terra")) {
+        stop("package 'terra' is required", call. = FALSE)
+    }
+
+    # get list of drivers available for writing depending on what the user's GDAL supports
+    drv <- terra::gdal(drivers = TRUE)
+    drv <- drv[drv$type == "vector" & grepl("write", drv$can), ]
+
+    if (is.null(filetype)) {
+        filetype <- "GeoJSON"
+    }
+
+    filetype <- match.arg(filetype, drv$name)
+
+    .write_terra_vector <- eval(substitute(function(object, path) {
         terra::writeVector(
             object,
             path,
-            filetype = NULL,
+            filetype = filetype,
             overwrite = TRUE,
-            options = NULL
+            options = options
         )
-    }
-    body(.write_terra_vector)[[2]][["filetype"]] <- filetype
-    body(.write_terra_vector)[[2]][["options"]] <- options
+    }, list(filetype = filetype, options = options)))
 
     targets::tar_format(
         read = function(path) terra::vect(path),
@@ -147,17 +160,21 @@ create_format_terra_vect <- function(filetype, options, ...) {
 #' @param ... Additional arguments not yet used
 #' @noRd
 create_format_terra_vect_shz <- function(options, ...) {
-    .write_terra_vector <- function(object, path) {
+
+    if (!requireNamespace("terra")) {
+        stop("package 'terra' is required", call. = FALSE)
+    }
+
+    .write_terra_vector <- eval(substitute(function(object, path) {
         terra::writeVector(
             x = object,
             filename = paste0(path, ".shz"),
             filetype = "ESRI Shapefile",
             overwrite = TRUE,
-            options = NULL
+            options = options
         )
         file.rename(paste0(path, ".shz"), path)
-    }
-    body(.write_terra_vector)[[2]][["options"]] <- options
+    }, list(options = options)))
 
     targets::tar_format(
         read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),

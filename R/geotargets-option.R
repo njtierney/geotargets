@@ -39,7 +39,7 @@ geotargets_option_get <- function(option_name) {
     get_geotargets_gdal_raster_creation_options <- function(option_name, option_value) {
         gdal_creation_options <- Sys.getenv(
             x = "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
-            unset = get_option(option_name, option_value, "")
+            unset = get_option(option_name, option_value, ";")
         )
         the_option <- strsplit(gdal_creation_options, ";")[[1]]
         the_option
@@ -86,10 +86,4 @@ geotargets_option_get <- function(option_name) {
 geotargets_option_set <- function(option_name, option_value) {
     option_name <- geotargets_repair_option_name(option_name)
     geotargets.env[[option_name]] <- option_value
-}
-
-geotargets_repair_option_name <- function(option_name) {
-    if (!startsWith(option_name, "geotargets.")) {
-        option_name <- paste0("geotargets.", option_name)
-    }
 }
