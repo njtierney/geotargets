@@ -9,7 +9,6 @@
 #' @param ... Additional arguments not yet used
 #'
 #' @inheritParams targets::tar_target
-#' @importFrom rlang %||% arg_match0
 #' @seealso [targets::tar_target_raw()]
 #' @export
 #' @examples
