@@ -19,10 +19,7 @@ geotargets_option_get(name)
 data in target store (default: \code{"GTiff"}). Options for driver names can be
 found here: \url{https://gdal.org/drivers/raster/index.html}}
 
-\item{gdal_vector_driver}{character, length 1; set the file type used for
-vector data in target store (default: \code{"GeoJSON"}).}
-
-\item{gdal_vector_creation_options}{character, length 1; set the GDAL layer creation
+\item{gdal_raster_creation_options}{character; set the GDAL layer creation
 options used when writing vector files to target store (default:
 \code{"ENCODING=UTF-8"}). You may specify multiple values e.g.
 \code{c("WRITE_BBOX=YES", "COORDINATE_PRECISION=10")}. Each GDAL driver supports
@@ -30,14 +27,10 @@ a unique set of creation options. For example, with the default \code{"GeoJSON"}
 driver:
 \url{https://gdal.org/drivers/vector/geojson.html#layer-creation-options}}
 
-\item{name}{character; option name to get}
+\item{gdal_vector_driver}{character, length 1; set the file type used for
+vector data in target store (default: \code{"GeoJSON"}).}
 
-\item{gdla_raster_creation_options}{character, length 1; set the GDAL creation options
-used when writing raster files to target store (default: \code{""}). You may
-specify multiple values e.g. \code{c("COMPRESS=DEFLATE", "TFW=YES")}. Each GDAL
-driver supports a unique set of creation options. For example, with the
-default \code{"GTiff"} driver:
-\url{https://gdal.org/drivers/raster/gtiff.html#creation-options}}
+\item{name}{character; option name to get}
 }
 \description{
 Get or set behavior for geospatial data target stores using
