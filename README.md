@@ -43,7 +43,7 @@ this is for you :)
 You can install the development version of geotargets like so:
 
 ``` r
-remotes::install_github("njtierney/geotargets")
+install.packages("geotargets", repos = c("https://njtierney.r-universe.dev", "https://cran.r-project.org"))
 ```
 
 ## A note on development

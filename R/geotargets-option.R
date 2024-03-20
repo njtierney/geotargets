@@ -42,11 +42,8 @@ geotargets_option_get <- function(option_name) {
     get_geotargets_gdal_raster_creation_options <- function(option_name, option_value) {
         gdal_creation_options <- Sys.getenv(
             x = "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
-            unset = ""
+            unset = get_option(option_name, option_value, ";")
         )
-        if (gdal_creation_options == "") {
-            gdal_creation_options <- get_option(option_name, option_value, "")
-        }
         the_option <- strsplit(gdal_creation_options, ";")[[1]]
         the_option
     }
