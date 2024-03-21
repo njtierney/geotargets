@@ -49,6 +49,9 @@ tar_terra_rast <- function(name,
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue")) {
 
+    filetype <- filetype %||% "GTiff"
+    gdal <- gdal %||% "ENCODING=UTF-8"
+
     name <- targets::tar_deparse_language(substitute(name))
 
     envir <- targets::tar_option_get("envir")

@@ -57,6 +57,10 @@ tar_terra_vect <- function(name,
                            storage = targets::tar_option_get("storage"),
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue")) {
+
+    filetype <- filetype %||% "GeoJSON"
+    gdal <- gdal %||% "ENCODING=UTF-8"
+
     name <- targets::tar_deparse_language(substitute(name))
 
     envir <- targets::tar_option_get("envir")
