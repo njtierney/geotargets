@@ -75,9 +75,7 @@ tar_terra_vect <- function(name,
         tidy_eval = tidy_eval
     )
 
-    # get list of drivers available for writing depending on what the user's GDAL supports
-    drv <- terra::gdal(drivers = TRUE)
-    drv <- drv[drv$type == "vector" & grepl("write", drv$can), ]
+    drv <- get_gdal_available_driver_list("vector")
 
     # if not specified by user, pull the corresponding geotargets option
     filetype <- filetype %||% geotargets_option_get("gdal.vector.driver")
@@ -124,9 +122,7 @@ create_format_terra_vect <- function(filetype, options, ...) {
 
     check_pkg_installed("terra")
 
-    # get list of drivers available for writing depending on what the user's GDAL supports
-    drv <- terra::gdal(drivers = TRUE)
-    drv <- drv[drv$type == "vector" & grepl("write", drv$can), ]
+    drv <- get_gdal_available_driver_list("vector")
 
     if (is.null(filetype)) {
         filetype <- "GeoJSON"

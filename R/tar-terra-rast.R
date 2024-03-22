@@ -67,9 +67,7 @@ tar_terra_rast <- function(name,
         tidy_eval = tidy_eval
     )
 
-    # get list of drivers available for writing depending on what the user's GDAL supports
-    drv <- terra::gdal(drivers = TRUE)
-    drv <- drv[drv$type == "raster" & grepl("write", drv$can), ]
+    drv <- get_gdal_available_driver_list("raster")
 
     # if not specified by user, pull the corresponding geotargets option
     filetype <- filetype %||% geotargets_option_get("gdal.raster.driver")
@@ -106,9 +104,7 @@ create_format_terra_raster <- function(filetype, gdal, ...) {
 
     check_pkg_installed("terra")
 
-    # get list of drivers available for writing depending on what the user's GDAL supports
-    drv <- terra::gdal(drivers = TRUE)
-    drv <- drv[drv$type == "raster" & grepl("write", drv$can), ]
+    drv <- get_gdal_available_driver_list("raster")
 
     filetype <- filetype %||% geotargets_option_get("gdal.raster.driver")
     filetype <- rlang::arg_match0(filetype, drv$name)
