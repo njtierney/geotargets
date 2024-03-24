@@ -124,9 +124,7 @@ create_format_terra_vect <- function(filetype, options, ...) {
 
     drv <- get_gdal_available_driver_list("vector")
 
-    if (is.null(filetype)) {
-        filetype <- "GeoJSON"
-    }
+    filetype <- filetype %||% "GeoJSON"
 
     filetype <- match.arg(filetype, drv$name)
 
