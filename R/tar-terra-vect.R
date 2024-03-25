@@ -57,9 +57,10 @@ tar_terra_vect <- function(name,
                            storage = targets::tar_option_get("storage"),
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue")) {
-
     filetype <- filetype %||% "GeoJSON"
     gdal <- gdal %||% "ENCODING=UTF-8"
+
+    check_pkg_installed("terra")
 
     name <- targets::tar_deparse_language(substitute(name))
 
@@ -76,8 +77,12 @@ tar_terra_vect <- function(name,
         tidy_eval = tidy_eval
     )
 
+    drv <- get_gdal_available_driver_list("vector")
+
     # if not specified by user, pull the corresponding geotargets option
     filetype <- filetype %||% geotargets_option_get("gdal.vector.driver")
+    filetype <- rlang::arg_match0(filetype, drv$name)
+
     gdal <- gdal %||% geotargets_option_get("gdal.vector.creation_options")
 
     format <- ifelse(
@@ -117,17 +122,11 @@ tar_terra_vect <- function(name,
 #' @noRd
 create_format_terra_vect <- function(filetype, options, ...) {
 
-    if (!requireNamespace("terra")) {
-        stop("package 'terra' is required", call. = FALSE)
-    }
+    check_pkg_installed("terra")
 
-    # get list of drivers available for writing depending on what the user's GDAL supports
-    drv <- terra::gdal(drivers = TRUE)
-    drv <- drv[drv$type == "vector" & grepl("write", drv$can), ]
+    drv <- get_gdal_available_driver_list("vector")
 
-    if (is.null(filetype)) {
-        filetype <- "GeoJSON"
-    }
+    filetype <- filetype %||% "GeoJSON"
 
     filetype <- match.arg(filetype, drv$name)
 
@@ -156,9 +155,7 @@ create_format_terra_vect <- function(filetype, options, ...) {
 #' @noRd
 create_format_terra_vect_shz <- function(options, ...) {
 
-    if (!requireNamespace("terra")) {
-        stop("package 'terra' is required", call. = FALSE)
-    }
+    check_pkg_installed("terra")
 
     .write_terra_vector <- eval(substitute(function(object, path) {
         terra::writeVector(
