@@ -51,6 +51,10 @@ tar_terra_rast <- function(name,
     filetype <- filetype %||% "GTiff"
     gdal <- gdal %||% "ENCODING=UTF-8"
 
+    #check that filetype option is available
+    drv <- get_gdal_available_driver_list("raster")
+    filetype <- rlang::arg_match0(filetype, drv$name)
+
     check_pkg_installed("terra")
 
     name <- targets::tar_deparse_language(substitute(name))
@@ -68,14 +72,6 @@ tar_terra_rast <- function(name,
         envir = envir,
         tidy_eval = tidy_eval
     )
-
-    drv <- get_gdal_available_driver_list("raster")
-
-    # if not specified by user, pull the corresponding geotargets option
-    filetype <- filetype %||% geotargets_option_get("gdal.raster.driver")
-    filetype <- rlang::arg_match0(filetype, drv$name)
-
-    gdal <- gdal %||% geotargets_option_get("gdal.raster.creation_options")
 
     targets::tar_target_raw(
         name = name,
@@ -105,13 +101,6 @@ tar_terra_rast <- function(name,
 create_format_terra_raster <- function(filetype, gdal, ...) {
 
     check_pkg_installed("terra")
-
-    drv <- get_gdal_available_driver_list("raster")
-
-    filetype <- filetype %||% geotargets_option_get("gdal.raster.driver")
-    filetype <- rlang::arg_match0(filetype, drv$name)
-
-    gdal <- gdal %||% geotargets_option_get("gdal.raster.creation_options")
 
     .write_terra_raster <- eval(substitute(function(object, path) {
         terra::writeRaster(
