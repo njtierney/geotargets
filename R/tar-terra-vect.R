@@ -40,8 +40,8 @@
 tar_terra_vect <- function(name,
                            command,
                            pattern = NULL,
-                           filetype = NULL,
-                           gdal = NULL,
+                           filetype = geotargets_option_get("gdal.vector.driver"),
+                           gdal = geotargets_option_get("gdal.vector.creation.options"),
                            ...,
                            packages = targets::tar_option_get("packages"),
                            tidy_eval = targets::tar_option_get("tidy_eval"),
@@ -57,6 +57,12 @@ tar_terra_vect <- function(name,
                            storage = targets::tar_option_get("storage"),
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue")) {
+    filetype <- filetype %||% "GeoJSON"
+    gdal <- gdal %||% "ENCODING=UTF-8"
+
+    #Check that filetype is available
+    drv <- get_gdal_available_driver_list("vector")
+    filetype <- rlang::arg_match0(filetype, drv$name)
 
     check_pkg_installed("terra")
 
@@ -74,14 +80,6 @@ tar_terra_vect <- function(name,
         envir = envir,
         tidy_eval = tidy_eval
     )
-
-    drv <- get_gdal_available_driver_list("vector")
-
-    # if not specified by user, pull the corresponding geotargets option
-    filetype <- filetype %||% geotargets_option_get("gdal.vector.driver")
-    filetype <- rlang::arg_match0(filetype, drv$name)
-
-    gdal <- gdal %||% geotargets_option_get("gdal.vector.creation_options")
 
     format <- ifelse(
         test = filetype == "ESRI Shapefile",
@@ -121,12 +119,6 @@ tar_terra_vect <- function(name,
 create_format_terra_vect <- function(filetype, options, ...) {
 
     check_pkg_installed("terra")
-
-    drv <- get_gdal_available_driver_list("vector")
-
-    filetype <- filetype %||% "GeoJSON"
-
-    filetype <- match.arg(filetype, drv$name)
 
     .write_terra_vector <- eval(substitute(function(object, path) {
         terra::writeVector(
