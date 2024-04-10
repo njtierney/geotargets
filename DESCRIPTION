@@ -36,6 +36,7 @@ Imports:
     rlang,
     cli
 Suggests: 
+    crew,
     terra,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

@@ -17,6 +17,29 @@ targets::tar_test("tar_terra_rast() works", {
   )
 })
 
+targets::tar_test("tar_terra_rast() works with multiple workers", {
+    targets::tar_script({
+        targets::tar_option_set(controller = crew::crew_controller_local(workers = 2))
+        list(
+            geotargets::tar_terra_rast(
+                test1,
+                terra::rast(system.file("ex/elev.tif", package = "terra"))
+            ),
+            geotargets::tar_terra_rast(
+                test2,
+                terra::rast(system.file("ex/elev.tif", package = "terra"))
+            ),
+            geotargets::tar_terra_rast(
+                combined,
+                rast(list(test1, test2))
+            )
+        )
+    })
+    targets::tar_make()
+    expect_s4_class(targets::tar_read(test1), "SpatRaster")
+    expect_s4_class(targets::tar_read(test2), "SpatRaster")
+})
+
 targets::tar_test("tar_terra_vect() works", {
   targets::tar_script({
     lux_area <- function(projection = "EPSG:4326") {
@@ -48,3 +71,5 @@ targets::tar_test("tar_terra_vect() works", {
   expect_snapshot(y)
   expect_equal(terra::values(x), terra::values(y))
 })
+
+
