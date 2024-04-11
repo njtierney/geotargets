@@ -102,8 +102,8 @@ tar_terra_vect <- function(name,
         garbage_collection = garbage_collection,
         deployment = deployment,
         priority = priority,
-        resources = tar_resources(
-            custom_format = tar_resources_custom_format(
+        resources = targets::tar_resources(
+            custom_format = targets::tar_resources_custom_format(
                 #these envvars are used in write function of format
                 envvars = c("GEOTARGETS_GDAL_VECTOR_DRIVER" = filetype,
                             "GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS" = gdal)
@@ -131,6 +131,7 @@ create_format_terra_vect <- function() {
                 overwrite = TRUE,
                 options = Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS")
             )
+            file.rename(paste0(path, ".shz"), path)
         },
         marshal = function(object) terra::wrap(object),
         unmarshal = function(object) terra::unwrap(object)
