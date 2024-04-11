@@ -18,21 +18,10 @@ targets::tar_test("geotargets_options_get() retrieves options in correct priorit
     )
 })
 
+test_that("geotargets_option_set() works", {
+    geotargets_option_set(gdal_raster_driver = "COG")
+    expect_equal(getOption("geotargets.gdal.raster.driver"), "COG")
+    expect_equal(geotargets_option_get("gdal.raster.driver"), "COG")
+    expect_equal(geotargets_option_get("gdal_raster_driver"), "COG")
+})
 
-
-# targets::tar_test("Options are distributed to workers", {
-#     targets::tar_script({
-#         Sys.setenv("GEOTARGETS_GDAL_RASTER_DRIVER" = "COG")
-#         targets::tar_option_set(
-#             controller = crew::crew_controller_local(workers = 2)
-#         )
-#         list(
-#             targets::tar_target(
-#                 opt,
-#                 Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER")
-#             )
-#         )
-#     })
-#     targets::tar_make()
-#     expect_equal(targets::tar_read(opt), "COG")
-# })
