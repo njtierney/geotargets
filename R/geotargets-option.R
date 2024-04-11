@@ -22,6 +22,12 @@
 #'   driver:
 #'   <https://gdal.org/drivers/vector/geojson.html#layer-creation-options>
 #'
+#' @details
+#' These options can also be set using `options()`.  For example,
+#' `geotargets_options_set(gdal_raster_driver = "GTiff")` is equivalent to
+#' `options("geotargets.gdal.raster.driver" = "GTiff")`.
+#'
+#'
 #' @rdname geotargets-options
 #' @export
 geotargets_option_set <- function(
@@ -32,34 +38,15 @@ geotargets_option_set <- function(
 ) {
 
     options(
-        "geotargets.gdal.raster.driver" =
-            gdal_raster_driver %||%
-            getOption("geotargets.gdal.raster.driver",
-                      default = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER",
-                                           unset = "GTiff")),
-
-        "geotargets.gdal.raster.creation.options" =
-            gdal_raster_creation_options %||%
-            getOption("geotargets.gdal.raster.creation.options",
-                      default =  Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
-                                            unset = "ENCODING=UTF-8")),
-
-        "geotargets.gdal.vector.driver" =
-            gdal_raster_creation_options %||%
-            getOption("geotargets.gdal.vector.driver",
-                      default =  Sys.getenv("GEOTARGETS_GDAL_VECTOR_DRIVER",
-                                            unset = "GeoJSON")),
-
-        "geotargets.gdal.vector.creation.options" =
-            gdal_raster_creation_options %||%
-            getOption("geotargets.gdal.vector.creation.options",
-                      default =  Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS",
-                                            unset = "ENCODING=UTF-8"))
+        "geotargets.gdal.raster.driver" = gdal_raster_driver,
+        "geotargets.gdal.raster.creation.options" = gdal_raster_creation_options,
+        "geotargets.gdal.vector.driver" = gdal_raster_creation_options,
+        "geotargets.gdal.vector.creation.options" = gdal_raster_creation_options
     )
 
 }
 
-#' @param name character; option name to get
+#' @param name character; option name to get.
 #'
 #' @rdname geotargets-options
 #' @export

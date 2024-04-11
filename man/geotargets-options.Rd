@@ -37,9 +37,14 @@ a unique set of creation options. For example, with the default \code{"GeoJSON"}
 driver:
 \url{https://gdal.org/drivers/vector/geojson.html#layer-creation-options}}
 
-\item{name}{character; option name to get}
+\item{name}{character; option name to get.}
 }
 \description{
 Get or set behavior for geospatial data target stores using
 geotargets-specific global options.
+}
+\details{
+These options can also be set using \code{options()}.  For example,
+\code{geotargets_options_set(gdal_raster_driver = "GTiff")} is equivalent to
+\code{options("geotargets.gdal.raster.driver" = "GTiff")}.
 }
