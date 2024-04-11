@@ -131,7 +131,6 @@ create_format_terra_vect <- function() {
                 overwrite = TRUE,
                 options = Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS")
             )
-            file.rename(paste0(path, ".shz"), path)
         },
         marshal = function(object) terra::wrap(object),
         unmarshal = function(object) terra::unwrap(object)
@@ -154,6 +153,7 @@ create_format_terra_vect_shz <- function() {
                 overwrite = TRUE,
                 options = Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS")
             )
+            file.rename(paste0(path, ".shz"), path)
         },
         marshal = function(object) terra::wrap(object),
         unmarshal = function(object) terra::unwrap(object)
