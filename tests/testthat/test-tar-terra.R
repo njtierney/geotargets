@@ -22,22 +22,26 @@ targets::tar_test("tar_terra_rast() works with multiple workers", {
         targets::tar_option_set(controller = crew::crew_controller_local(workers = 2))
         list(
             geotargets::tar_terra_rast(
-                test1,
+                rast_raw,
                 terra::rast(system.file("ex/elev.tif", package = "terra"))
             ),
             geotargets::tar_terra_rast(
-                test2,
-                terra::rast(system.file("ex/elev.tif", package = "terra"))
+                rast_plus,
+                rast_raw + 1
+            ),
+            geotargets::tar_terra_rast(
+                rast_minus,
+                rast_raw - 1
             ),
             geotargets::tar_terra_rast(
                 combined,
-                rast(list(test1, test2))
+                rast(unname(list(rast_plus, rast_minus)))
             )
         )
     })
     targets::tar_make()
-    expect_s4_class(targets::tar_read(test1), "SpatRaster")
-    expect_s4_class(targets::tar_read(test2), "SpatRaster")
+    expect_true(all(is.na(tar_meta()$error)))
+    expect_snapshot(tar_read(combined))
 })
 
 targets::tar_test("tar_terra_vect() works", {
@@ -72,4 +76,22 @@ targets::tar_test("tar_terra_vect() works", {
   expect_equal(terra::values(x), terra::values(y))
 })
 
+targets::tar_test("tar_terra_vect() works with multiple workers", {
+    targets::tar_script({
+        targets::tar_option_set(controller = crew::crew_controller_local(workers = 2))
+        list(
+            geotargets::tar_terra_vect(
+                vect1,
+                terra::vect(system.file("ex", "lux.shp", package = "terra"))
+            ),
+            geotargets::tar_terra_vect(
+                vect2,
+                terra::vect(system.file("ex", "lux.shp", package = "terra"))
+            )
+        )
+    })
+    targets::tar_make()
+    expect_s4_class(targets::tar_read(vect1), "SpatVector")
+    expect_s4_class(targets::tar_read(vect2), "SpatVector")
+})
 
