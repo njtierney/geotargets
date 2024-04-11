@@ -65,5 +65,22 @@ geotargets_option_set <- function(
 #' @export
 geotargets_option_get <- function(name) {
     option_name <- geotargets_repair_option_name(name)
-    getOption(option_name)
+    # check if `name` is one of the possible options
+    option_name <-
+        rlang::arg_match0(option_name, c(
+            "geotargets.gdal.raster.driver",
+            "geotargets.gdal.raster.creation.options",
+            "geotargets.gdal.vector.driver",
+            "geotargets.gdal.vector.creation.options"
+        ))
+
+    env_name <- gsub("\\.", "_", toupper(option_name))
+    opt <- getOption(option_name, default = Sys.getenv(env_name))
+
+    #replace empty string from Sys.getenv default with NULL
+    if (opt == "") {
+        opt <- NULL
+    }
+    #return
+    opt
 }
