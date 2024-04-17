@@ -1,0 +1,5 @@
+# geotargets (development version)
+
+* Created `tar_terra_rast()` and `tar_terra_vect()` for targets that create `SpatRaster` and `SpatVector` objects, respectively
+* `geotargets_options_get()` and `geotargets_options_set()` can be used to set and get options specific to `geotargets`.
+* `geotargets` now requires `targets` version 1.7.0 or higher
