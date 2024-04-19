@@ -1,4 +1,4 @@
-targets::tar_test("tar_terra_rasts() works", {
+targets::tar_test("tar_terra_sprc() works", {
   geotargets::geotargets_option_set(
     "raster_gdal_creation_options",
     c("COMPRESS=DEFLATE", "TFW=YES")
@@ -17,7 +17,7 @@ targets::tar_test("tar_terra_rasts() works", {
       )
     }
     list(
-      geotargets::tar_terra_rasts(
+      geotargets::tar_terra_sprc(
         raster_elevs,
         # two rasters, one unaltered, one scaled by factor of 2 and
         # reprojected to interrupted good homolosine

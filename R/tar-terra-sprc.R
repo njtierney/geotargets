@@ -26,7 +26,7 @@
 #'         )
 #'       }
 #'       list(
-#'         tar_terra_rasts(
+#'         tar_terra_sprc(
 #'           raster_elevs,
 #'           # two rasters, one unaltered, one scaled by factor of 2 and
 #'           # reprojected to interrupted good homolosine
@@ -41,7 +41,7 @@
 #'     x <- targets::tar_read(raster_elevs)
 #'   })
 #' }
-tar_terra_rasts <- function(name,
+tar_terra_sprc <- function(name,
                            command,
                            pattern = NULL,
                            filetype = NULL,
