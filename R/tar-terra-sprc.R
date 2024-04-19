@@ -44,8 +44,8 @@
 tar_terra_sprc <- function(name,
                            command,
                            pattern = NULL,
-                           filetype = NULL,
-                           gdal = NULL,
+                           filetype = geotargets_option_get("gdal.raster.driver"),
+                           gdal = geotargets_option_get("gdal.raster.creation.options"),
                            ...,
                            tidy_eval = targets::tar_option_get("tidy_eval"),
                            packages = targets::tar_option_get("packages"),
@@ -61,6 +61,13 @@ tar_terra_sprc <- function(name,
                            storage = targets::tar_option_get("storage"),
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue")) {
+  filetype <- filetype %||% "GTiff"
+  gdal <- gdal %||% "ENCODING=UTF-8"
+
+  # check that filetype option is available
+  drv <- get_gdal_available_driver_list("raster")
+  filetype <- rlang::arg_match0(filetype, drv$name)
+
   check_pkg_installed("terra")
 
   name <- targets::tar_deparse_language(substitute(name))
@@ -87,15 +94,40 @@ tar_terra_sprc <- function(name,
 
   gdal <- gdal %||% geotargets_option_get("gdal.raster.creation_options")
 
+  .write_terra_rasters_sprc <- eval(
+      substitute(
+          function(object, path) {
+              for (i in seq(object)) {
+                  if (i > 1) {
+                      opt <- "APPEND_SUBDATASET=YES"
+                  } else {
+                      opt <- ""
+                  }
+                  terra::writeRaster(
+                      x = object[i],
+                      filename = path,
+                      filetype = filetype,
+                      overwrite = (i == 1),
+                      gdal = opt
+                  )
+              }
+          },
+          list(filetype = filetype, gdal = gdal)
+      )
+  )
+
   targets::tar_target_raw(
     name = name,
     command = command,
     pattern = pattern,
     packages = packages,
     library = library,
-    format = create_format_terra_rasters_sprc(filetype = filetype,
-                                              gdal = gdal,
-                                              ...),
+    format = targets::tar_format(
+        read = function(path) terra::sprc(path),
+        write = .write_terra_rasters_sprc,
+        marshal = function(object) terra::wrap(object),
+        unmarshal = function(object) terra::unwrap(object)
+    ),
     repository = repository,
     iteration = iteration,
     error = error,
@@ -103,58 +135,15 @@ tar_terra_sprc <- function(name,
     garbage_collection = garbage_collection,
     deployment = deployment,
     priority = priority,
-    resources = resources,
+    resources = targets::tar_resources(
+        custom_format = targets::tar_resources_custom_format(
+            #these envvars are used in write function of format
+            envvars = c("GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
+                        "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = gdal)
+        )
+    ),
     storage = storage,
     retrieval = retrieval,
     cue = cue
   )
-}
-
-#' @param filetype File format expressed as GDAL driver names passed to `terra::writeRaster()`
-#' @param gdal GDAL driver specific datasource creation options passed to `terra::writeRaster()`
-#' @param ... Additional arguments not yet used
-#' @noRd
-create_format_terra_rasters_sprc <- function(filetype, gdal, ...) {
-  check_pkg_installed("terra")
-
-  drv <- get_gdal_available_driver_list("raster")
-
-  filetype <- filetype %||% geotargets_option_get("gdal.raster.driver")
-  filetype <- rlang::arg_match0(filetype, drv$name)
-
-  gdal <- gdal %||% geotargets_option_get("gdal.raster.creation_options")
-  ## TODO
-  ## Need to append the "opt" argument for GDAL options that is currently
-  ## controlled with the if(i > 1) part.
-
-  .write_terra_rasters_sprc <- eval(
-    substitute(
-      function(object, path) {
-        for (i in seq(object)) {
-          if (i > 1) {
-            opt <- "APPEND_SUBDATASET=YES"
-          } else {
-            opt <- ""
-          }
-          terra::writeRaster(
-            x = object[i],
-            filename = path,
-            filetype = filetype,
-            overwrite = (i == 1),
-            gdal = opt
-          )
-        }
-      },
-      list(filetype = filetype, gdal = gdal)
-    )
-  )
-
-  format_sprc_geotiff <- targets::tar_format(
-    read = function(path) terra::sprc(path),
-    write = .write_terra_rasters_sprc,
-    marshal = function(object) terra::wrap(object),
-    unmarshal = function(object) terra::unwrap(object)
-  )
-
-  format_sprc_geotiff
 }
