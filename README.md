@@ -19,7 +19,7 @@ coverage](https://codecov.io/gh/njtierney/geotargets/branch/master/graph/badge.s
 as rasters and vectors (e.g., shapefiles).
 
 A relatively common gotcha moment when using popular libraries like
-`terra` with targets is running into erros with read and write. Due to
+`terra` with targets is running into errors with read and write. Due to
 the limitations that come with the underlying C++ implementation in the
 `terra` library, there are specific ways to write and read these
 objects. See `?terra` for details. `geotargets` helps handle these write
