@@ -19,7 +19,7 @@ coverage](https://codecov.io/gh/njtierney/geotargets/branch/master/graph/badge.s
 as rasters and vectors (e.g., shapefiles).
 
 A relatively common gotcha moment when using popular libraries like
-`terra` with targets is running into errors with read and write. Due to
+`terra` with targets is running into erros with read and write. Due to
 the limitations that come with the underlying C++ implementation in the
 `terra` library, there are specific ways to write and read these
 objects. See `?terra` for details. `geotargets` helps handle these write
@@ -55,10 +55,11 @@ breaking ways.
 
 # Examples
 
-Below we show two examples of target factories:
+Below we show three examples of target factories:
 
 - `tar_terra_rast()`
 - `tar_terra_vect()`
+- `tar_terra_sprc()`
 
 You would use these in place of `tar_target()` in your targets pipeline,
 when you are doing work with terra raster or terra vector data.
@@ -113,6 +114,35 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   tar_make()
   x <- tar_read(terra_rast_example)
   x
+})
+```
+
+## `tar_terra_sprc()`: targets with terra raster collections
+
+``` r
+targets::tar_dir({ # tar_dir() runs code from a temporary directory.
+  library(geotargets)
+  targets::tar_script({
+    elev_scale <- function(z = 1, projection = "EPSG:4326") {
+      terra::project(
+        terra::rast(system.file("ex", "elev.tif", package = "terra")) * z,
+        projection
+      )
+    }
+    list(
+      tar_terra_sprc(
+        raster_elevs,
+        # two rasters, one unaltered, one scaled by factor of 2 and
+        # reprojected to interrupted good homolosine
+        command = terra::sprc(list(
+          elev_scale(1),
+          elev_scale(2, "+proj=igh")
+        ))
+      )
+    )
+  })
+  targets::tar_make()
+  x <- targets::tar_read(raster_elevs)
 })
 ```
 
