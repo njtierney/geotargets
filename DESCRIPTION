@@ -39,5 +39,5 @@ Suggests:
     terra,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-URL: https://github.com/njtierney/geotargets
+URL: https://github.com/njtierney/geotargets, https://njtierney.github.io/geotargets/
 BugReports: https://github.com/njtierney/geotargets/issues
