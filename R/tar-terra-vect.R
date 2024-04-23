@@ -40,8 +40,8 @@
 tar_terra_vect <- function(name,
                            command,
                            pattern = NULL,
-                           filetype = NULL,
-                           gdal = NULL,
+                           filetype = geotargets_option_get("gdal.vector.driver"),
+                           gdal = geotargets_option_get("gdal.vector.creation.options"),
                            ...,
                            packages = targets::tar_option_get("packages"),
                            tidy_eval = targets::tar_option_get("tidy_eval"),
@@ -57,6 +57,12 @@ tar_terra_vect <- function(name,
                            storage = targets::tar_option_get("storage"),
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue")) {
+    filetype <- filetype %||% "GeoJSON"
+    gdal <- gdal %||% "ENCODING=UTF-8"
+
+    #Check that filetype is available
+    drv <- get_gdal_available_driver_list("vector")
+    filetype <- rlang::arg_match0(filetype, drv$name)
 
     check_pkg_installed("terra")
 
@@ -75,19 +81,11 @@ tar_terra_vect <- function(name,
         tidy_eval = tidy_eval
     )
 
-    drv <- get_gdal_available_driver_list("vector")
-
-    # if not specified by user, pull the corresponding geotargets option
-    filetype <- filetype %||% geotargets_option_get("gdal.vector.driver")
-    filetype <- rlang::arg_match0(filetype, drv$name)
-
-    gdal <- gdal %||% geotargets_option_get("gdal.vector.creation_options")
-
     format <- ifelse(
         test = filetype == "ESRI Shapefile",
         #special handling of ESRI shapefiles because the output is a dir of multiple files.
-        yes = create_format_terra_vect_shz(options = gdal, ...),
-        no =  create_format_terra_vect(filetype, options = gdal, ...)
+        yes = create_format_terra_vect_shz(),
+        no =  create_format_terra_vect()
     )
 
     targets::tar_target_raw(
@@ -104,7 +102,13 @@ tar_terra_vect <- function(name,
         garbage_collection = garbage_collection,
         deployment = deployment,
         priority = priority,
-        resources = resources,
+        resources = targets::tar_resources(
+            custom_format = targets::tar_resources_custom_format(
+                #these envvars are used in write function of format
+                envvars = c("GEOTARGETS_GDAL_VECTOR_DRIVER" = filetype,
+                            "GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS" = gdal)
+            )
+        ),
         storage = storage,
         retrieval = retrieval,
         cue = cue
@@ -112,63 +116,45 @@ tar_terra_vect <- function(name,
 }
 
 
-#' @param filetype File format expressed as GDAL driver names passed to
-#'   `terra::writeVector()`
-#' @param options GDAL driver specific datasource creation options passed to
-#'   `terra::writeVector()`
-#' @param ... Additional arguments not yet used
 #' @noRd
-create_format_terra_vect <- function(filetype, options, ...) {
+create_format_terra_vect <- function() {
 
     check_pkg_installed("terra")
 
-    drv <- get_gdal_available_driver_list("vector")
-
-    filetype <- filetype %||% "GeoJSON"
-
-    filetype <- match.arg(filetype, drv$name)
-
-    .write_terra_vector <- eval(substitute(function(object, path) {
-        terra::writeVector(
-            object,
-            path,
-            filetype = filetype,
-            overwrite = TRUE,
-            options = options
-        )
-    }, list(filetype = filetype, options = options)))
-
     targets::tar_format(
         read = function(path) terra::vect(path),
-        write = .write_terra_vector,
+        write = function(object, path) {
+            terra::writeVector(
+                object,
+                path,
+                filetype = Sys.getenv("GEOTARGETS_GDAL_VECTOR_DRIVER"),
+                overwrite = TRUE,
+                options = Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS")
+            )
+        },
         marshal = function(object) terra::wrap(object),
         unmarshal = function(object) terra::unwrap(object)
     )
 }
 
 #' Special handling for ESRI Shapefiles
-#' @param options GDAL driver specific datasource creation options passed to
-#'   `terra::writeVector()`
-#' @param ... Additional arguments not yet used
 #' @noRd
-create_format_terra_vect_shz <- function(options, ...) {
+create_format_terra_vect_shz <- function() {
 
     check_pkg_installed("terra")
 
-    .write_terra_vector <- eval(substitute(function(object, path) {
-        terra::writeVector(
-            x = object,
-            filename = paste0(path, ".shz"),
-            filetype = "ESRI Shapefile",
-            overwrite = TRUE,
-            options = options
-        )
-        file.rename(paste0(path, ".shz"), path)
-    }, list(options = options)))
-
     targets::tar_format(
         read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),
-        write = .write_terra_vector,
+        write = function(object, path) {
+            terra::writeVector(
+                x = object,
+                filename = paste0(path, ".shz"),
+                filetype = "ESRI Shapefile",
+                overwrite = TRUE,
+                options = Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS")
+            )
+            file.rename(paste0(path, ".shz"), path)
+        },
         marshal = function(object) terra::wrap(object),
         unmarshal = function(object) terra::unwrap(object)
     )
