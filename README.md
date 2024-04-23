@@ -112,7 +112,7 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
     )
   })
   tar_make()
-  x <- tar_read(terra_rast_example)
+  x <- tar_read(terra_vect_example)
   x
 })
 ```
