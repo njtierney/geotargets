@@ -23,6 +23,9 @@ which have no restriction in the extent or other geometric parameters."><!-- mat
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
+</li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -55,8 +58,8 @@ which have no restriction in the extent or other geometric parameters.</p>
 <span>  <span class="va">name</span>,</span>
 <span>  <span class="va">command</span>,</span>
 <span>  pattern <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  filetype <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  gdal <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filetype <span class="op">=</span> <span class="fu"><a href="geotargets-options.html">geotargets_option_get</a></span><span class="op">(</span><span class="st">"gdal.raster.driver"</span><span class="op">)</span>,</span>
+<span>  gdal <span class="op">=</span> <span class="fu"><a href="geotargets-options.html">geotargets_option_get</a></span><span class="op">(</span><span class="st">"gdal.raster.creation.options"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  tidy_eval <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"tidy_eval"</span><span class="op">)</span>,</span>
 <span>  packages <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"packages"</span><span class="op">)</span>,</span>
