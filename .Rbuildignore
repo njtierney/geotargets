@@ -12,3 +12,6 @@
 ^_targets\.Rmd$
 ^_targets\.yaml$
 ^CODE_OF_CONDUCT\.md$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
