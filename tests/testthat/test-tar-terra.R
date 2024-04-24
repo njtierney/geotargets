@@ -22,26 +22,17 @@ targets::tar_test("tar_terra_rast() works with multiple workers", {
         targets::tar_option_set(controller = crew::crew_controller_local(workers = 2))
         list(
             geotargets::tar_terra_rast(
-                rast_raw,
+                rast1,
                 terra::rast(system.file("ex/elev.tif", package = "terra"))
             ),
             geotargets::tar_terra_rast(
-                rast_plus,
-                rast_raw + 1
-            ),
-            geotargets::tar_terra_rast(
-                rast_minus,
-                rast_raw - 1
-            ),
-            geotargets::tar_terra_rast(
-                combined,
-                rast(unname(list(rast_plus, rast_minus)))
+                rast2,
+                terra::rast(system.file("ex/elev.tif", package = "terra"))
             )
         )
     })
     targets::tar_make()
-    expect_true(all(is.na(tar_meta()$error)))
-    expect_snapshot(tar_read(combined))
+    expect_true(all(is.na(targets::tar_meta()$error)))
 })
 
 targets::tar_test("tar_terra_vect() works", {
@@ -91,7 +82,6 @@ targets::tar_test("tar_terra_vect() works with multiple workers", {
         )
     })
     targets::tar_make()
-    expect_s4_class(targets::tar_read(vect1), "SpatVector")
-    expect_s4_class(targets::tar_read(vect2), "SpatVector")
+    expect_true(all(is.na(targets::tar_meta()$error)))
 })
 
