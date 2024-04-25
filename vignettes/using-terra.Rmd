@@ -1,0 +1,126 @@
+---
+title: "Using {terra} with {geotargets}"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using {terra} with {geotargets}}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+# With the root.dir option below,
+# this vignette runs the R code in a temporary directory
+# so new files are written to temporary storage
+# and not the user's file space.
+knitr::opts_knit$set(root.dir = fs::dir_create(tempfile()))
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+if (identical(Sys.getenv("NOT_CRAN", unset = "false"), "false")) {
+  knitr::opts_chunk$set(eval = FALSE)
+}
+library(targets)
+library(geotargets)
+```
+
+```{r setup}
+library(geotargets)
+```
+
+`geotargets` extends targets to work with geospatial data formats, such as rasters and vectors (e.g., shapefiles). 
+
+The design of `geotargets` is to specify target factories like so: `tar_<pkg>_<type>`.
+
+In this vignette we will demonstrate the use of the `terra` R package, and we 
+will demonstrate how to build raster (`rast`), vector (`vect`), and raster collections (`sprc`):
+
+- `tar_terra_rast()`
+- `tar_terra_vect()`
+- `tar_terra_sprc()`
+
+
+## `tar_terra_rast()`: targets with terra rasters
+
+```{r}
+#| label: tar-terra-rast
+#| eval: false
+library(targets)
+tar_dir({ # tar_dir() runs code from a temporary directory.
+  tar_script({
+    library(targets)
+    library(geotargets)
+    list(
+      tar_terra_rast(
+        terra_rast_example,
+        system.file("ex/elev.tif", package = "terra") |> terra::rast()
+      )
+    )
+  })
+  tar_make()
+  x <- tar_read(terra_rast_example)
+  x
+})
+```
+
+
+## `tar_terra_vect()`: targets with terra vectors
+
+```{r}
+#| label: tar-terra-vect
+#| eval: false
+tar_dir({ # tar_dir() runs code from a temporary directory.
+  tar_script({
+    library(geotargets)
+    lux_area <- function(projection = "EPSG:4326") {
+      terra::project(
+        terra::vect(system.file("ex", "lux.shp",
+          package = "terra"
+        )),
+        projection
+      )
+    }
+    list(
+      tar_terra_vect(
+        terra_vect_example,
+        lux_area()
+      )
+    )
+  })
+  tar_make()
+  x <- tar_read(terra_rast_example)
+  x
+})
+```
+
+
+## `tar_terra_sprc()`: targets with terra raster collections
+
+```{r}
+#| label: tar-terra-sprc
+#| eval: false
+targets::tar_dir({ # tar_dir() runs code from a temporary directory.
+  library(geotargets)
+  targets::tar_script({
+    elev_scale <- function(z = 1, projection = "EPSG:4326") {
+      terra::project(
+        terra::rast(system.file("ex", "elev.tif", package = "terra")) * z,
+        projection
+      )
+    }
+    list(
+      tar_terra_sprc(
+        raster_elevs,
+        # two rasters, one unaltered, one scaled by factor of 2 and
+        # reprojected to interrupted good homolosine
+        command = terra::sprc(list(
+          elev_scale(1),
+          elev_scale(2, "+proj=igh")
+        ))
+      )
+    )
+  })
+  targets::tar_make()
+  x <- targets::tar_read(raster_elevs)
+})
+```
