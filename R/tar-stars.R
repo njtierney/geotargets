@@ -35,7 +35,7 @@ tar_stars <- function(name,
                       mdim = FALSE,
                       ncdf = FALSE,
                       driver = geotargets_option_get("gdal.raster.driver"),
-                      options = geotargets_option_get("gdal.raster.creation_options"),
+                      options = geotargets_option_get("gdal.raster.creation.options"),
                       ...,
                       tidy_eval = targets::tar_option_get("tidy_eval"),
                       packages = targets::tar_option_get("packages"),
@@ -106,7 +106,7 @@ tar_stars_proxy <- function(name,
                             mdim = FALSE,
                             ncdf = FALSE,
                             driver = geotargets_option_get("gdal.raster.driver"),
-                            options = geotargets_option_get("gdal.raster.creation_options"),
+                            options = geotargets_option_get("gdal.raster.creation.options"),
                             ...,
                             tidy_eval = targets::tar_option_get("tidy_eval"),
                             packages = targets::tar_option_get("packages"),
@@ -178,7 +178,7 @@ tar_stars_proxy <- function(name,
                             mdim = FALSE,
                             ncdf = FALSE,
                             driver = geotargets_option_get("gdal.raster.driver"),
-                            options = geotargets_option_get("gdal.raster.creation_options"),
+                            options = geotargets_option_get("gdal.raster.creation.options"),
                             ...,
                             tidy_eval = targets::tar_option_get("tidy_eval"),
                             packages = targets::tar_option_get("packages"),
@@ -242,6 +242,9 @@ tar_stars_proxy <- function(name,
 }
 
 create_format_stars <- function(driver, options, proxy, mdim, ncdf, ...) {
+
+    driver <- driver %||% "GTiff"
+    options <- options %||% character(0)
 
     # get list of drivers available for writing depending on what the user's GDAL supports
     drv <- sf::st_drivers(what = "raster")
