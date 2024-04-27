@@ -92,7 +92,7 @@ tar_terra_sprc <- function(name,
   filetype <- filetype %||% geotargets_option_get("gdal.raster.driver")
   filetype <- rlang::arg_match0(filetype, drv$name)
 
-  gdal <- gdal %||% geotargets_option_get("gdal.raster.creation_options")
+  gdal <- gdal %||% geotargets_option_get("gdal.raster.creation.options")
 
   .write_terra_rasters_sprc <- eval(
       substitute(
