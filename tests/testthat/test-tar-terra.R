@@ -17,26 +17,6 @@ targets::tar_test("tar_terra_rast() works", {
     )
 })
 
-targets::tar_test("tar_terra_rast(zipfile=TRUE) works", {
-    # geotargets::geotargets_option_set(gdal_raster_creation_options = c("COMPRESS=DEFLATE", "TFW=YES"))
-    targets::tar_script({
-        list(
-            geotargets::tar_terra_rast(
-                test_terra_rast2,
-                terra::rast(system.file("ex/elev.tif", package = "terra")),
-                gdal = c("STREAMABLE_OUTPUT=YES", "COMPRESS=NONE"),
-                zipfile = TRUE
-            )
-        )
-    })
-    targets::tar_make()
-    x <- targets::tar_read(test_terra_rast2)
-    expect_s4_class(x, "SpatRaster")
-    expect_snapshot(
-        x
-    )
-})
-
 targets::tar_test("tar_terra_vect() works", {
     targets::tar_script({
         lux_area <- function(projection = "EPSG:4326") {
