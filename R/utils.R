@@ -15,9 +15,9 @@ check_pkg_installed <- function(pkg, call = rlang::caller_env()) {
   }
 }
 
-get_gdal_available_driver_list <- function(driver_type){
+get_gdal_available_driver_list <- function(driver_type) {
     # get list of drivers available for writing depending on what the user's GDAL supports
     drv <- terra::gdal(drivers = TRUE)
-    drv <- drv[drv$type == driver_type & grepl("write", drv$can), ]
+    drv <- drv[drv[[driver_type]] & grepl("write", drv$can), ]
     drv
 }
