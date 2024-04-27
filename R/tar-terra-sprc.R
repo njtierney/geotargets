@@ -62,7 +62,7 @@ tar_terra_sprc <- function(name,
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue")) {
   filetype <- filetype %||% "GTiff"
-  gdal <- gdal %||% "ENCODING=UTF-8"
+  gdal <- gdal %||% character(0)
 
   # check that filetype option is available
   drv <- get_gdal_available_driver_list("raster")
