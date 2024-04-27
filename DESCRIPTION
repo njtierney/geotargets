@@ -32,16 +32,16 @@ Language: en-GB
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 Imports: 
+    targets (>= 1.7.0),
     rlang,
-    targets,
-    terra
+    cli
 Suggests: 
     sf,
     stars,
     ncmeta,
+    terra,
     testthat (>= 3.0.0),
-Depends:
-    R (>= 4.1.0)
+    withr
 Config/testthat/edition: 3
-URL: https://github.com/njtierney/geotargets
+URL: https://github.com/njtierney/geotargets, https://njtierney.github.io/geotargets/
 BugReports: https://github.com/njtierney/geotargets/issues
