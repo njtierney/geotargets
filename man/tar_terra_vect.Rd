@@ -10,6 +10,7 @@ tar_terra_vect(
   pattern = NULL,
   filetype = geotargets_option_get("gdal.vector.driver"),
   gdal = geotargets_option_get("gdal.vector.creation.options"),
+  zipfile = FALSE,
   ...,
   packages = targets::tar_option_get("packages"),
   tidy_eval = targets::tar_option_get("tidy_eval"),
@@ -57,6 +58,10 @@ to \code{\link[terra:writeVector]{terra::writeVector()}}. See 'Note' for more de
 
 \item{gdal}{character. GDAL driver specific datasource creation options
 passed to \code{\link[terra:writeVector]{terra::writeVector()}}.}
+
+\item{zipfile}{logical. Should the file in the target store be a ZIP archive?
+Required for \code{filetype} formats that have sidecar files. Not all GDAL
+drivers support directly generating SOZip-enabled files. Default: \code{FALSE}.}
 
 \item{...}{Additional arguments not yet used}
 
@@ -223,8 +228,10 @@ Provides a target format for \link[terra:SpatVector-class]{terra::SpatVector} ob
 \note{
 Although you may pass any supported GDAL vector driver to the
 \code{filetype} argument, not all formats are guaranteed to work with
-\code{geotargets}.  At the moment, we have tested \code{GeoJSON} and \verb{ESRI Shapefile}
-which both appear to work generally.
+\code{geotargets}.  At the moment, we have tested \code{GeoJSON}, \verb{ESRI Shapefile},
+\code{GPKG}, and \code{Parquet} which all appear to work generally. \verb{ESRI Shapefile}
+targets are always stored as SOZip-enabled Zipfiles (GDAL >= 3.7). \code{GPKG}
+and \code{Parquet} can also be stored as ZIP files by setting \code{zipfile=TRUE}.
 }
 \examples{
 if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {

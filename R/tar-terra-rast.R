@@ -6,7 +6,17 @@
 #'   to [terra::writeRaster()]
 #' @param gdal character. GDAL driver specific datasource creation options
 #'   passed to [terra::writeRaster()]
+#' @param zipfile logical. Should the file in the target store be a ZIP archive?
+#'   Required for `filetype` formats that have sidecar files. Not all GDAL
+#'   drivers support directly generating SOZip-enabled files. Default: `FALSE`.
 #' @param ... Additional arguments not yet used
+#'
+#' @note Although you may pass any supported GDAL vector driver to the
+#'   `filetype` argument, not all formats are guaranteed to work with
+#'   `geotargets`.  At the moment, we have tested `GTiff` and `GPKG` and
+#'    they appear to work generally. Both `GTiff` and `GPKG` rasters can be
+#'    stored as ZIP files by setting `zipfile=TRUE`. To write a SOZip-enabled
+#'    `GTiff` target set `gdal=c("STREAMABLE_OUTPUT=YES", "COMPRESS=NONE")`.
 #'
 #' @inheritParams targets::tar_target
 #' @importFrom rlang %||% arg_match0
@@ -33,6 +43,7 @@ tar_terra_rast <- function(name,
                            pattern = NULL,
                            filetype = geotargets_option_get("gdal.raster.driver"),
                            gdal = geotargets_option_get("gdal.raster.creation.options"),
+                           zipfile = FALSE,
                            ...,
                            tidy_eval = targets::tar_option_get("tidy_eval"),
                            packages = targets::tar_option_get("packages"),
@@ -73,6 +84,31 @@ tar_terra_rast <- function(name,
         tidy_eval = tidy_eval
     )
 
+    .format_terra_rast_read <- eval(substitute(function(path) {
+        path2 <- ifelse(zipfile, paste0("/vsizip/{", path, "}"), path)
+        terra::rast(path2)
+    }, list(zipfile = zipfile)))
+
+    .format_terra_rast_write <- eval(substitute(function(object, path) {
+        path2 <- ifelse(zipfile, paste0("/vsizip/{", path, "}/", basename(path)), path)
+        filetype <- Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER")
+        extension <- ""
+        if (filetype == "GPKG") {
+            extension <- ".gpkg.zip"
+            path2 <- paste0(path, extension)
+        }
+        terra::writeRaster(
+            object,
+            path2,
+            filetype = filetype,
+            overwrite = TRUE,
+            gdal = strsplit(Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS", unset = ";"), ";")[[1]]
+        )
+        if (extension != "") {
+            file.rename(paste0(path, extension), path)
+        }
+    }, list(zipfile = zipfile)))
+
     targets::tar_target_raw(
         name = name,
         command = command,
@@ -80,16 +116,8 @@ tar_terra_rast <- function(name,
         packages = packages,
         library = library,
         format = targets::tar_format(
-            read = function(path) terra::rast(path),
-            write = function(object, path) {
-                terra::writeRaster(
-                    object,
-                    path,
-                    filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
-                    overwrite = TRUE,
-                    gdal = strsplit(Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS", unset = ";"), ";")[[1]]
-                )
-            },
+            read = .format_terra_rast_read,
+            write = .format_terra_rast_write,
             marshal = function(object) terra::wrap(object),
             unmarshal = function(object) terra::unwrap(object)
         ),

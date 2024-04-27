@@ -6,13 +6,18 @@
 #'   to [terra::writeVector()]. See 'Note' for more details
 #' @param gdal character. GDAL driver specific datasource creation options
 #'   passed to [terra::writeVector()].
+#' @param zipfile logical. Should the file in the target store be a ZIP archive?
+#'   Required for `filetype` formats that have sidecar files. Not all GDAL
+#'   drivers support directly generating SOZip-enabled files. Default: `FALSE`.
 #' @param ... Additional arguments not yet used
 #' @inheritParams targets::tar_target
 #'
 #' @note Although you may pass any supported GDAL vector driver to the
 #'   `filetype` argument, not all formats are guaranteed to work with
-#'   `geotargets`.  At the moment, we have tested `GeoJSON` and `ESRI Shapefile`
-#'   which both appear to work generally.
+#'   `geotargets`.  At the moment, we have tested `GeoJSON`, `ESRI Shapefile`,
+#'    `GPKG`, and `Parquet` which all appear to work generally. `ESRI Shapefile`
+#'    targets are always stored as SOZip-enabled Zipfiles (GDAL >= 3.7). `GPKG`
+#'    and `Parquet` can also be stored as ZIP files by setting `zipfile=TRUE`.
 #' @export
 #' @examples
 #' if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
@@ -42,6 +47,7 @@ tar_terra_vect <- function(name,
                            pattern = NULL,
                            filetype = geotargets_option_get("gdal.vector.driver"),
                            gdal = geotargets_option_get("gdal.vector.creation.options"),
+                           zipfile = FALSE,
                            ...,
                            packages = targets::tar_option_get("packages"),
                            tidy_eval = targets::tar_option_get("tidy_eval"),
@@ -81,12 +87,16 @@ tar_terra_vect <- function(name,
         tidy_eval = tidy_eval
     )
 
-    format <- ifelse(
-        test = filetype == "ESRI Shapefile",
-        #special handling of ESRI shapefiles because the output is a dir of multiple files.
-        yes = create_format_terra_vect_shz(),
-        no =  create_format_terra_vect()
-    )
+    # special handling of drivers w/ file extension for direct write of SOZIP (GDAL >=3.7)
+    extension <- switch(filetype,
+                        "ESRI Shapefile" = ".shz",
+                        "GPKG" = ".gpkg.zip",
+                        "")
+
+    format <- ifelse(zipfile || filetype == "ESRI Shapefile",
+                     yes = create_format_terra_vect_zip(extension,
+                                                        filetype = filetype),
+                     no = create_format_terra_vect())
 
     targets::tar_target_raw(
         name = name,
@@ -137,24 +147,35 @@ create_format_terra_vect <- function() {
     )
 }
 
-#' Special handling for ESRI Shapefiles
+#' Handling for ZIP files (required for ESRI Shapefile)
 #' @noRd
-create_format_terra_vect_shz <- function() {
+create_format_terra_vect_zip <- function(extension, filetype) {
 
     check_pkg_installed("terra")
 
+    .format_terra_vect_write_zip <- eval(substitute(function(object, path) {
+
+        if (extension == "") {
+            # no extension, use generic "/vsizip/{path to zipfile}/path/in/zipfile"
+            path <- paste0("/vsizip/{", path, "}/", basename(path))
+        }
+
+        terra::writeVector(
+            x = object,
+            filename = paste0(path, extension),
+            filetype = filetype,
+            overwrite = TRUE,
+            options = strsplit(Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS", unset = ";"), ";")[[1]]
+        )
+
+        if (extension != "") {
+            file.rename(paste0(path, extension), path)
+        }
+    }, list(extension = extension, filetype = filetype)))
+
     targets::tar_format(
         read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),
-        write = function(object, path) {
-            terra::writeVector(
-                x = object,
-                filename = paste0(path, ".shz"),
-                filetype = "ESRI Shapefile",
-                overwrite = TRUE,
-                options = strsplit(Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS", unset = ";"), ";")[[1]]
-            )
-            file.rename(paste0(path, ".shz"), path)
-        },
+        write = .format_terra_vect_write_zip,
         marshal = function(object) terra::wrap(object),
         unmarshal = function(object) terra::unwrap(object)
     )
