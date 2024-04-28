@@ -228,7 +228,7 @@ Provides a target format for \link[terra:SpatRaster-class]{terra::SpatRaster} ob
 \note{
 Although you may pass any supported GDAL vector driver to the
 \code{filetype} argument, not all formats are guaranteed to work with
-\code{geotargets}.  At the moment, we have tested \code{GTiff} and \code{GPKG} and
+\code{geotargets}. At the moment, we have tested \code{GTiff} and \code{GPKG} and
 they appear to work generally. Both \code{GTiff} and \code{GPKG} rasters can be
 stored as ZIP files by setting \code{zipfile=TRUE}. To write a SOZip-enabled
 \code{GTiff} target set \code{gdal=c("STREAMABLE_OUTPUT=YES", "COMPRESS=NONE")}.

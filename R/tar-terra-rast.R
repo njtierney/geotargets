@@ -13,10 +13,10 @@
 #'
 #' @note Although you may pass any supported GDAL vector driver to the
 #'   `filetype` argument, not all formats are guaranteed to work with
-#'   `geotargets`.  At the moment, we have tested `GTiff` and `GPKG` and
-#'    they appear to work generally. Both `GTiff` and `GPKG` rasters can be
-#'    stored as ZIP files by setting `zipfile=TRUE`. To write a SOZip-enabled
-#'    `GTiff` target set `gdal=c("STREAMABLE_OUTPUT=YES", "COMPRESS=NONE")`.
+#'   `geotargets`. At the moment, we have tested `GTiff` and `GPKG` and
+#'   they appear to work generally. Both `GTiff` and `GPKG` rasters can be
+#'   stored as ZIP files by setting `zipfile=TRUE`. To write a SOZip-enabled
+#'   `GTiff` target set `gdal=c("STREAMABLE_OUTPUT=YES", "COMPRESS=NONE")`.
 #'
 #' @inheritParams targets::tar_target
 #' @importFrom rlang %||% arg_match0

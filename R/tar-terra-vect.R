@@ -15,9 +15,9 @@
 #' @note Although you may pass any supported GDAL vector driver to the
 #'   `filetype` argument, not all formats are guaranteed to work with
 #'   `geotargets`.  At the moment, we have tested `GeoJSON`, `ESRI Shapefile`,
-#'    `GPKG`, and `Parquet` which all appear to work generally. `ESRI Shapefile`
-#'    targets are always stored as SOZip-enabled Zipfiles (GDAL >= 3.7). `GPKG`
-#'    and `Parquet` can also be stored as ZIP files by setting `zipfile=TRUE`.
+#'   `GPKG`, and `Parquet` which all appear to work generally. `ESRI Shapefile`
+#'   targets are always stored as a SOZip-enabled ZIP file (GDAL >= 3.7). `GPKG`
+#'   and `Parquet` can optionally be stored as ZIP files by setting `zipfile=TRUE`.
 #' @export
 #' @examples
 #' if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
