@@ -163,7 +163,7 @@ create_format_terra_vect_zip <- function(extension, filetype) {
         terra::writeVector(
             x = object,
             filename = paste0(path, extension),
-            filetype = filetype,
+            filetype = Sys.getenv("GEOTARGETS_GDAL_VECTOR_DRIVER"),
             overwrite = TRUE,
             options = strsplit(Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS", unset = ";"), ";")[[1]]
         )
@@ -171,7 +171,7 @@ create_format_terra_vect_zip <- function(extension, filetype) {
         if (extension != "") {
             file.rename(paste0(path, extension), path)
         }
-    }, list(extension = extension, filetype = filetype)))
+    }, list(extension = extension)))
 
     targets::tar_format(
         read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),
