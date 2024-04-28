@@ -48,3 +48,55 @@ targets::tar_test("tar_terra_vect() works", {
     expect_snapshot(y)
     expect_equal(terra::values(x), terra::values(y))
 })
+
+targets::tar_test("tar_terra_rast_wrap works", {
+    targets::tar_script({
+
+        make_rast1 <- function() {
+            x <- terra::rast(system.file("ex/elev.tif", package = "terra"))
+            terra::units(x) <- "m"
+            terra::varnames(x) <- "elev"
+            x
+        }
+
+        make_rast2 <- function() {
+            x <- terra::rast(system.file("ex/elev.tif", package = "terra"))
+            y <- terra::classify(x, cbind(c(0, 300, 500),
+                                          c(300, 500, 1000),
+                                          1:3))
+            levels(y) <- data.frame(value = 1:3,
+                                    category = c("low", "med", "hi"))
+            y
+        }
+
+        list(
+            geotargets::tar_terra_rast_wrap(
+                rast1,
+                make_rast1(),
+                filetype = "GPKG"
+            ),
+            geotargets::tar_terra_rast_wrap(
+                rast2,
+                make_rast2(),
+                filetype = "GTiff"
+            )
+        )
+    })
+
+    targets::tar_make()
+
+    x <- targets::tar_read(rast1)
+    y <- targets::tar_read(rast2)
+    z <- targets::tar_read(rast1_cache_files)
+    x_raw <- readRDS("_targets/objects/rast1")
+
+    expect_s4_class(terra::rast(z[1]), "SpatRaster")
+
+    expect_snapshot(x)
+    expect_snapshot(y)
+    expect_snapshot(z)
+
+    expect_true("units" %in% names(x_raw@attributes))
+    expect_equal(terra::units(x), "m")
+    expect_true(!is.null(terra::levels(y)))
+})

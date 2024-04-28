@@ -9,7 +9,8 @@ geotargets_option_set(
   gdal_raster_driver = NULL,
   gdal_raster_creation_options = NULL,
   gdal_vector_driver = NULL,
-  gdal_vector_creation_options = NULL
+  gdal_vector_creation_options = NULL,
+  cache_dir = NULL
 )
 
 geotargets_option_get(name)
@@ -36,6 +37,11 @@ options used when writing vector files to target store (default:
 a unique set of creation options. For example, with the default \code{"GeoJSON"}
 driver:
 \url{https://gdal.org/drivers/vector/geojson.html#layer-creation-options}}
+
+\item{cache_dir}{character. Path to directory where file sources for
+\code{PackedSpatRaster} objects can be stored. Default: \code{"geotargets_cache"}
+when \code{geotargets::geotargets_option_get("cache.dir")}
+is not set.}
 
 \item{name}{character; option name to get.}
 }
