@@ -61,6 +61,8 @@ tar_terra_sprc <- function(name,
                            storage = targets::tar_option_get("storage"),
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue")) {
+  check_pkg_installed("terra")
+
   filetype <- filetype %||% "GTiff"
   gdal <- gdal %||% character(0)
 
@@ -68,7 +70,6 @@ tar_terra_sprc <- function(name,
   drv <- get_gdal_available_driver_list("raster")
   filetype <- rlang::arg_match0(filetype, drv$name)
 
-  check_pkg_installed("terra")
 
   name <- targets::tar_deparse_language(substitute(name))
 
