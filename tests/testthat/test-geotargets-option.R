@@ -25,3 +25,9 @@ test_that("geotargets_option_set() works", {
     expect_equal(geotargets_option_get("gdal_raster_driver"), "COG")
 })
 
+test_that("options aren't reset with multiple calls to geotargets_option_set()", {
+    geotargets_option_set(gdal_raster_driver = "GPKG")
+    geotargets_option_set(gdal_vector_driver = "GPKG")
+    expect_equal(geotargets_option_get("gdal_vector_driver"), "GPKG")
+    expect_equal(geotargets_option_get("gdal_raster_driver"), "GPKG")
+})

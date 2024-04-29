@@ -38,10 +38,10 @@ geotargets_option_set <- function(
 ) {
 
     options(
-        "geotargets.gdal.raster.driver" = gdal_raster_driver,
-        "geotargets.gdal.raster.creation.options" = gdal_raster_creation_options,
-        "geotargets.gdal.vector.driver" = gdal_raster_creation_options,
-        "geotargets.gdal.vector.creation.options" = gdal_raster_creation_options
+        "geotargets.gdal.raster.driver" = gdal_raster_driver %||% geotargets_option_get("gdal.raster.driver"),
+        "geotargets.gdal.raster.creation.options" = gdal_raster_creation_options %||% geotargets_option_get("gdal.raster.creation.options"),
+        "geotargets.gdal.vector.driver" = gdal_vector_driver %||% geotargets_option_get("gdal.vector.driver"),
+        "geotargets.gdal.vector.creation.options" = gdal_vector_creation_options %||% geotargets_option_get("gdal.vector.creation.options")
     )
 
 }
