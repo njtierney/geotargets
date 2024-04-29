@@ -21,7 +21,10 @@
 #'   a unique set of creation options. For example, with the default `"GeoJSON"`
 #'   driver:
 #'   <https://gdal.org/drivers/vector/geojson.html#layer-creation-options>
-#'
+#' @param cache_dir character. Path to directory where file sources for
+#'  `PackedSpatRaster` objects can be stored. Default: `"geotargets_cache"`
+#'   when `geotargets::geotargets_option_get("cache.dir")`
+#'   is not set.
 #' @details
 #' These options can also be set using `options()`.  For example,
 #' `geotargets_options_set(gdal_raster_driver = "GTiff")` is equivalent to
@@ -34,14 +37,16 @@ geotargets_option_set <- function(
         gdal_raster_driver = NULL,
         gdal_raster_creation_options = NULL,
         gdal_vector_driver = NULL,
-        gdal_vector_creation_options = NULL
+        gdal_vector_creation_options = NULL,
+        cache_dir = NULL
 ) {
 
     options(
         "geotargets.gdal.raster.driver" = gdal_raster_driver,
         "geotargets.gdal.raster.creation.options" = gdal_raster_creation_options,
         "geotargets.gdal.vector.driver" = gdal_raster_creation_options,
-        "geotargets.gdal.vector.creation.options" = gdal_raster_creation_options
+        "geotargets.gdal.vector.creation.options" = gdal_raster_creation_options,
+        "geotargets.cache.dir" = cache_dir
     )
 
 }
@@ -58,7 +63,8 @@ geotargets_option_get <- function(name) {
             "geotargets.gdal.raster.driver",
             "geotargets.gdal.raster.creation.options",
             "geotargets.gdal.vector.driver",
-            "geotargets.gdal.vector.creation.options"
+            "geotargets.gdal.vector.creation.options",
+            "geotargets.cache.dir"
         ))
 
     env_name <- gsub("\\.", "_", toupper(option_name))
