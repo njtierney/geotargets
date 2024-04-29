@@ -49,7 +49,7 @@ tar_terra_rast <- function(name,
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue")) {
     filetype <- filetype %||% "GTiff"
-    gdal <- gdal %||% "ENCODING=UTF-8"
+    gdal <- gdal %||% character(0)
 
     #check that filetype option is available
     drv <- get_gdal_available_driver_list("raster")
@@ -87,7 +87,7 @@ tar_terra_rast <- function(name,
                     path,
                     filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
                     overwrite = TRUE,
-                    gdal = Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS")
+                    gdal = strsplit(Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS", unset = ";"), ";")[[1]]
                 )
             },
             marshal = function(object) terra::wrap(object),
@@ -104,7 +104,7 @@ tar_terra_rast <- function(name,
             custom_format = targets::tar_resources_custom_format(
                 #these envvars are used in write function of format
                 envvars = c("GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
-                            "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = gdal)
+                            "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = paste0(gdal, collapse = ";"))
             )
         ),
         storage = storage,

@@ -1,6 +1,6 @@
 targets::tar_test("tar_terra_sprc() works", {
   geotargets::geotargets_option_set(
-    "raster_gdal_creation_options",
+    gdal_raster_creation_options =
     c("COMPRESS=DEFLATE", "TFW=YES")
   )
   targets::tar_script({

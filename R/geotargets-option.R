@@ -65,7 +65,7 @@ geotargets_option_get <- function(name) {
     opt <- getOption(option_name, default = Sys.getenv(env_name))
 
     #replace empty string from Sys.getenv default with NULL
-    if (opt == "") {
+    if (length(opt) == 1 && opt == "") {
         opt <- NULL
     }
     #return
