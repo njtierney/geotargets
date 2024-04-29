@@ -63,13 +63,12 @@ tar_terra_sprc <- function(name,
                            cue = targets::tar_option_get("cue")) {
   check_pkg_installed("terra")
 
-  filetype <- filetype %||% "GTiff"
   gdal <- gdal %||% character(0)
+  filetype <- filetype %||% "GTiff"
 
   # check that filetype option is available
   drv <- get_gdal_available_driver_list("raster")
   filetype <- rlang::arg_match0(filetype, drv$name)
-
 
   name <- targets::tar_deparse_language(substitute(name))
 
@@ -86,14 +85,6 @@ tar_terra_sprc <- function(name,
     envir = envir,
     tidy_eval = tidy_eval
   )
-
-  drv <- get_gdal_available_driver_list("raster")
-
-  # if not specified by user, pull the corresponding geotargets option
-  filetype <- filetype %||% geotargets_option_get("gdal.raster.driver")
-  filetype <- rlang::arg_match0(filetype, drv$name)
-
-  gdal <- gdal %||% geotargets_option_get("gdal.raster.creation.options")
 
   .write_terra_rasters_sprc <- eval(
       substitute(
