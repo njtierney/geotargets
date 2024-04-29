@@ -10,6 +10,7 @@ tar_terra_rast(
   pattern = NULL,
   filetype = geotargets_option_get("gdal.raster.driver"),
   gdal = geotargets_option_get("gdal.raster.creation.options"),
+  zipfile = FALSE,
   ...,
   tidy_eval = targets::tar_option_get("tidy_eval"),
   packages = targets::tar_option_get("packages"),
@@ -57,6 +58,10 @@ to \code{\link[terra:writeRaster]{terra::writeRaster()}}}
 
 \item{gdal}{character. GDAL driver specific datasource creation options
 passed to \code{\link[terra:writeRaster]{terra::writeRaster()}}}
+
+\item{zipfile}{logical. Should the file in the target store be a ZIP archive?
+Required for \code{filetype} formats that have sidecar files. Not all GDAL
+drivers support directly generating SOZip-enabled files. Default: \code{FALSE}.}
 
 \item{...}{Additional arguments not yet used}
 
@@ -219,6 +224,14 @@ rules that decide whether the target is up to date.}
 }
 \description{
 Provides a target format for \link[terra:SpatRaster-class]{terra::SpatRaster} objects.
+}
+\note{
+Although you may pass any supported GDAL vector driver to the
+\code{filetype} argument, not all formats are guaranteed to work with
+\code{geotargets}. At the moment, we have tested \code{GTiff} and \code{GPKG} and
+they appear to work generally. Both \code{GTiff} and \code{GPKG} rasters can be
+stored as ZIP files by setting \code{zipfile=TRUE}. To write a SOZip-enabled
+\code{GTiff} target set \code{gdal=c("STREAMABLE_OUTPUT=YES", "COMPRESS=NONE")}.
 }
 \examples{
 if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
