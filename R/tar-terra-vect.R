@@ -106,7 +106,7 @@ tar_terra_vect <- function(name,
             custom_format = targets::tar_resources_custom_format(
                 #these envvars are used in write function of format
                 envvars = c("GEOTARGETS_GDAL_VECTOR_DRIVER" = filetype,
-                            "GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS" = paste0(gdal, collapse = ";"))
+                            "GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS" = semicolon_paste(gdal))
             )
         ),
         storage = storage,
@@ -129,7 +129,7 @@ create_format_terra_vect <- function() {
                 path,
                 filetype = Sys.getenv("GEOTARGETS_GDAL_VECTOR_DRIVER"),
                 overwrite = TRUE,
-                options = strsplit(Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS", unset = ";"), ";")[[1]]
+                options = semicolon_split(Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS", unset = ";"))
             )
         },
         marshal = function(object) terra::wrap(object),
@@ -151,7 +151,7 @@ create_format_terra_vect_shz <- function() {
                 filename = paste0(path, ".shz"),
                 filetype = "ESRI Shapefile",
                 overwrite = TRUE,
-                options = strsplit(Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS", unset = ";"), ";")[[1]]
+                options = semicolon_split(Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS", unset = ";"))
             )
             file.rename(paste0(path, ".shz"), path)
         },

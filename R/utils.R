@@ -25,3 +25,12 @@ get_gdal_available_driver_list <- function(driver_type) {
     }
     drv
 }
+
+semicolon_split <- function(env_vars){
+    strsplit(env_vars, ";")[[1]]
+}
+
+semicolon_paste <- function(vec){
+    paste0(vec, collapse = ";")
+}
+
