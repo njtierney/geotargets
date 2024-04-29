@@ -31,7 +31,5 @@ targets::tar_test("tar_terra_sprc() works", {
   targets::tar_make()
   x <- targets::tar_read(raster_elevs)
   expect_s4_class(x, "SpatRasterCollection")
-  expect_snapshot(
-    x
-  )
+  expect_snapshot(x)
 })

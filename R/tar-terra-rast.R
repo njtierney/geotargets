@@ -104,7 +104,7 @@ tar_terra_rast <- function(name,
             custom_format = targets::tar_resources_custom_format(
                 #these envvars are used in write function of format
                 envvars = c("GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
-                            "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = semicolon_paste(gdal,))
+                            "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = semicolon_paste(gdal))
             )
         ),
         storage = storage,

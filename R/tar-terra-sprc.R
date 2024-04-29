@@ -86,8 +86,7 @@ tar_terra_sprc <- function(name,
     tidy_eval = tidy_eval
   )
 
-  .write_terra_rasters_sprc <- eval(
-      substitute(
+  .write_terra_rasters_sprc <-
           function(object, path) {
               for (i in seq(object)) {
                   if (i > 1) {
@@ -98,15 +97,12 @@ tar_terra_sprc <- function(name,
                   terra::writeRaster(
                       x = object[i],
                       filename = path,
-                      filetype = filetype,
+                      filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
                       overwrite = (i == 1),
-                      gdal = opt
+                      gdal = semicolon_paste(c(Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS"), opt))
                   )
               }
-          },
-          list(filetype = filetype, gdal = gdal)
-      )
-  )
+          }
 
   targets::tar_target_raw(
     name = name,
@@ -131,7 +127,7 @@ tar_terra_sprc <- function(name,
         custom_format = targets::tar_resources_custom_format(
             #these envvars are used in write function of format
             envvars = c("GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
-                        "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = gdal)
+                        "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = semicolon_paste(gdal))
         )
     ),
     storage = storage,
