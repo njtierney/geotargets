@@ -55,31 +55,6 @@ tar_stars_proxy(
   retrieval = targets::tar_option_get("retrieval"),
   cue = targets::tar_option_get("cue")
 )
-
-tar_stars_proxy(
-  name,
-  command,
-  pattern = NULL,
-  mdim = FALSE,
-  ncdf = FALSE,
-  driver = geotargets_option_get("gdal.raster.driver"),
-  options = geotargets_option_get("gdal.raster.creation.options"),
-  ...,
-  tidy_eval = targets::tar_option_get("tidy_eval"),
-  packages = targets::tar_option_get("packages"),
-  library = targets::tar_option_get("library"),
-  repository = targets::tar_option_get("repository"),
-  iteration = targets::tar_option_get("iteration"),
-  error = targets::tar_option_get("error"),
-  memory = targets::tar_option_get("memory"),
-  garbage_collection = targets::tar_option_get("garbage_collection"),
-  deployment = targets::tar_option_get("deployment"),
-  priority = targets::tar_option_get("priority"),
-  resources = targets::tar_option_get("resources"),
-  storage = targets::tar_option_get("storage"),
-  retrieval = targets::tar_option_get("retrieval"),
-  cue = targets::tar_option_get("cue")
-)
 }
 \arguments{
 \item{name}{Symbol, name of the target. A target
@@ -106,7 +81,7 @@ For example, in a pipeline with numeric vector targets \code{x} and \code{y},
 branches of \code{z} that each compute \code{x[1] + y[1]}, \code{x[2] + y[2]},
 and so on. See the user manual for details.}
 
-\item{proxy}{logical. Passed to \code{\link[stars:read_stars]{stars::read_stars()}}. If \code{TRUE} the target an object of class \code{stars_proxy}. Otherwise, the object is class \code{stars}.}
+\item{proxy}{logical. Passed to \code{\link[stars:read_stars]{stars::read_stars()}}. If \code{TRUE} the target will be read as an object of class \code{stars_proxy}. Otherwise, the object is class \code{stars}.}
 
 \item{mdim}{logical. Use the \href{https://gdal.org/user/multidim_raster_data_model.html}{Multidimensional Raster Data Model} via \code{\link[stars:mdim]{stars::write_mdim()}}? Default: \code{FALSE}. Only supported for some drivers, e.g. \code{"netCDF"} or \code{"Zarr"}.}
 
