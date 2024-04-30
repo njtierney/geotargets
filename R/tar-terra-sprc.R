@@ -99,7 +99,7 @@ tar_terra_sprc <- function(name,
                       filename = path,
                       filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
                       overwrite = (i == 1),
-                      gdal = geotargets:::semicolon_paste(c(Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS"), opt))
+                      gdal = opt
                   )
               }
           }
