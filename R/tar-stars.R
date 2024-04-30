@@ -4,7 +4,7 @@
 #'
 #' @param driver character. File format expressed as GDAL driver names passed to [stars::write_stars()]. See [sf::st_drivers()].
 #' @param options character. GDAL driver specific datasource creation options passed to [stars::write_stars()]
-#' @param proxy logical. Passed to [stars::read_stars()]. If `TRUE` the target an object of class `stars_proxy`. Otherwise, the object is class `stars`.
+#' @param proxy logical. Passed to [stars::read_stars()]. If `TRUE` the target will be read as an object of class `stars_proxy`. Otherwise, the object is class `stars`.
 #' @param mdim logical. Use the [Multidimensional Raster Data Model](https://gdal.org/user/multidim_raster_data_model.html) via [stars::write_mdim()]? Default: `FALSE`. Only supported for some drivers, e.g. `"netCDF"` or `"Zarr"`.
 #' @param ncdf logical. Use the NetCDF library directly to read data via [stars::read_ncdf()]? Default: `FALSE`. Only supported for `driver="netCDF"`.
 #' @param ... Additional arguments not yet used
