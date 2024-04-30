@@ -3,6 +3,7 @@
 \name{tar_stars}
 \alias{tar_stars}
 \alias{tar_stars_proxy}
+\alias{tar_stars_raw}
 \title{Create a stars \emph{stars} Target}
 \usage{
 tar_stars(
@@ -35,6 +36,32 @@ tar_stars_proxy(
   name,
   command,
   pattern = NULL,
+  mdim = FALSE,
+  ncdf = FALSE,
+  driver = geotargets_option_get("gdal.raster.driver"),
+  options = geotargets_option_get("gdal.raster.creation.options"),
+  ...,
+  tidy_eval = targets::tar_option_get("tidy_eval"),
+  packages = targets::tar_option_get("packages"),
+  library = targets::tar_option_get("library"),
+  repository = targets::tar_option_get("repository"),
+  iteration = targets::tar_option_get("iteration"),
+  error = targets::tar_option_get("error"),
+  memory = targets::tar_option_get("memory"),
+  garbage_collection = targets::tar_option_get("garbage_collection"),
+  deployment = targets::tar_option_get("deployment"),
+  priority = targets::tar_option_get("priority"),
+  resources = targets::tar_option_get("resources"),
+  storage = targets::tar_option_get("storage"),
+  retrieval = targets::tar_option_get("retrieval"),
+  cue = targets::tar_option_get("cue")
+)
+
+tar_stars_raw(
+  name,
+  command,
+  pattern = NULL,
+  proxy,
   mdim = FALSE,
   ncdf = FALSE,
   driver = geotargets_option_get("gdal.raster.driver"),

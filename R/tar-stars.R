@@ -70,20 +70,17 @@ tar_stars <- function(name,
         tidy_eval = tidy_eval
     )
 
-    targets::tar_target_raw(
+    tar_stars_raw(
         name = name,
         command = command,
         pattern = pattern,
+        proxy = proxy,
+        mdim = mdim,
+        ncdf = ncdf,
+        driver = driver,
+        options = options,
         packages = packages,
         library = library,
-        format = create_format_stars(
-            driver = driver,
-            options = options,
-            proxy = proxy,
-            mdim = mdim,
-            ncdf = ncdf,
-            ...
-        ),
         repository = repository,
         iteration = iteration,
         error = error,
@@ -123,7 +120,7 @@ tar_stars_proxy <- function(name,
                             retrieval = targets::tar_option_get("retrieval"),
                             cue = targets::tar_option_get("cue")) {
 
-    rlang::check_installed("stars")
+    check_pkg_installed("stars")
 
     name <- targets::tar_deparse_language(substitute(name))
 
@@ -141,20 +138,18 @@ tar_stars_proxy <- function(name,
         tidy_eval = tidy_eval
     )
 
-    targets::tar_target_raw(
+    tar_stars_raw(
         name = name,
         command = command,
         pattern = pattern,
+        proxy = TRUE,
+        mdim = mdim,
+        ncdf = ncdf,
+        driver = driver,
+        options = options,
+        ...,
         packages = packages,
         library = library,
-        format = create_format_stars(
-            driver = driver,
-            options = options,
-            proxy = TRUE,
-            mdim = mdim,
-            ncdf = ncdf,
-            ...
-        ),
         repository = repository,
         iteration = iteration,
         error = error,
@@ -169,52 +164,123 @@ tar_stars_proxy <- function(name,
     )
 }
 
-create_format_stars <- function(driver, options, proxy, mdim, ncdf, ...) {
+
+#' tar_stars method with no tidy eval etc.
+#' @noRd
+tar_stars_raw <- function(name,
+                          command,
+                          pattern = NULL,
+                          proxy,
+                          mdim = FALSE,
+                          ncdf = FALSE,
+                          driver = geotargets_option_get("gdal.raster.driver"),
+                          options = geotargets_option_get("gdal.raster.creation.options"),
+                          ...,
+                          tidy_eval = targets::tar_option_get("tidy_eval"),
+                          packages = targets::tar_option_get("packages"),
+                          library = targets::tar_option_get("library"),
+                          repository = targets::tar_option_get("repository"),
+                          iteration = targets::tar_option_get("iteration"),
+                          error = targets::tar_option_get("error"),
+                          memory = targets::tar_option_get("memory"),
+                          garbage_collection = targets::tar_option_get("garbage_collection"),
+                          deployment = targets::tar_option_get("deployment"),
+                          priority = targets::tar_option_get("priority"),
+                          resources = targets::tar_option_get("resources"),
+                          storage = targets::tar_option_get("storage"),
+                          retrieval = targets::tar_option_get("retrieval"),
+                          cue = targets::tar_option_get("cue")) {
 
     driver <- driver %||% "GTiff"
     options <- options %||% character(0)
 
-    # get list of drivers available for writing depending on what the user's GDAL supports
+    # get drivers available for writing (depends on user's GDAL build)
     drv <- sf::st_drivers(what = "raster")
     drv <- drv[drv$write, ]
 
     driver <- rlang::arg_match0(driver, drv$name)
 
-    READ_FUN <- "stars::read_stars"
-    WRITE_FUN <- "stars::write_stars"
+    .read_stars <- eval(substitute(
+        function(path) {
 
-    if (mdim) {
-        READ_FUN <- "stars::read_mdim"
-        WRITE_FUN <- "stars::write_mdim"
-    }
+        ## TODO: it appears envvar custom resources do not work in read function?
+        READ_FUN <- stars::read_stars
+        #  mdim <- as.logical(Sys.getenv("GEOTARGETS_GDAL_RASTER_MDIM", unset = FALSE))
+        print(mdim)
+        if (mdim) {
+            READ_FUN <- stars::read_mdim
+        }
 
-    if (ncdf && requireNamespace("ncmeta")) {
-        READ_FUN <- "stars::read_ncdf"
-    }
+        # ncdf <- as.logical(Sys.getenv("GEOTARGETS_USE_NCMETA", unset = FALSE))
+        print(ncdf)
+        if (ncdf && requireNamespace("ncmeta")) {
+            READ_FUN <- stars::read_ncdf
+        }
 
-    .read_stars <- eval(substitute(function(path) {
-        FUN(path, proxy = proxy)
-    }, list(FUN = str2lang(READ_FUN),
-            proxy = proxy)))
+        # proxy <- as.logical(Sys.getenv("GEOTARGETS_PROXY", unset = FALSE))
+        print(proxy)
+        READ_FUN(path, proxy = proxy)
+
+    }, list(ncdf = ncdf, mdim = mdim, proxy = proxy)))
 
     # TODO: should multidimensional array use the same `options` as 2D?
-    .write_stars <- eval(substitute(function(object, path) {
-        FUN(
+    .write_stars <- function(object, path) {
+
+        WRITE_FUN <- stars::write_stars
+
+        mdim <- as.logical(Sys.getenv("GEOTARGETS_GDAL_RASTER_MDIM",
+                                      unset = FALSE))
+        if (mdim) {
+            WRITE_FUN <- stars::write_mdim
+        }
+
+        dr <- Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER")
+
+        # stars requires character(0), not "", for no options set
+        co <- Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS")
+        co2 <- strsplit(co, ";")[[1]]
+
+        WRITE_FUN(
             object,
             path,
-            driver = driver,
             overwrite = TRUE,
-            options = options
+            driver = dr,
+            options = co
         )
-    }, list(FUN = str2lang(WRITE_FUN),
-            driver = driver,
-            options = options)))
+    }
 
-    targets::tar_format(
-        read = .read_stars,
-        write = .write_stars,
-        marshal = function(object) object, # Not currently used
-        unmarshal = function(object) object
+    targets::tar_target_raw(
+        name = name,
+        command = command,
+        pattern = pattern,
+        packages = packages,
+        library = library,
+        format = targets::tar_format(
+            read = .read_stars,
+            write = .write_stars,
+            marshal = function(object) object, # Not currently used
+            unmarshal = function(object) object
+        ),
+        repository = repository,
+        iteration = iteration,
+        error = error,
+        memory = memory,
+        garbage_collection = garbage_collection,
+        deployment = deployment,
+        priority = priority,
+        resources = targets::tar_resources(
+            custom_format = targets::tar_resources_custom_format(
+                #these envvars are used in read and write functions of format
+                envvars = c("GEOTARGETS_GDAL_RASTER_DRIVER" = driver,
+                            "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" =
+                                paste0(options, collapse = ";"),
+                            "GEOTARGETS_GDAL_RASTER_MDIM" = mdim,
+                            "GEOTARGETS_PROXY" = proxy,
+                            "GEOTARGETS_USE_NCMETA" = ncdf)
+            )
+        ),
+        storage = storage,
+        retrieval = retrieval,
+        cue = cue
     )
 }
-

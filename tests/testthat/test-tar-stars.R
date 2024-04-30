@@ -3,7 +3,7 @@
 skip_if_not_installed("stars")
 
 targets::tar_test("tar_stars() works", {
-  geotargets::geotargets_option_set("gdal.raster.creation_options", c("COMPRESS=DEFLATE", "TFW=YES"))
+  geotargets::geotargets_option_set(gdal_raster_creation_options = c("COMPRESS=DEFLATE", "TFW=YES"))
   targets::tar_script({
     list(geotargets::tar_stars(
       test_stars,
@@ -19,11 +19,11 @@ targets::tar_test("tar_stars() works", {
 })
 
 targets::tar_test("tar_stars_proxy() works", {
-  geotargets::geotargets_option_set("gdal.raster.creation_options", c("COMPRESS=DEFLATE", "TFW=YES"))
+  geotargets::geotargets_option_set(gdal_raster_creation_options = c("COMPRESS=DEFLATE", "TFW=YES"))
   targets::tar_script({
     list(geotargets::tar_stars_proxy(
       test_stars_proxy,
-      stars::read_stars(system.file("tif", "olinda_dem_utm25s.tif", package = "stars"), proxy = TRUE)
+      stars::read_stars(system.file("tif", "olinda_dem_utm25s.tif", package = "stars"))
     ))
   })
   targets::tar_make()
@@ -32,13 +32,12 @@ targets::tar_test("tar_stars_proxy() works", {
   expect_snapshot(
     x
   )
-  geotargets::geotargets_option_set("stars.proxy", FALSE) # go back to default
 })
 
 
 targets::tar_test("tar_stars(mdim=TRUE) works", {
   targets::tar_script({
-    geotargets::geotargets_option_set("gdal.raster.driver", "netCDF")
+    geotargets::geotargets_option_set(gdal_raster_driver = "netCDF")
     list(geotargets::tar_stars(test_stars_mdim, {
       set.seed(135)
       m <- matrix(runif(10), 2, 5)
@@ -48,7 +47,7 @@ targets::tar_test("tar_stars(mdim=TRUE) works", {
       s <- stars::st_as_stars(list(Precipitation = m)) |>
             stars::st_set_dimensions(1, values = pts) |>
             stars::st_set_dimensions(2, values = times)
-    }, driver = "netCDF", mdim = TRUE))
+    }, mdim = TRUE))
   })
 
   targets::tar_make()
