@@ -19,7 +19,7 @@ coverage](https://codecov.io/gh/njtierney/geotargets/branch/master/graph/badge.s
 as rasters and vectors (e.g., shapefiles).
 
 A relatively common gotcha moment when using popular libraries like
-`terra` with targets is running into erros with read and write. Due to
+`terra` with targets is running into errors with read and write. Due to
 the limitations that come with the underlying C++ implementation in the
 `terra` library, there are specific ways to write and read these
 objects. See `?terra` for details. `geotargets` helps handle these write
@@ -55,17 +55,19 @@ breaking ways.
 
 # Examples
 
-Below we show three examples of target factories:
+Below we show four examples of target factories:
 
 - `tar_terra_rast()`
 - `tar_terra_vect()`
 - `tar_terra_sprc()`
+- `tar_stars()`
 
 You would use these in place of `tar_target()` in your targets pipeline,
-when you are doing work with terra raster or terra vector data.
+when you are doing work with objects from the terra or stars packages
+such as SpatRaster, SpatVector, SpatRasterCollection, stars, or
+stars_proxy.
 
-It is a bit tricky to implement targets workflows in a README, but if
-you would like to see and download working examples for yourself, see
+If you would like to see and download working examples for yourself, see
 the repo,
 [demo-geotargets](https://github.com/njtierney/demo-geotargets).
 
@@ -73,21 +75,39 @@ the repo,
 
 ``` r
 library(targets)
+
 tar_dir({ # tar_dir() runs code from a temporary directory.
   tar_script({
-    library(targets)
     library(geotargets)
+    
+    get_elev <- function() {
+        terra::rast(system.file("ex", "elev.tif", package = "terra"))
+    }
+    
     list(
       tar_terra_rast(
         terra_rast_example,
-        system.file("ex/elev.tif", package = "terra") |> terra::rast()
+        get_elev()
       )
     )
   })
+  
   tar_make()
   x <- tar_read(terra_rast_example)
   x
 })
+#> ▶ dispatched target terra_rast_example
+#> ● completed target terra_rast_example [0.007 seconds]
+#> ▶ ended pipeline [0.15 seconds]
+#> class       : SpatRaster 
+#> dimensions  : 90, 95, 1  (nrow, ncol, nlyr)
+#> resolution  : 0.008333333, 0.008333333  (x, y)
+#> extent      : 5.741667, 6.533333, 49.44167, 50.19167  (xmin, xmax, ymin, ymax)
+#> coord. ref. : lon/lat WGS 84 (EPSG:4326) 
+#> source      : terra_rast_example 
+#> name        : elevation 
+#> min value   :       141 
+#> max value   :       547
 ```
 
 ## `tar_terra_vect()`: targets with terra vectors
@@ -96,14 +116,13 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
 tar_dir({ # tar_dir() runs code from a temporary directory.
   tar_script({
     library(geotargets)
+    
     lux_area <- function(projection = "EPSG:4326") {
-      terra::project(
-        terra::vect(system.file("ex", "lux.shp",
-          package = "terra"
-        )),
-        projection
-      )
+      terra::project(terra::vect(system.file("ex", "lux.shp",
+                                             package = "terra")),
+                     projection)
     }
+    
     list(
       tar_terra_vect(
         terra_vect_example,
@@ -111,29 +130,47 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
       )
     )
   })
+  
   tar_make()
   x <- tar_read(terra_vect_example)
   x
 })
+#> ▶ dispatched target terra_vect_example
+#> ● completed target terra_vect_example [0.027 seconds]
+#> ▶ ended pipeline [0.127 seconds]
+#>  class       : SpatVector 
+#>  geometry    : polygons 
+#>  dimensions  : 12, 6  (geometries, attributes)
+#>  extent      : 5.74414, 6.528252, 49.44781, 50.18162  (xmin, xmax, ymin, ymax)
+#>  source      : terra_vect_example
+#>  coord. ref. : lon/lat WGS 84 (EPSG:4326) 
+#>  names       :  ID_1   NAME_1  ID_2   NAME_2  AREA   POP
+#>  type        : <num>    <chr> <num>    <chr> <num> <int>
+#>  values      :     1 Diekirch     1 Clervaux   312 18081
+#>                    1 Diekirch     2 Diekirch   218 32543
+#>                    1 Diekirch     3  Redange   259 18664
 ```
 
 ## `tar_terra_sprc()`: targets with terra raster collections
 
 ``` r
-targets::tar_dir({ # tar_dir() runs code from a temporary directory.
-  library(geotargets)
-  targets::tar_script({
+tar_dir({ # tar_dir() runs code from a temporary directory.
+  tar_script({
+    
+    library(geotargets)
+    
     elev_scale <- function(z = 1, projection = "EPSG:4326") {
       terra::project(
         terra::rast(system.file("ex", "elev.tif", package = "terra")) * z,
         projection
       )
     }
+    
     list(
       tar_terra_sprc(
         raster_elevs,
         # two rasters, one unaltered, one scaled by factor of 2 and
-        # reprojected to interrupted good homolosine
+        # reprojected to interrupted goode homolosine
         command = terra::sprc(list(
           elev_scale(1),
           elev_scale(2, "+proj=igh")
@@ -141,9 +178,60 @@ targets::tar_dir({ # tar_dir() runs code from a temporary directory.
       )
     )
   })
-  targets::tar_make()
-  x <- targets::tar_read(raster_elevs)
+  
+  tar_make()
+  x <- tar_read(raster_elevs)
+  x
 })
+#> ▶ dispatched target raster_elevs
+#> ● completed target raster_elevs [0.14 seconds]
+#> ▶ ended pipeline [0.29 seconds]
+#> Warning message:
+#> [rast] skipped sub-datasets (see 'describe(sds=TRUE)'):
+#> /tmp/RtmpZRJR3w/targets_788293366c7ea/_targets/scratch/raster_elevs
+#> class       : SpatRasterCollection 
+#> length      : 2 
+#> nrow        : 90, 115 
+#> ncol        : 95, 114 
+#> nlyr        :  1,   1 
+#> extent      : 5.741667, 1558890, 49.44167, 5556741  (xmin, xmax, ymin, ymax)
+#> crs (first) : lon/lat WGS 84 (EPSG:4326) 
+#> names       : raster_elevs, raster_elevs
+```
+
+## `tar_stars()`: targets with stars objects
+
+``` r
+tar_dir({ # tar_dir() runs code from a temporary directory.
+  tar_script({
+    library(geotargets)
+    
+    list(
+      tar_stars(
+        test_stars,
+        stars::read_stars(system.file("tif", "olinda_dem_utm25s.tif", package = "stars"))
+      )
+    )
+  })
+  
+  tar_make()
+  x <- tar_read(test_stars)
+  x
+})
+#> ▶ dispatched target test_stars
+#> ● completed target test_stars [0.033 seconds]
+#> ▶ ended pipeline [0.123 seconds]
+#> Warning message:
+#> In CPL_write_gdal(mat, file, driver, options, type, dims, from,  :
+#>   GDAL Message 6: creation option '' is not formatted with the key=value format
+#> stars object with 2 dimensions and 1 attribute
+#> attribute(s):
+#>             Min. 1st Qu. Median     Mean 3rd Qu. Max.
+#> test_stars    -1       6     12 21.66521      35   88
+#> dimension(s):
+#>   from  to  offset  delta                       refsys point x/y
+#> x    1 111  288776  89.99 UTM Zone 25, Southern Hem... FALSE [x]
+#> y    1 111 9120761 -89.99 UTM Zone 25, Southern Hem... FALSE [y]
 ```
 
 ## Code of Conduct
