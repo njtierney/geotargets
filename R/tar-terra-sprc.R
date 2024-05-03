@@ -61,14 +61,14 @@ tar_terra_sprc <- function(name,
                            storage = targets::tar_option_get("storage"),
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue")) {
-  filetype <- filetype %||% "GTiff"
+  check_pkg_installed("terra")
+
   gdal <- gdal %||% character(0)
+  filetype <- filetype %||% "GTiff"
 
   # check that filetype option is available
   drv <- get_gdal_available_driver_list("raster")
   filetype <- rlang::arg_match0(filetype, drv$name)
-
-  check_pkg_installed("terra")
 
   name <- targets::tar_deparse_language(substitute(name))
 
@@ -86,16 +86,7 @@ tar_terra_sprc <- function(name,
     tidy_eval = tidy_eval
   )
 
-  drv <- get_gdal_available_driver_list("raster")
-
-  # if not specified by user, pull the corresponding geotargets option
-  filetype <- filetype %||% geotargets_option_get("gdal.raster.driver")
-  filetype <- rlang::arg_match0(filetype, drv$name)
-
-  gdal <- gdal %||% geotargets_option_get("gdal.raster.creation.options")
-
-  .write_terra_rasters_sprc <- eval(
-      substitute(
+  .write_terra_rasters_sprc <-
           function(object, path) {
               for (i in seq(object)) {
                   if (i > 1) {
@@ -106,15 +97,12 @@ tar_terra_sprc <- function(name,
                   terra::writeRaster(
                       x = object[i],
                       filename = path,
-                      filetype = filetype,
+                      filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
                       overwrite = (i == 1),
                       gdal = opt
                   )
               }
-          },
-          list(filetype = filetype, gdal = gdal)
-      )
-  )
+          }
 
   targets::tar_target_raw(
     name = name,
@@ -138,8 +126,12 @@ tar_terra_sprc <- function(name,
     resources = targets::tar_resources(
         custom_format = targets::tar_resources_custom_format(
             #these envvars are used in write function of format
-            envvars = c("GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
-                        "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = gdal)
+            envvars = c(
+                "GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
+                "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = (
+                    paste0(gdal, collapse = ";")
+                    )
+            )
         )
     ),
     storage = storage,

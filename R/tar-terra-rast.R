@@ -87,7 +87,10 @@ tar_terra_rast <- function(name,
                     path,
                     filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
                     overwrite = TRUE,
-                    gdal = strsplit(Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS", unset = ";"), ";")[[1]]
+                    gdal = strsplit(
+                        Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
+                                   unset = ";"),
+                        ";")[[1]]
                 )
             },
             marshal = function(object) terra::wrap(object),
@@ -103,8 +106,12 @@ tar_terra_rast <- function(name,
         resources = targets::tar_resources(
             custom_format = targets::tar_resources_custom_format(
                 #these envvars are used in write function of format
-                envvars = c("GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
-                            "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = paste0(gdal, collapse = ";"))
+                envvars = c(
+                    "GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
+                    "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = (
+                        paste0(gdal, collapse = ";")
+                        )
+                    )
             )
         ),
         storage = storage,
