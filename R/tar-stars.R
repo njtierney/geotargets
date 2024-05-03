@@ -52,7 +52,7 @@ tar_stars <- function(name,
                       retrieval = targets::tar_option_get("retrieval"),
                       cue = targets::tar_option_get("cue")) {
 
-    rlang::check_installed("stars")
+    check_pkg_installed("stars")
 
     name <- targets::tar_deparse_language(substitute(name))
 

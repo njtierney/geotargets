@@ -7,7 +7,7 @@ NULL
 
 # clear CRAN checks spotting floating global variables
 #' @importFrom utils globalVariables
-#' @importFrom rlang %||% arg_match0 is_installed check_installed
+#' @importFrom rlang %||%
 utils::globalVariables(
   c(
     "packages"
