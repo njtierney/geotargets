@@ -16,6 +16,25 @@ targets::tar_test("tar_terra_rast() works", {
     )
 })
 
+targets::tar_test("tar_terra_rast() works with multiple workers (tests marshaling/unmarshaling)", {
+    targets::tar_script({
+        targets::tar_option_set(controller = crew::crew_controller_local(workers = 2))
+        list(
+            geotargets::tar_terra_rast(
+                rast1,
+                terra::rast(system.file("ex/elev.tif", package = "terra"))
+            ),
+            geotargets::tar_terra_rast(
+                rast2,
+                terra::rast(system.file("ex/elev.tif", package = "terra"))
+            )
+        )
+    })
+    targets::tar_make()
+    expect_true(all(is.na(targets::tar_meta()$error)))
+    expect_s4_class(targets::tar_read(rast1), "SpatRaster")
+})
+
 targets::tar_test("tar_terra_vect() works", {
     targets::tar_script({
         lux_area <- function(projection = "EPSG:4326") {
@@ -47,3 +66,23 @@ targets::tar_test("tar_terra_vect() works", {
     expect_snapshot(y)
     expect_equal(terra::values(x), terra::values(y))
 })
+
+targets::tar_test("tar_terra_vect() works with multiple workers (tests marshaling/unmarshaling)", {
+    targets::tar_script({
+        targets::tar_option_set(controller = crew::crew_controller_local(workers = 2))
+        list(
+            geotargets::tar_terra_vect(
+                vect1,
+                terra::vect(system.file("ex", "lux.shp", package = "terra"))
+            ),
+            geotargets::tar_terra_vect(
+                vect2,
+                terra::vect(system.file("ex", "lux.shp", package = "terra"))
+            )
+        )
+    })
+    targets::tar_make()
+    expect_true(all(is.na(targets::tar_meta()$error)))
+    expect_s4_class(targets::tar_read(vect1), "SpatVector")
+})
+
