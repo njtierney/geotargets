@@ -36,10 +36,11 @@ Imports:
     rlang,
     cli
 Suggests: 
+    crew,
+    terra,
     sf,
     stars,
     ncmeta,
-    terra,
     testthat (>= 3.0.0),
     withr
 Config/testthat/edition: 3

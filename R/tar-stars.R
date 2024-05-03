@@ -206,19 +206,16 @@ tar_stars_raw <- function(name,
         ## TODO: it appears envvar custom resources do not work in read function?
         READ_FUN <- stars::read_stars
         #  mdim <- as.logical(Sys.getenv("GEOTARGETS_GDAL_RASTER_MDIM", unset = FALSE))
-        print(mdim)
         if (mdim) {
             READ_FUN <- stars::read_mdim
         }
 
         # ncdf <- as.logical(Sys.getenv("GEOTARGETS_USE_NCMETA", unset = FALSE))
-        print(ncdf)
         if (ncdf && requireNamespace("ncmeta")) {
             READ_FUN <- stars::read_ncdf
         }
 
         # proxy <- as.logical(Sys.getenv("GEOTARGETS_PROXY", unset = FALSE))
-        print(proxy)
         READ_FUN(path, proxy = proxy)
 
     }, list(ncdf = ncdf, mdim = mdim, proxy = proxy)))
