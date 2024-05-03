@@ -126,8 +126,12 @@ tar_terra_sprc <- function(name,
     resources = targets::tar_resources(
         custom_format = targets::tar_resources_custom_format(
             #these envvars are used in write function of format
-            envvars = c("GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
-                        "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = geotargets:::semicolon_paste(gdal))
+            envvars = c(
+                "GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
+                "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = (
+                    paste0(gdal, collapse = ";")
+                    )
+            )
         )
     ),
     storage = storage,
