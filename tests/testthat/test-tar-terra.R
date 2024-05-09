@@ -87,3 +87,24 @@ targets::tar_test("tar_terra_vect() works with multiple workers (tests marshalin
     expect_s4_class(targets::tar_read(vect1), "SpatVector")
 })
 
+targets::tar_test("user resources are passed correctly", {
+    persistent <- crew_controller_local(name = "persistent")
+    transient <- crew_controller_local(name = "transient", tasks_max = 1L)
+    targets::tar_option_set(
+        controller = crew_controller_group(persistent, transient),
+        resources = tar_resources(
+            crew = tar_resources_crew(controller = "transient")
+        ))
+    testthat::expect_equal(
+        tar_terra_rast(x, 1)$settings$resources$crew,
+        tar_resources_crew(controller = "transient")
+    )
+    testthat::expect_equal(
+        tar_terra_rast(
+            x, 1,
+            resources = tar_resources(crew = tar_resources_crew(controller = "persistent"))
+        )$settings$resources$crew,
+        tar_resources_crew(controller = "persistent")
+    )
+})
+
