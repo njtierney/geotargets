@@ -128,7 +128,7 @@ tar_terra_sprc <- function(name,
     deployment = deployment,
     priority = priority,
     resources = targets::tar_resources(
-        custom_format = modifyList(
+        custom_format = utils::modifyList(
             targets::tar_resources_custom_format(
                 #these envvars are used in write function of format
                 envvars = c(
