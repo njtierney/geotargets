@@ -1,4 +1,5 @@
 # test_that() #Included to make RStudio recognize this file as a test
+library(targets)
 targets::tar_test("tar_terra_rast() works", {
     # geotargets::geotargets_option_set(gdal_raster_creation_options = c("COMPRESS=DEFLATE", "TFW=YES"))
     targets::tar_script({
@@ -102,6 +103,20 @@ targets::tar_test("user resources are passed correctly", {
     )
     testthat::expect_equal(
         tar_terra_rast(
+            x, 1,
+            resources = tar_resources(crew = tar_resources_crew(controller = "persistent"))
+        )$settings$resources$crew,
+        tar_resources_crew(controller = "persistent")
+    )
+    testthat::expect_equal(
+        tar_terra_vect(
+            x, 1,
+            resources = tar_resources(crew = tar_resources_crew(controller = "persistent"))
+        )$settings$resources$crew,
+        tar_resources_crew(controller = "persistent")
+    )
+    testthat::expect_equal(
+        tar_terra_sprc(
             x, 1,
             resources = tar_resources(crew = tar_resources_crew(controller = "persistent"))
         )$settings$resources$crew,
