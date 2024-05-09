@@ -127,9 +127,9 @@ tar_terra_sprc <- function(name,
     garbage_collection = garbage_collection,
     deployment = deployment,
     priority = priority,
-    resources = targets::tar_resources(
-        custom_format = utils::modifyList(
-            targets::tar_resources_custom_format(
+    resources = utils::modifyList(
+        targets::tar_resources(
+            custom_format = targets::tar_resources_custom_format(
                 #these envvars are used in write function of format
                 envvars = c(
                     "GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
