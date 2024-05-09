@@ -66,6 +66,11 @@ tar_terra_vect <- function(name,
 
     check_pkg_installed("terra")
 
+    #ensure that user-passed `resources` doesn't include `custom_format`
+    if ("custom_format" %in% names(resources)) {
+        stop("`custom_format` cannot be supplied to targets created with `tar_terra_vect()`")
+    }
+
     name <- targets::tar_deparse_language(substitute(name))
 
     envir <- targets::tar_option_get("envir")
@@ -103,16 +108,17 @@ tar_terra_vect <- function(name,
         deployment = deployment,
         priority = priority,
         resources = targets::tar_resources(
-            custom_format = targets::tar_resources_custom_format(
-                #these envvars are used in write function of format
-                envvars = c(
-                    "GEOTARGETS_GDAL_VECTOR_DRIVER" = filetype,
-                    "GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS" = (
-                        paste0(gdal, collapse = ";")
+            custom_format = modifyList(
+                targets::tar_resources_custom_format(
+                    #these envvars are used in write function of format
+                    envvars = c(
+                        "GEOTARGETS_GDAL_VECTOR_DRIVER" = filetype,
+                        "GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS" = (
+                            paste0(gdal, collapse = ";")
                         )
+                    )
                 )
-            )
-        ),
+            ), resources),
         storage = storage,
         retrieval = retrieval,
         cue = cue
