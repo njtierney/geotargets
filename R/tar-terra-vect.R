@@ -68,7 +68,7 @@ tar_terra_vect <- function(name,
 
     #ensure that user-passed `resources` doesn't include `custom_format`
     if ("custom_format" %in% names(resources)) {
-        stop("`custom_format` cannot be supplied to targets created with `tar_terra_vect()`")
+        cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_vect}")
     }
 
     name <- targets::tar_deparse_language(substitute(name))

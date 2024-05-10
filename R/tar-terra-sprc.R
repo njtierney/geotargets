@@ -64,7 +64,7 @@ tar_terra_sprc <- function(name,
   check_pkg_installed("terra")
     #ensure that user-passed `resources` doesn't include `custom_format`
     if ("custom_format" %in% names(resources)) {
-        stop("`custom_format` cannot be supplied to targets created with `tar_terra_sprc()`")
+        cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_sprc}")
     }
 
   gdal <- gdal %||% character(0)
