@@ -275,7 +275,7 @@ tar_stars_raw <- function(name,
                             "GEOTARGETS_PROXY" = proxy,
                             "GEOTARGETS_USE_NCMETA" = ncdf)
             )
-        ), resources)
+        ), resources),
         storage = storage,
         retrieval = retrieval,
         cue = cue
