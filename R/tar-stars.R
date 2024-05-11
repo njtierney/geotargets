@@ -265,7 +265,7 @@ tar_stars_raw <- function(name,
         garbage_collection = garbage_collection,
         deployment = deployment,
         priority = priority,
-        resources = targets::tar_resources(
+        resources = utils::modifyList(targets::tar_resources(
             custom_format = targets::tar_resources_custom_format(
                 #these envvars are used in read and write functions of format
                 envvars = c("GEOTARGETS_GDAL_RASTER_DRIVER" = driver,
@@ -275,7 +275,7 @@ tar_stars_raw <- function(name,
                             "GEOTARGETS_PROXY" = proxy,
                             "GEOTARGETS_USE_NCMETA" = ncdf)
             )
-        ),
+        ), resources)
         storage = storage,
         retrieval = retrieval,
         cue = cue
