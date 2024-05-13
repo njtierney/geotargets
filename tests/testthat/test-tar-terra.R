@@ -1,4 +1,5 @@
 # test_that() #Included to make RStudio recognize this file as a test
+library(targets)
 targets::tar_test("tar_terra_rast() works", {
     # geotargets::geotargets_option_set(gdal_raster_creation_options = c("COMPRESS=DEFLATE", "TFW=YES"))
     targets::tar_script({
@@ -85,5 +86,41 @@ targets::tar_test("tar_terra_vect() works with multiple workers (tests marshalin
     targets::tar_make()
     expect_true(all(is.na(targets::tar_meta()$error)))
     expect_s4_class(targets::tar_read(vect1), "SpatVector")
+})
+
+targets::tar_test("user resources are passed correctly", {
+    library(crew)
+    persistent <- crew::crew_controller_local(name = "persistent")
+    transient  <- crew::crew_controller_local(name = "transient", tasks_max = 1L)
+    targets::tar_option_set(
+        controller = crew::crew_controller_group(persistent, transient),
+        resources = tar_resources(
+            crew = tar_resources_crew(controller = "transient")
+        ))
+    testthat::expect_equal(
+        tar_terra_rast(x, 1)$settings$resources$crew,
+        tar_resources_crew(controller = "transient")
+    )
+    testthat::expect_equal(
+        tar_terra_rast(
+            x, 1,
+            resources = tar_resources(crew = tar_resources_crew(controller = "persistent"))
+        )$settings$resources$crew,
+        tar_resources_crew(controller = "persistent")
+    )
+    testthat::expect_equal(
+        tar_terra_vect(
+            x, 1,
+            resources = tar_resources(crew = tar_resources_crew(controller = "persistent"))
+        )$settings$resources$crew,
+        tar_resources_crew(controller = "persistent")
+    )
+    testthat::expect_equal(
+        tar_terra_sprc(
+            x, 1,
+            resources = tar_resources(crew = tar_resources_crew(controller = "persistent"))
+        )$settings$resources$crew,
+        tar_resources_crew(controller = "persistent")
+    )
 })
 
