@@ -1,4 +1,4 @@
-# geotargets 0.0.0.9000 (development version)
+# geotargets 0.1.0 (14 May 2024)
 
 * Created `tar_terra_rast()` and `tar_terra_vect()` for targets that create `SpatRaster` and `SpatVector` objects, respectively
 * Created `tar_terra_sprc()` that creates a `SpatRasterCollection` object.
