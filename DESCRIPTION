@@ -1,5 +1,5 @@
 Package: geotargets
-Title: Targets extensions for geospatial formats
+Title: 'Targets' Extensions for Geospatial Formats
 Version: 0.1.0
 Authors@R: c(
     person(
@@ -23,9 +23,9 @@ Authors@R: c(
     )
     )
 Description: Provides extensions for various geospatial file formats, 
-  such as shapefiles and rasters. See the vignettes for worked 
-  examples and demonstrations and explanations of how to use the various
-  package extensions.
+  such as shapefiles and rasters. Currently provides support for the 'terra'
+  geospatial formats. See the vignettes for worked examples, demonstrations, 
+  and explanations of how to use the various package extensions.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Language: en-GB
