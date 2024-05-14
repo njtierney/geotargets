@@ -15,16 +15,34 @@ Targetopia](https://img.shields.io/badge/R_Targetopia-member-blue?style=flat&lab
 coverage](https://codecov.io/gh/njtierney/geotargets/branch/master/graph/badge.svg)](https://app.codecov.io/gh/njtierney/geotargets?branch=master)
 <!-- badges: end -->
 
-`geotargets` extends targets to work with geospatial data formats, such
-as rasters and vectors (e.g., shapefiles).
+`geotargets` extends [`targets`](https://github.com/ropensci/targets) to
+work with geospatial data formats, such as rasters and vectors (e.g.,
+shapefiles). Currently we support raster and vector formats for the
+[`terra`](https://github.com/rspatial/terra) package
 
-A relatively common gotcha moment when using popular libraries like
-`terra` with targets is running into erros with read and write. Due to
-the limitations that come with the underlying C++ implementation in the
-`terra` library, there are specific ways to write and read these
-objects. See `?terra` for details. `geotargets` helps handle these write
-and read steps, so you don’t have to worry about them and can use
-targets as you are used to.
+## Installation
+
+You can install the development version of geotargets like so:
+
+``` r
+install.packages("geotargets", repos = c("https://njtierney.r-universe.dev", "https://cran.r-project.org"))
+```
+
+## Why `geotargets`
+
+If you want to use geospatial data formats (such as `terra`) with the
+[`targets`](https://github.com/ropensci/targets) package to build
+analytic reproducible pipelines, it involves writing a lot of custom
+targets wrappers. We wrote `geotargets` so you can use geospatial data
+formats with `targets`.
+
+To provide more detail on this, a common problem when using popular
+libraries like `terra` with `targets` is running into errors with read
+and write. Due to the limitations that come with the underlying C++
+implementation in the `terra` library, there are specific ways to write
+and read these objects. See `?terra` for details. `geotargets` helps
+handle these write and read steps, so you don’t have to worry about them
+and can use targets as you are used to.
 
 In essence, if you’ve ever come across the error:
 
@@ -36,25 +54,11 @@ or
     Error: external pointer is not valid
 
 When trying to read in a geospatial raster or vector in targets, then
-this is for you :)
-
-## Installation
-
-You can install the development version of geotargets like so:
-
-``` r
-install.packages("geotargets", repos = c("https://njtierney.r-universe.dev", "https://cran.r-project.org"))
-```
-
-## A note on development
-
-`geotargets` is still undergoing development, and we would love for
-people to use the package to kick the tyres. We are using it in our own
-work, but want users to know that the API could change in subtle or
-breaking ways.
+`geotargets` for you :)
 
 # Examples
 
+We currently provide support for the `terra` package with `targets`.
 Below we show three examples of target factories:
 
 - `tar_terra_rast()`
@@ -62,10 +66,10 @@ Below we show three examples of target factories:
 - `tar_terra_sprc()`
 
 You would use these in place of `tar_target()` in your targets pipeline,
-when you are doing work with terra raster or terra vector data.
+when you are doing work with `terra` raster, vector, or raster
+collection data.
 
-It is a bit tricky to implement targets workflows in a README, but if
-you would like to see and download working examples for yourself, see
+If you would like to see and download working examples for yourself, see
 the repo,
 [demo-geotargets](https://github.com/njtierney/demo-geotargets).
 
@@ -152,3 +156,11 @@ Please note that the geotargets project is released with a [Contributor
 Code of
 Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.
+
+## A note on development
+
+`geotargets` is still undergoing development. We currently consider the
+extensions with `terra` maturing and approaching stability. We would
+love for people to use the package to kick the tyres. We are using it in
+our own work, but want users to know that the API could change in subtle
+or breaking ways.
