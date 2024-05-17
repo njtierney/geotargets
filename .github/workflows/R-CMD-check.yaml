@@ -44,6 +44,9 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
+      - name: GDAL version
+        run: gdalinfo --version
+
       - uses: r-lib/actions/check-r-package@v2.8.3
         with:
           upload-snapshots: true
