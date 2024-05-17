@@ -44,8 +44,11 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - name: GDAL version
-        run: gdalinfo --version
+      - name: GDAL version and drivers
+        shell: Rscript {0}
+        run: |
+            terra::gdal()
+            terra::gdal(drivers = TRUE)
 
       - uses: r-lib/actions/check-r-package@v2.8.3
         with:
