@@ -40,6 +40,7 @@ tar_terra_tiles_raw <- function(
     #     gdal = gdal
     # ))
 
+    #this is what the output should be:
     command <- expression(c("my_tiles/myrast_tile1", "my_tiles/myrast_tile2", "my_tiles/myrast_tile3", "my_tiles/myrast_tile4"))
 
     upstream <- targets::tar_target_raw(
@@ -206,10 +207,10 @@ make_tiles <- function(raster, template, tiles_dir, filename, filetype, gdal) {
     )
 }
 ## This works! Why doesn't the upstream target work?
-raster <- terra::rast(system.file("ex/elev.tif", package="terra"))
-template <- terra::rast(ncols = 2, nrows = 2)
-tiles_dir<- "my_tiles"
-filename <- "myrast_tile"
-filetype <- "GTiff"
-gdal <- ""
-make_tiles(raster, template, tiles_dir, filename, filetype, gdal)
+# raster <- terra::rast(system.file("ex/elev.tif", package="terra"))
+# template <- terra::rast(ncols = 2, nrows = 2)
+# tiles_dir<- "my_tiles"
+# filename <- "myrast_tile"
+# filetype <- "GTiff"
+# gdal <- ""
+# make_tiles(raster, template, tiles_dir, filename, filetype, gdal)
