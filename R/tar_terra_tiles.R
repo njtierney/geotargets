@@ -25,23 +25,50 @@ tar_terra_tiles_raw <- function(
     targets::tar_assert_scalar(name, "name must have length 1.")
     filetype <- filetype %||% "GTiff"
     gdal <- gdal %||% character(0)
+
     name_tiles <- paste0(name, "_tile")
     name_files <- paste0(name, "_files")
+    sym_tiles <- as.symbol(name_tiles)#TODO not sure if I need both of these
+    sym_files <- as.symbol(name_files)
 
+    #FIXME allow providing template that isn't a target if possible
+    template <- quote(terra::rast(ncols = 3, nrows = 3))
+    # raster <- enexpr(raster)
+
+# browser()
     #Upstream target splits raster into tiles and returns vector of filenames
+    # command <- substitute(
+    #     make_tiles(
+    #         raster = raster,
+    #         template = template,
+    #         tiles_dir = tiles_dir,
+    #         filename = name_tiles,
+    #         filetype = filetype,
+    #         gdal = gdal
+    #     ),
+    #     # env = parent.frame()
+    #     env = list(raster = raster, template = template, tiles_dir = tiles_dir, name = name_tiles, filetype = filetype, gdal = gdal) #this diffuses raster all the way to the command to create the raster object
+    # )
 
-    #FIXME the upstream target isn't working with the error "cannot branch over empty target (rast_split_tile)" (that's `name_tiles` in this example)
-    # command <- quote(make_tiles(
-    #     raster = raster,
-    #     template = template,
-    #     tiles_dir = tiles_dir,
-    #     filename = name_tiles,
-    #     filetype = filetype,
-    #     gdal = gdal
-    # ))
+    command <- rlang::expr(
+        make_tiles(
+            raster = !!raster,
+            template = !!template,
+            tiles_dir = !!tiles_dir,
+            filename = !!name_tiles,
+            filetype = !!filetype,
+            gdal = !!gdal
+        )
+    )
 
-    #this is what the output should be:
-    command <- expression(c("my_tiles/myrast_tile1", "my_tiles/myrast_tile2", "my_tiles/myrast_tile3", "my_tiles/myrast_tile4"))
+    # #this is what the output should be:
+    # make_tiles_fake <- function(raster) {
+    #     c("my_tiles/myrast_tile1", "my_tiles/myrast_tile2", "my_tiles/myrast_tile3", "my_tiles/myrast_tile4")
+    # }
+    # command <- substitute(
+    #     make_tiles_fake(raster),
+    #     env = parent.frame()
+    # )
 
     upstream <- targets::tar_target_raw(
         name = name_tiles,
@@ -49,6 +76,7 @@ tar_terra_tiles_raw <- function(
         pattern = NULL,
         packages = packages,
         library = library,
+        deps = "my_map", #TODO shouldn't need this
         format = "rds",
         repository = repository,
         iteration = iteration,
@@ -63,17 +91,15 @@ tar_terra_tiles_raw <- function(
         cue = targets::tar_cue(mode = "always"),
         description = description
     )
-    name_tiles_sym <- as.symbol(name_tiles)
 
     #files target maps over the result of upstream with format = "file"
-
     files <- tar_target_raw(
         name = name_files,
-        command = as.expression(name_tiles_sym),
-        pattern = as.expression(tarchetypes:::call_function("map", list(name_tiles_sym))),
+        command = as.expression(sym_tiles),
+        pattern = as.expression(tarchetypes:::call_function("map", list(sym_tiles))),
         packages = packages,
         library = library,
-        format = "file",
+        format = "file", #TODO allow "file_fast" as an option—see tar_files_raw
         repository = repository,
         iteration = "list", #only list works (for now at least)
         error = error,
@@ -86,15 +112,13 @@ tar_terra_tiles_raw <- function(
         cue = cue,
         description = description
     )
-    name_files_sym <- as.symbol(name_files)
 
     #downstream target reads those files in as SpatRaster objects
-
     downstream <- targets::tar_target_raw(
         name = name,
-        # command = as.expression(tarchetypes:::call_function("rast", name_files_sym)),
-        command = as.expression(as.call(c(as.symbol("rast"), name_files_sym))),
-        pattern = as.expression(tarchetypes:::call_function("map", list(name_files_sym))),
+        command = as.expression(tarchetypes:::call_function("rast", list(sym_files))),
+        # command = as.expression(as.call(c(as.symbol("rast"), sym_files))),
+        pattern = as.expression(tarchetypes:::call_function("map", list(sym_files))),
         packages = packages,
         library = library,
         format = targets::tar_format(
@@ -170,8 +194,8 @@ tar_terra_tiles <- function(
     name <- targets::tar_deparse_language(substitute(name))
     tar_terra_tiles_raw(
         name = name,
-        raster = raster,
-        template = template, #E.g. terra::rast(ncols = 3, nrows = 3)
+        raster = rlang::enexpr(raster),
+        # template = {{template}}, #E.g. terra::rast(ncols = 3, nrows = 3)
         tiles_dir = tiles_dir, #dir to save tiles to disk.  Can't be inside _targets/ store
         filetype = filetype,
         gdal = gdal,
