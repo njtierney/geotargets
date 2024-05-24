@@ -28,30 +28,11 @@ tar_terra_tiles_raw <- function(
 
     name_tiles <- paste0(name, "_tile")
     name_files <- paste0(name, "_files")
-    sym_tiles <- as.symbol(name_tiles)#TODO not sure if I need both of these
+    sym_tiles <- as.symbol(name_tiles)
     sym_files <- as.symbol(name_files)
 
-    #FIXME allow providing template that isn't a target if possible
-    template <- quote(terra::rast(ncols = 3, nrows = 3))
-    # raster <- enexpr(raster)
-
-# browser()
-    #Upstream target splits raster into tiles and returns vector of filenames
-    # command <- substitute(
-    #     make_tiles(
-    #         raster = raster,
-    #         template = template,
-    #         tiles_dir = tiles_dir,
-    #         filename = name_tiles,
-    #         filetype = filetype,
-    #         gdal = gdal
-    #     ),
-    #     # env = parent.frame()
-    #     env = list(raster = raster, template = template, tiles_dir = tiles_dir, name = name_tiles, filetype = filetype, gdal = gdal) #this diffuses raster all the way to the command to create the raster object
-    # )
-
     command <- rlang::expr(
-        make_tiles(
+        geotargets:::make_tiles(
             raster = !!raster,
             template = !!template,
             tiles_dir = !!tiles_dir,
@@ -61,22 +42,13 @@ tar_terra_tiles_raw <- function(
         )
     )
 
-    # #this is what the output should be:
-    # make_tiles_fake <- function(raster) {
-    #     c("my_tiles/myrast_tile1", "my_tiles/myrast_tile2", "my_tiles/myrast_tile3", "my_tiles/myrast_tile4")
-    # }
-    # command <- substitute(
-    #     make_tiles_fake(raster),
-    #     env = parent.frame()
-    # )
-
+    #target to create files
     upstream <- targets::tar_target_raw(
         name = name_tiles,
         command = command,
         pattern = NULL,
         packages = packages,
         library = library,
-        deps = "my_map", #TODO shouldn't need this
         format = "rds",
         repository = repository,
         iteration = iteration,
@@ -195,8 +167,8 @@ tar_terra_tiles <- function(
     tar_terra_tiles_raw(
         name = name,
         raster = rlang::enexpr(raster),
-        # template = {{template}}, #E.g. terra::rast(ncols = 3, nrows = 3)
-        tiles_dir = tiles_dir, #dir to save tiles to disk.  Can't be inside _targets/ store
+        template = rlang::enexpr(template),
+        tiles_dir = tiles_dir,
         filetype = filetype,
         gdal = gdal,
         ...,
