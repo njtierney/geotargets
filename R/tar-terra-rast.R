@@ -9,6 +9,7 @@
 #' @param ... Additional arguments not yet used
 #'
 #' @inheritParams targets::tar_target
+#' @returns target class "tar_stem" for use in a target pipeline
 #' @importFrom rlang %||% arg_match0
 #' @seealso [targets::tar_target_raw()]
 #' @export

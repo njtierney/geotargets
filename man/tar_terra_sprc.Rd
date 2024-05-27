@@ -217,6 +217,9 @@ explicitly from another language.
 \item{cue}{An optional object from \code{tar_cue()} to customize the
 rules that decide whether the target is up to date.}
 }
+\value{
+target class "tar_stem" for use in a target pipeline
+}
 \description{
 Provides a target format for \link[terra:SpatRaster-class]{terra::SpatRasterCollection} objects,
 which have no restriction in the extent or other geometric parameters.

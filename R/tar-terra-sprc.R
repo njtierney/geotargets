@@ -10,6 +10,7 @@
 #' @param ... Additional arguments not yet used
 #'
 #' @inheritParams targets::tar_target
+#' @returns target class "tar_stem" for use in a target pipeline
 #' @seealso [targets::tar_target_raw()]
 #' @author Andrew Gene Brown
 #' @author Nicholas Tierney
