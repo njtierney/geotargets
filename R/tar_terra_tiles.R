@@ -68,7 +68,8 @@ tar_terra_tiles_raw <- function(
     files <- tar_target_raw(
         name = name_files,
         command = as.expression(sym_tiles),
-        pattern = as.expression(tarchetypes:::call_function("map", list(sym_tiles))),
+        # pattern = as.expression(tarchetypes:::call_function("map", list(sym_tiles))),
+        pattern = as.expression(as.call(c(as.symbol("map"), sym_tiles))),
         packages = packages,
         library = library,
         format = "file", #TODO allow "file_fast" as an option—see tar_files_raw
@@ -88,9 +89,10 @@ tar_terra_tiles_raw <- function(
     #downstream target reads those files in as SpatRaster objects
     downstream <- targets::tar_target_raw(
         name = name,
-        command = as.expression(tarchetypes:::call_function("rast", list(sym_files))),
-        # command = as.expression(as.call(c(as.symbol("rast"), sym_files))),
-        pattern = as.expression(tarchetypes:::call_function("map", list(sym_files))),
+        # command = as.expression(tarchetypes:::call_function("rast", list(sym_files))),
+        command = as.expression(as.call(c(as.symbol("rast"), sym_files))),
+        # pattern = as.expression(tarchetypes:::call_function("map", list(sym_files))),
+        pattern = as.expression(as.call(c(as.symbol("map"), sym_files))),
         packages = packages,
         library = library,
         format = targets::tar_format(
@@ -202,11 +204,3 @@ make_tiles <- function(raster, template, tiles_dir, filename, filetype, gdal) {
         gdal = gdal
     )
 }
-## This works! Why doesn't the upstream target work?
-# raster <- terra::rast(system.file("ex/elev.tif", package="terra"))
-# template <- terra::rast(ncols = 2, nrows = 2)
-# tiles_dir<- "my_tiles"
-# filename <- "myrast_tile"
-# filetype <- "GTiff"
-# gdal <- ""
-# make_tiles(raster, template, tiles_dir, filename, filetype, gdal)
