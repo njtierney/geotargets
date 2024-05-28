@@ -65,7 +65,7 @@ tar_terra_tiles_raw <- function(
     )
 
     #files target maps over the result of upstream with format = "file"
-    files <- tar_target_raw(
+    files <- targets::tar_target_raw(
         name = name_files,
         command = as.expression(sym_tiles),
         # pattern = as.expression(tarchetypes:::call_function("map", list(sym_tiles))),
@@ -193,12 +193,15 @@ tar_terra_tiles <- function(
 
 make_tiles <- function(raster, template, tiles_dir, filename, filetype, gdal) {
     terra::ext(template) <- terra::ext(raster)
-    fs::dir_create(tiles_dir) #TODO use base R?
+    # fs::dir_create(tiles_dir) #TODO use base R?
+    if (!dir.exists(tiles_dir)) {
+        dir.create(tiles_dir)
+    }
 
     terra::makeTiles(
         raster,
         template,
-        filename = fs::path(tiles_dir, filename),
+        filename = file.path(tiles_dir, filename),
         overwrite = TRUE,
         filetype = filetype,
         gdal = gdal
