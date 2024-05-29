@@ -1,4 +1,57 @@
-
+#' Split a raster into tiles that can be iterated over with dynamic branching
+#'
+#' This target factory is useful when a raster is too large or too high
+#' resolution to work on in-memory. It can instead be split into tiles that can
+#' be iterated over, potentially using parallel workers.
+#'
+#' @param raster a `SpatRaster` object to be split into tiles
+#' @param template passed to the `y` argument of [terra::makeTiles()]—a
+#'   `SpatRaster` or `SpatVector` defining the zones; or numeric specifying the
+#'   number of rows and columns for each zone (1 or 2 numbers if the number of
+#'   rows and columns is not the same)
+#' @param tiles_dir path to a directory to save the tiles to disk
+#' @param filetype character. File format expressed as GDAL driver names passed
+#'   to [terra::makeTiles()]
+#' @param gdal character. GDAL driver specific datasource creation options
+#'   passed to [terra::makeTiles()]
+#' @param ... additional arguments not yet used
+#' @inheritParams targets::tar_target
+#' @author Eric Scott
+#' @returns A list of three targets, an upstream target that splits the raster
+#'   into tiles and saves them with `terra::makeTiles()`, a files target that
+#'   maps over the resulting paths with dynamic branching, and a downstream
+#'   target that reads those files in with `terra::rast()`. The files and
+#'   downstream targets are both patterns.
+#' @export
+#'
+#' @examples
+#' if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
+#'   targets::tar_dir({
+#'     targets::tar_script({
+#'         library(targets)
+#'         library(geotargets)
+#'         library(terra)
+#'         list(
+#'             tar_target(
+#'                 my_file,
+#'                 system.file("ex/elev.tif", package="terra"),
+#'                 format = "file"
+#'             ),
+#'             tar_terra_rast(
+#'                 my_map,
+#'                 terra::rast(my_file)
+#'             ),
+#'             tar_terra_tiles(
+#'                 name = rast_split,
+#'                 raster = my_map,
+#'                 template = terra::rast(ncols = 2, nrows = 2, ext = ext(my_map)),
+#'                 tiles_dir = tempdir()
+#'             )
+#'         )
+#'     })
+#'     targets::tar_manifest()
+#'   })
+#' }
 tar_terra_tiles <- function(
         name,
         raster,
@@ -48,6 +101,7 @@ tar_terra_tiles <- function(
     )
 }
 
+#' @noRd
 tar_terra_tiles_raw <- function(
         name,
         raster,
