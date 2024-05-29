@@ -14,6 +14,11 @@
 #'   to [terra::makeTiles()]
 #' @param gdal character. GDAL driver specific datasource creation options
 #'   passed to [terra::makeTiles()]
+#' @param format character of length 1.  Must be either "file" or "file_fast"
+#'   (ee the `format` argument of [targets::tar_target()] for details). Applies
+#'   only to the files target (see Value section)—use the `filetype` argument to
+#'   set the file format for raster targets.
+#'
 #' @param ... additional arguments not yet used
 #' @inheritParams targets::tar_target
 #' @author Eric Scott
@@ -59,6 +64,7 @@ tar_terra_tiles <- function(
         tiles_dir, #dir to save tiles to disk.  Can't be inside _targets/ store
         filetype = geotargets_option_get("gdal.raster.driver"),
         gdal = geotargets_option_get("gdal.raster.creation.options"),
+        format = c("file", "file_fast"),
         ...,
         packages = targets::tar_option_get("packages"),
         library = targets::tar_option_get("library"),
@@ -76,6 +82,7 @@ tar_terra_tiles <- function(
         description = targets::tar_option_get("description")
 ) {
     name <- targets::tar_deparse_language(substitute(name))
+    format <- match.arg(format)
     tar_terra_tiles_raw(
         name = name,
         raster = rlang::enexpr(raster),
@@ -83,6 +90,7 @@ tar_terra_tiles <- function(
         tiles_dir = tiles_dir,
         filetype = filetype,
         gdal = gdal,
+        format = format,
         ...,
         packages = packages,
         library = library,
@@ -109,6 +117,7 @@ tar_terra_tiles_raw <- function(
         tiles_dir, #dir to save tiles to disk.  Can't be inside _targets/ store
         filetype = geotargets_option_get("gdal.raster.driver"),
         gdal = geotargets_option_get("gdal.raster.creation.options"),
+        format = c("file", "file_fast"),
         ...,
         packages = targets::tar_option_get("packages"),
         library = targets::tar_option_get("library"),
@@ -129,6 +138,7 @@ tar_terra_tiles_raw <- function(
     targets::tar_assert_scalar(name, "name must have length 1.")
     filetype <- filetype %||% "GTiff"
     gdal <- gdal %||% character(0)
+    format <- match.arg(format)
 
     name_tiles <- paste0(name, "_tile")
     name_files <- paste0(name, "_files")
@@ -173,7 +183,7 @@ tar_terra_tiles_raw <- function(
         pattern = as.expression(as.call(c(as.symbol("map"), sym_tiles))),
         packages = packages,
         library = library,
-        format = "file", #TODO allow "file_fast" as an option—see tar_files_raw
+        format = format,
         repository = repository,
         iteration = "list", #only list works (for now at least)
         error = error,

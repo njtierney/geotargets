@@ -11,6 +11,7 @@ tar_terra_tiles(
   tiles_dir,
   filetype = geotargets_option_get("gdal.raster.driver"),
   gdal = geotargets_option_get("gdal.raster.creation.options"),
+  format = c("file", "file_fast"),
   ...,
   packages = targets::tar_option_get("packages"),
   library = targets::tar_option_get("library"),
@@ -59,6 +60,11 @@ to \code{\link[terra:makeTiles]{terra::makeTiles()}}}
 
 \item{gdal}{character. GDAL driver specific datasource creation options
 passed to \code{\link[terra:makeTiles]{terra::makeTiles()}}}
+
+\item{format}{character of length 1.  Must be either "file" or "file_fast"
+(ee the \code{format} argument of \code{\link[targets:tar_target]{targets::tar_target()}} for details). Applies
+only to the files target (see Value section)—use the \code{filetype} argument to
+set the file format for raster targets.}
 
 \item{...}{additional arguments not yet used}
 

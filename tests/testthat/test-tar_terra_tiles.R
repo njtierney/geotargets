@@ -30,3 +30,15 @@ targets::tar_test("tar_terra_tiles() works", {
     targets::tar_make()
     expect_true(all(is.na(targets::tar_meta()$error)))
 })
+
+test_that("format arg works", {
+    target_list <- tar_terra_tiles(
+        name = rast_split,
+        raster = my_map,
+        template = terra::rast(ncols = 2, nrows = 2, ext = ext(my_map)),
+        tiles_dir = tempdir(),
+        format = "file_fast"
+    )
+    expect_equal(target_list$rast_split_files$settings$format,
+                 "file_fast")
+})
