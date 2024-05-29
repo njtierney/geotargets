@@ -170,7 +170,7 @@ of the target. Choices:</p><ul><li><p><code>"vector"</code>: branching happens w
 aggregation happens with <code><a href="https://vctrs.r-lib.org/reference/vec_c.html" class="external-link">vctrs::vec_c()</a></code>.</p></li>
 <li><p><code>"list"</code>, branching happens with <code>[[]]</code> and aggregation happens with
 <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></li>
-<li><p><code>"group"</code>: <code>dplyr::group_by()</code>-like functionality to branch over
+<li><p><code>"group"</code>: <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by()</a></code>-like functionality to branch over
 subsets of a non-dynamic data frame.
 For <code>iteration = "group"</code>, the target must not by dynamic
 (the <code>pattern</code> argument of <code><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target()</a></code> must be left <code>NULL</code>).
@@ -179,7 +179,7 @@ frame with a special <code>tar_group</code> column of consecutive integers
 from 1 through the number of groups. Each integer designates a group,
 and a branch is created for each collection of rows in a group.
 See the <code><a href="https://docs.ropensci.org/targets/reference/tar_group.html" class="external-link">tar_group()</a></code> function to see how you can
-create the special <code>tar_group</code> column with <code>dplyr::group_by()</code>.</p></li>
+create the special <code>tar_group</code> column with <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by()</a></code>.</p></li>
 </ul></dd>
 
 
