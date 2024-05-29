@@ -162,7 +162,7 @@ tar_terra_tiles_raw <- function(
         resources = resources,
         storage = storage,
         retrieval = retrieval,
-        cue = targets::tar_cue(mode = "always"),
+        cue = targets::tar_cue(mode = "always"), #TODO find a way to make this not necessary.  If resulting files get deleted, this doesn't get invalidated when cue = cue because this target isn't format = 'file'.  Currently though, this means this potentially expensive step runs every time!
         description = description
     )
 
@@ -234,7 +234,7 @@ tar_terra_tiles_raw <- function(
             ), resources),
         storage = storage,
         retrieval = retrieval,
-        cue = cue,
+        cue = cue, #TODO I think if we want to be able to delete the tiles stored outside of _targets/ in `tiles_dir`, then this needs to only be invalidated when the upstream target is invalidated and not care about the files target.  Then, the upstream target doesn't need to run "always" maybe?
         description = description
     )
     out <- list(upstream, files, downstream)
