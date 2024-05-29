@@ -30,7 +30,6 @@
 #' @return Specific options, such as "gdal.raster.driver". See "Details" for
 #'   more information.
 #'
-#'
 #' @rdname geotargets-options
 #' @export
 #' @examples
@@ -59,7 +58,6 @@ geotargets_option_set <- function(
         gdal_vector_driver = NULL,
         gdal_vector_creation_options = NULL
 ) {
-
     # TODO do this programmatically with formals() or something?  `options()` also accepts a named list
     options(
         "geotargets.gdal.raster.driver" = gdal_raster_driver %||%

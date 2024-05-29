@@ -60,6 +60,7 @@ We currently provide support for the `terra` package with `targets`. Below we sh
 - `tar_terra_rast()`
 - `tar_terra_vect()`
 - `tar_terra_sprc()`
+- `tar_stars()`
 
 You would use these in place of `tar_target()` in your targets pipeline, when you are doing work with `terra` raster, vector, or raster collection data.
 
@@ -69,19 +70,24 @@ If you would like to see and download working examples for yourself, see the rep
 
 ```{r}
 #| label: tar-terra-rast
-#| eval: false
 library(targets)
+
 tar_dir({ # tar_dir() runs code from a temporary directory.
   tar_script({
-    library(targets)
     library(geotargets)
+    
+    get_elev <- function() {
+        terra::rast(system.file("ex", "elev.tif", package = "terra"))
+    }
+    
     list(
       tar_terra_rast(
         terra_rast_example,
-        system.file("ex/elev.tif", package = "terra") |> terra::rast()
+        get_elev()
       )
     )
   })
+  
   tar_make()
   x <- tar_read(terra_rast_example)
   x
@@ -93,18 +99,16 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
 
 ```{r}
 #| label: tar-terra-vect
-#| eval: false
 tar_dir({ # tar_dir() runs code from a temporary directory.
   tar_script({
     library(geotargets)
+    
     lux_area <- function(projection = "EPSG:4326") {
-      terra::project(
-        terra::vect(system.file("ex", "lux.shp",
-          package = "terra"
-        )),
-        projection
-      )
+      terra::project(terra::vect(system.file("ex", "lux.shp",
+                                             package = "terra")),
+                     projection)
     }
+    
     list(
       tar_terra_vect(
         terra_vect_example,
@@ -112,6 +116,7 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
       )
     )
   })
+  
   tar_make()
   x <- tar_read(terra_vect_example)
   x
@@ -123,21 +128,23 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
 
 ```{r}
 #| label: tar-terra-sprc
-#| eval: false
-targets::tar_dir({ # tar_dir() runs code from a temporary directory.
-  library(geotargets)
-  targets::tar_script({
+tar_dir({ # tar_dir() runs code from a temporary directory.
+  tar_script({
+    
+    library(geotargets)
+    
     elev_scale <- function(z = 1, projection = "EPSG:4326") {
       terra::project(
         terra::rast(system.file("ex", "elev.tif", package = "terra")) * z,
         projection
       )
     }
+    
     list(
       tar_terra_sprc(
         raster_elevs,
         # two rasters, one unaltered, one scaled by factor of 2 and
-        # reprojected to interrupted good homolosine
+        # reprojected to interrupted goode homolosine
         command = terra::sprc(list(
           elev_scale(1),
           elev_scale(2, "+proj=igh")
@@ -145,10 +152,37 @@ targets::tar_dir({ # tar_dir() runs code from a temporary directory.
       )
     )
   })
-  targets::tar_make()
-  x <- targets::tar_read(raster_elevs)
+  
+  tar_make()
+  x <- tar_read(raster_elevs)
+  x
 })
 ```
+
+
+
+## `tar_stars()`: targets with stars objects
+
+```{r}
+#| label: tar-stars
+tar_dir({ # tar_dir() runs code from a temporary directory.
+  tar_script({
+    library(geotargets)
+    
+    list(
+      tar_stars(
+        test_stars,
+        stars::read_stars(system.file("tif", "olinda_dem_utm25s.tif", package = "stars"))
+      )
+    )
+  })
+  
+  tar_make()
+  x <- tar_read(test_stars)
+  x
+})
+```
+
 
 ## Code of Conduct
 
