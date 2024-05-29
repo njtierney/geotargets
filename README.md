@@ -15,16 +15,34 @@ Targetopia](https://img.shields.io/badge/R_Targetopia-member-blue?style=flat&lab
 coverage](https://codecov.io/gh/njtierney/geotargets/branch/master/graph/badge.svg)](https://app.codecov.io/gh/njtierney/geotargets?branch=master)
 <!-- badges: end -->
 
-`geotargets` extends targets to work with geospatial data formats, such
-as rasters and vectors (e.g., shapefiles).
+`geotargets` extends [`targets`](https://github.com/ropensci/targets) to
+work with geospatial data formats, such as rasters and vectors (e.g.,
+shapefiles). Currently we support raster and vector formats for the
+[`terra`](https://github.com/rspatial/terra) package
 
-A relatively common gotcha moment when using popular libraries like
-`terra` with targets is running into errors with read and write. Due to
-the limitations that come with the underlying C++ implementation in the
-`terra` library, there are specific ways to write and read these
-objects. See `?terra` for details. `geotargets` helps handle these write
-and read steps, so you don’t have to worry about them and can use
-targets as you are used to.
+## Installation
+
+You can install the development version of geotargets like so:
+
+``` r
+install.packages("geotargets", repos = c("https://njtierney.r-universe.dev", "https://cran.r-project.org"))
+```
+
+## Why `geotargets`
+
+If you want to use geospatial data formats (such as `terra`) with the
+[`targets`](https://github.com/ropensci/targets) package to build
+analytic reproducible pipelines, it involves writing a lot of custom
+targets wrappers. We wrote `geotargets` so you can use geospatial data
+formats with `targets`.
+
+To provide more detail on this, a common problem when using popular
+libraries like `terra` with `targets` is running into errors with read
+and write. Due to the limitations that come with the underlying C++
+implementation in the `terra` library, there are specific ways to write
+and read these objects. See `?terra` for details. `geotargets` helps
+handle these write and read steps, so you don’t have to worry about them
+and can use targets as you are used to.
 
 In essence, if you’ve ever come across the error:
 
@@ -36,26 +54,12 @@ or
     Error: external pointer is not valid
 
 When trying to read in a geospatial raster or vector in targets, then
-this is for you :)
-
-## Installation
-
-You can install the development version of geotargets like so:
-
-``` r
-install.packages("geotargets", repos = c("https://njtierney.r-universe.dev", "https://cran.r-project.org"))
-```
-
-## A note on development
-
-`geotargets` is still undergoing development, and we would love for
-people to use the package to kick the tyres. We are using it in our own
-work, but want users to know that the API could change in subtle or
-breaking ways.
+`geotargets` for you :)
 
 # Examples
 
-Below we show four examples of target factories:
+We currently provide support for the `terra` package with `targets`.
+Below we show three examples of target factories:
 
 - `tar_terra_rast()`
 - `tar_terra_vect()`
@@ -63,9 +67,8 @@ Below we show four examples of target factories:
 - `tar_stars()`
 
 You would use these in place of `tar_target()` in your targets pipeline,
-when you are doing work with objects from the terra or stars packages
-such as SpatRaster, SpatVector, SpatRasterCollection, stars, or
-stars_proxy.
+when you are doing work with `terra` raster, vector, or raster
+collection data.
 
 If you would like to see and download working examples for yourself, see
 the repo,
@@ -97,8 +100,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target terra_rast_example
-#> ● completed target terra_rast_example [0.007 seconds]
-#> ▶ ended pipeline [0.15 seconds]
+#> ● completed target terra_rast_example [0.019 seconds]
+#> ▶ ended pipeline [0.185 seconds]
 #> class       : SpatRaster 
 #> dimensions  : 90, 95, 1  (nrow, ncol, nlyr)
 #> resolution  : 0.008333333, 0.008333333  (x, y)
@@ -136,8 +139,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target terra_vect_example
-#> ● completed target terra_vect_example [0.027 seconds]
-#> ▶ ended pipeline [0.127 seconds]
+#> ● completed target terra_vect_example [0.034 seconds]
+#> ▶ ended pipeline [0.173 seconds]
 #>  class       : SpatVector 
 #>  geometry    : polygons 
 #>  dimensions  : 12, 6  (geometries, attributes)
@@ -184,11 +187,11 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target raster_elevs
-#> ● completed target raster_elevs [0.14 seconds]
-#> ▶ ended pipeline [0.29 seconds]
+#> ● completed target raster_elevs [0.112 seconds]
+#> ▶ ended pipeline [0.266 seconds]
 #> Warning message:
 #> [rast] skipped sub-datasets (see 'describe(sds=TRUE)'):
-#> /tmp/RtmpZRJR3w/targets_788293366c7ea/_targets/scratch/raster_elevs
+#> /private/var/folders/wr/by_lst2d2fngf67mknmgf4340000gn/T/Rtmpr9sjXA/targets_1085a12a40d0c/_targets/scratch/raster_elevs
 #> class       : SpatRasterCollection 
 #> length      : 2 
 #> nrow        : 90, 115 
@@ -219,8 +222,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target test_stars
-#> ● completed target test_stars [0.033 seconds]
-#> ▶ ended pipeline [0.123 seconds]
+#> ● completed target test_stars [0.053 seconds]
+#> ▶ ended pipeline [0.17 seconds]
 #> Warning message:
 #> In CPL_write_gdal(mat, file, driver, options, type, dims, from,  :
 #>   GDAL Message 6: creation option '' is not formatted with the key=value format
@@ -240,3 +243,11 @@ Please note that the geotargets project is released with a [Contributor
 Code of
 Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.
+
+## A note on development
+
+`geotargets` is still undergoing development. We currently consider the
+extensions with `terra` maturing and approaching stability. We would
+love for people to use the package to kick the tyres. We are using it in
+our own work, but want users to know that the API could change in subtle
+or breaking ways.

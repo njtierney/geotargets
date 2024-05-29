@@ -18,7 +18,11 @@ targets::tar_test("geotargets_options_get() retrieves options in correct priorit
     )
 })
 
+
 test_that("geotargets_option_set() works", {
+    op <- getOption("geotargets.gdal.raster.driver")
+    withr::defer(options("geotargets.gdal.raster.driver" = op))
+
     geotargets_option_set(gdal_raster_driver = "COG")
     expect_equal(getOption("geotargets.gdal.raster.driver"), "COG")
     expect_equal(geotargets_option_get("gdal.raster.driver"), "COG")
@@ -26,6 +30,11 @@ test_that("geotargets_option_set() works", {
 })
 
 test_that("options aren't reset with multiple calls to geotargets_option_set()", {
+    op_rast <- getOption("geotargets.gdal.raster.driver")
+    withr::defer(options("geotargets.gdal.raster.driver" = op_rast))
+    op_vect <- getOption("geotargets.gdal.vector.driver")
+    withr::defer(options("geotargets.gdal.vector.driver" = op_vect))
+
     geotargets_option_set(gdal_raster_driver = "GPKG")
     geotargets_option_set(gdal_vector_driver = "GPKG")
     expect_equal(geotargets_option_get("gdal_vector_driver"), "GPKG")

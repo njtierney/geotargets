@@ -8,6 +8,7 @@
 #'   passed to [terra::writeVector()].
 #' @param ... Additional arguments not yet used
 #' @inheritParams targets::tar_target
+#' @returns target class "tar_stem" for use in a target pipeline
 #'
 #' @note Although you may pass any supported GDAL vector driver to the
 #'   `filetype` argument, not all formats are guaranteed to work with
@@ -66,6 +67,11 @@ tar_terra_vect <- function(name,
 
     check_pkg_installed("terra")
 
+    #ensure that user-passed `resources` doesn't include `custom_format`
+    if ("custom_format" %in% names(resources)) {
+        cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_vect}")
+    }
+
     name <- targets::tar_deparse_language(substitute(name))
 
     envir <- targets::tar_option_get("envir")
@@ -102,17 +108,18 @@ tar_terra_vect <- function(name,
         garbage_collection = garbage_collection,
         deployment = deployment,
         priority = priority,
-        resources = targets::tar_resources(
-            custom_format = targets::tar_resources_custom_format(
-                #these envvars are used in write function of format
-                envvars = c(
-                    "GEOTARGETS_GDAL_VECTOR_DRIVER" = filetype,
-                    "GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS" = (
-                        paste0(gdal, collapse = ";")
+        resources = utils::modifyList(
+            targets::tar_resources(
+                custom_format = targets::tar_resources_custom_format(
+                    #these envvars are used in write function of format
+                    envvars = c(
+                        "GEOTARGETS_GDAL_VECTOR_DRIVER" = filetype,
+                        "GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS" = (
+                            paste0(gdal, collapse = ";")
                         )
+                    )
                 )
-            )
-        ),
+            ), resources),
         storage = storage,
         retrieval = retrieval,
         cue = cue

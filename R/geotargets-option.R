@@ -27,8 +27,31 @@
 #' `geotargets_options_set(gdal_raster_driver = "GTiff")` is equivalent to
 #' `options("geotargets.gdal.raster.driver" = "GTiff")`.
 #'
+#' @return Specific options, such as "gdal.raster.driver". See "Details" for
+#'   more information.
+#'
 #' @rdname geotargets-options
 #' @export
+#' @examples
+#' if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
+#'  targets::tar_dir({ # tar_dir() runs code from a temporary directory.
+#'    library(geotargets)
+#'   op <- getOption("geotargets.gdal.raster.driver")
+#'   withr::defer(options("geotargets.gdal.raster.driver" = op))
+#'   geotargets_option_set(gdal_raster_driver = "COG")
+#'    targets::tar_script({
+#'      list(
+#'        geotargets::tar_terra_rast(
+#'          terra_rast_example,
+#'          system.file("ex/elev.tif", package = "terra") |> terra::rast()
+#'        )
+#'      )
+#'    })
+#'    targets::tar_make()
+#'    x <- targets::tar_read(terra_rast_example)
+#'  })
+#'}
+#'
 geotargets_option_set <- function(
         gdal_raster_driver = NULL,
         gdal_raster_creation_options = NULL,
@@ -52,6 +75,9 @@ geotargets_option_set <- function(
 #' @param name character; option name to get.
 #'
 #' @rdname geotargets-options
+#' @examples
+#' geotargets_option_get("gdal.raster.driver")
+#' geotargets_option_get("gdal.raster.creation.options")
 #' @export
 geotargets_option_get <- function(name) {
     option_name <- geotargets_repair_option_name(name)
