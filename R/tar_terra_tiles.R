@@ -31,21 +31,19 @@ tar_terra_tiles_raw <- function(
     sym_tiles <- as.symbol(name_tiles)
     sym_files <- as.symbol(name_files)
 
-    command <- rlang::expr(
-        geotargets:::make_tiles(
-            raster = !!raster,
-            template = !!template,
-            tiles_dir = !!tiles_dir,
-            filename = !!name_tiles,
-            filetype = !!filetype,
-            gdal = !!gdal
-        )
-    )
-
     #target to create files
     upstream <- targets::tar_target_raw(
         name = name_tiles,
-        command = command,
+        command = rlang::expr(
+                terra::makeTiles(
+                    !!raster,
+                    !!template,
+                    filename = file.path(!!tiles_dir, !!name_tiles),
+                    overwrite = TRUE,
+                    filetype = !!filetype,
+                    gdal = !!gdal
+                )
+        ),
         pattern = NULL,
         packages = packages,
         library = library,
@@ -188,22 +186,5 @@ tar_terra_tiles <- function(
         retrieval = retrieval,
         cue = cue,
         description = description
-    )
-}
-
-make_tiles <- function(raster, template, tiles_dir, filename, filetype, gdal) {
-    terra::ext(template) <- terra::ext(raster)
-    # fs::dir_create(tiles_dir) #TODO use base R?
-    if (!dir.exists(tiles_dir)) {
-        dir.create(tiles_dir)
-    }
-
-    terra::makeTiles(
-        raster,
-        template,
-        filename = file.path(tiles_dir, filename),
-        overwrite = TRUE,
-        filetype = filetype,
-        gdal = gdal
     )
 }

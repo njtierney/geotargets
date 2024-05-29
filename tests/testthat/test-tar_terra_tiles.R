@@ -17,8 +17,8 @@ targets::tar_test("tar_terra_tiles() works", {
             tar_terra_tiles(
                 name = rast_split,
                 raster = my_map,
-                template = terra::rast(ncols = 2, nrows = 2),
-                tiles_dir = "tiles_test"
+                template = terra::rast(ncols = 2, nrows = 2, ext = ext(my_map)),
+                tiles_dir = tempdir()
             )
         )
     })
