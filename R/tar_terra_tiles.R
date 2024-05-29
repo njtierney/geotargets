@@ -1,3 +1,53 @@
+
+tar_terra_tiles <- function(
+        name,
+        raster,
+        template, #E.g. terra::rast(ncols = 3, nrows = 3)
+        tiles_dir, #dir to save tiles to disk.  Can't be inside _targets/ store
+        filetype = geotargets_option_get("gdal.raster.driver"),
+        gdal = geotargets_option_get("gdal.raster.creation.options"),
+        ...,
+        packages = targets::tar_option_get("packages"),
+        library = targets::tar_option_get("library"),
+        repository = targets::tar_option_get("repository"),
+        iteration = targets::tar_option_get("iteration"),
+        error = targets::tar_option_get("error"),
+        memory = targets::tar_option_get("memory"),
+        garbage_collection = targets::tar_option_get("garbage_collection"),
+        deployment = targets::tar_option_get("deployment"),
+        priority = targets::tar_option_get("priority"),
+        resources = targets::tar_option_get("resources"),
+        storage = targets::tar_option_get("storage"),
+        retrieval = targets::tar_option_get("retrieval"),
+        cue = targets::tar_option_get("cue"),
+        description = targets::tar_option_get("description")
+) {
+    name <- targets::tar_deparse_language(substitute(name))
+    tar_terra_tiles_raw(
+        name = name,
+        raster = rlang::enexpr(raster),
+        template = rlang::enexpr(template),
+        tiles_dir = tiles_dir,
+        filetype = filetype,
+        gdal = gdal,
+        ...,
+        packages = packages,
+        library = library,
+        repository = repository,
+        iteration = iteration,
+        error = error,
+        memory = memory,
+        garbage_collection = garbage_collection,
+        deployment = deployment,
+        priority = priority,
+        resources = resources,
+        storage = storage,
+        retrieval = retrieval,
+        cue = cue,
+        description = description
+    )
+}
+
 tar_terra_tiles_raw <- function(
         name,
         raster,
@@ -66,7 +116,6 @@ tar_terra_tiles_raw <- function(
     files <- targets::tar_target_raw(
         name = name_files,
         command = as.expression(sym_tiles),
-        # pattern = as.expression(tarchetypes:::call_function("map", list(sym_tiles))),
         pattern = as.expression(as.call(c(as.symbol("map"), sym_tiles))),
         packages = packages,
         library = library,
@@ -85,11 +134,11 @@ tar_terra_tiles_raw <- function(
     )
 
     #downstream target reads those files in as SpatRaster objects
+    #TODO ideally this would only be outdated when the upstream target changes rather than the files target.  That way the tiles files could save to a tempdir() that the user doesn't touch and they could even be deleted after the downstream target runs to prevent there from being duplicates.
+
     downstream <- targets::tar_target_raw(
         name = name,
-        # command = as.expression(tarchetypes:::call_function("rast", list(sym_files))),
         command = as.expression(as.call(c(as.symbol("rast"), sym_files))),
-        # pattern = as.expression(tarchetypes:::call_function("map", list(sym_files))),
         pattern = as.expression(as.call(c(as.symbol("map"), sym_files))),
         packages = packages,
         library = library,
@@ -139,52 +188,3 @@ tar_terra_tiles_raw <- function(
     out
 }
 
-#' @export
-tar_terra_tiles <- function(
-        name,
-        raster,
-        template, #E.g. terra::rast(ncols = 3, nrows = 3)
-        tiles_dir, #dir to save tiles to disk.  Can't be inside _targets/ store
-        filetype = geotargets_option_get("gdal.raster.driver"),
-        gdal = geotargets_option_get("gdal.raster.creation.options"),
-        ...,
-        packages = targets::tar_option_get("packages"),
-        library = targets::tar_option_get("library"),
-        repository = targets::tar_option_get("repository"),
-        iteration = targets::tar_option_get("iteration"),
-        error = targets::tar_option_get("error"),
-        memory = targets::tar_option_get("memory"),
-        garbage_collection = targets::tar_option_get("garbage_collection"),
-        deployment = targets::tar_option_get("deployment"),
-        priority = targets::tar_option_get("priority"),
-        resources = targets::tar_option_get("resources"),
-        storage = targets::tar_option_get("storage"),
-        retrieval = targets::tar_option_get("retrieval"),
-        cue = targets::tar_option_get("cue"),
-        description = targets::tar_option_get("description")
-) {
-    name <- targets::tar_deparse_language(substitute(name))
-    tar_terra_tiles_raw(
-        name = name,
-        raster = rlang::enexpr(raster),
-        template = rlang::enexpr(template),
-        tiles_dir = tiles_dir,
-        filetype = filetype,
-        gdal = gdal,
-        ...,
-        packages = packages,
-        library = library,
-        repository = repository,
-        iteration = iteration,
-        error = error,
-        memory = memory,
-        garbage_collection = garbage_collection,
-        deployment = deployment,
-        priority = priority,
-        resources = resources,
-        storage = storage,
-        retrieval = retrieval,
-        cue = cue,
-        description = description
-    )
-}
