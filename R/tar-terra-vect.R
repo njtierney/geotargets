@@ -8,6 +8,7 @@
 #'   passed to [terra::writeVector()].
 #' @param ... Additional arguments not yet used
 #' @inheritParams targets::tar_target
+#' @returns target class "tar_stem" for use in a target pipeline
 #'
 #' @note Although you may pass any supported GDAL vector driver to the
 #'   `filetype` argument, not all formats are guaranteed to work with

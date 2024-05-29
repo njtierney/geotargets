@@ -4,9 +4,9 @@
 \name{geotargets-package}
 \alias{geotargets}
 \alias{geotargets-package}
-\title{geotargets: Targets extensions for geospatial formats}
+\title{geotargets: 'Targets' Extensions for Geospatial Formats}
 \description{
-Provides extensions for various geospatial file formats, such as shapefiles and rasters. See the vignettes for worked examples and demonstrations and explanations of how to use the various package extensions.
+Provides extensions for various geospatial file formats, such as shapefiles and rasters. Currently provides support for the 'terra' geospatial formats. See the vignettes for worked examples, demonstrations, and explanations of how to use the various package extensions.
 }
 \seealso{
 Useful links:
