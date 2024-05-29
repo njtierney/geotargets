@@ -22,6 +22,11 @@ targets::tar_test("tar_terra_tiles() works", {
             )
         )
     })
+    manifest <- targets::tar_manifest()
+    #check that the command is correct
+    expect_match(manifest[manifest$name == "rast_split_tile", ][["command"]], "terra::makeTiles\\(my_map, terra::rast\\(ncols = 2, nrows = 2")
+    expect_equal(manifest[manifest$name == "rast_split_files",][["command"]], "rast_split_tile")
+    expect_equal(manifest[manifest$name == "rast_split",][["command"]], "rast(rast_split_files)")
     targets::tar_make()
     expect_true(all(is.na(targets::tar_meta()$error)))
 })
