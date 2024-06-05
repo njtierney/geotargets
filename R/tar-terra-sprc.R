@@ -61,7 +61,8 @@ tar_terra_sprc <- function(name,
                            resources = targets::tar_option_get("resources"),
                            storage = targets::tar_option_get("storage"),
                            retrieval = targets::tar_option_get("retrieval"),
-                           cue = targets::tar_option_get("cue")) {
+                           cue = targets::tar_option_get("cue"),
+                           description = targets::tar_option_get("description")) {
   check_pkg_installed("terra")
     #ensure that user-passed `resources` doesn't include `custom_format`
     if ("custom_format" %in% names(resources)) {
@@ -142,6 +143,7 @@ tar_terra_sprc <- function(name,
         ), resources),
     storage = storage,
     retrieval = retrieval,
-    cue = cue
+    cue = cue,
+    description = description
   )
 }

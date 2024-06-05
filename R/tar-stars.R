@@ -50,7 +50,8 @@ tar_stars <- function(name,
                       resources = targets::tar_option_get("resources"),
                       storage = targets::tar_option_get("storage"),
                       retrieval = targets::tar_option_get("retrieval"),
-                      cue = targets::tar_option_get("cue")) {
+                      cue = targets::tar_option_get("cue"),
+                      description = targets::tar_option_get("description")) {
 
     check_pkg_installed("stars")
 
@@ -91,7 +92,8 @@ tar_stars <- function(name,
         resources = resources,
         storage = storage,
         retrieval = retrieval,
-        cue = cue
+        cue = cue,
+        description = description
     )
 }
 
@@ -118,7 +120,8 @@ tar_stars_proxy <- function(name,
                             resources = targets::tar_option_get("resources"),
                             storage = targets::tar_option_get("storage"),
                             retrieval = targets::tar_option_get("retrieval"),
-                            cue = targets::tar_option_get("cue")) {
+                            cue = targets::tar_option_get("cue"),
+                            description = targets::tar_option_get("description")) {
 
     check_pkg_installed("stars")
 
@@ -160,7 +163,8 @@ tar_stars_proxy <- function(name,
         resources = resources,
         storage = storage,
         retrieval = retrieval,
-        cue = cue
+        cue = cue,
+        description = description
     )
 }
 
@@ -189,7 +193,8 @@ tar_stars_raw <- function(name,
                           resources = targets::tar_option_get("resources"),
                           storage = targets::tar_option_get("storage"),
                           retrieval = targets::tar_option_get("retrieval"),
-                          cue = targets::tar_option_get("cue")) {
+                          cue = targets::tar_option_get("cue"),
+                          description = targets::tar_option_get("description")) {
 
     driver <- driver %||% "GTiff"
     options <- options %||% character(0)
@@ -278,6 +283,7 @@ tar_stars_raw <- function(name,
         ), resources),
         storage = storage,
         retrieval = retrieval,
-        cue = cue
+        cue = cue,
+        description = description
     )
 }
