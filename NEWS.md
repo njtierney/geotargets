@@ -1,6 +1,7 @@
 # geotargets (development version)
 
 * Created `tar_stars()` and `tar_stars_proxy()` that create `stars` and `stars_proxy` objects, respectively.
+* Added the `description` argument to all `tar_*()` functions which is passed to `tar_target()`
 
 # geotargets 0.1.0 (14 May 2024)
 
