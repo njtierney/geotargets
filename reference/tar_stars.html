@@ -74,7 +74,8 @@
 <span>  resources <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"resources"</span><span class="op">)</span>,</span>
 <span>  storage <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"storage"</span><span class="op">)</span>,</span>
 <span>  retrieval <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"retrieval"</span><span class="op">)</span>,</span>
-<span>  cue <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"cue"</span><span class="op">)</span></span>
+<span>  cue <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"cue"</span><span class="op">)</span>,</span>
+<span>  description <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"description"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">tar_stars_proxy</span><span class="op">(</span></span>
@@ -99,7 +100,8 @@
 <span>  resources <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"resources"</span><span class="op">)</span>,</span>
 <span>  storage <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"storage"</span><span class="op">)</span>,</span>
 <span>  retrieval <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"retrieval"</span><span class="op">)</span>,</span>
-<span>  cue <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"cue"</span><span class="op">)</span></span>
+<span>  cue <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"cue"</span><span class="op">)</span>,</span>
+<span>  description <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"description"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -328,6 +330,17 @@ explicitly from another language.</p></li>
 <dt>cue</dt>
 <dd><p>An optional object from <code><a href="https://docs.ropensci.org/targets/reference/tar_cue.html" class="external-link">tar_cue()</a></code> to customize the
 rules that decide whether the target is up to date.</p></dd>
+
+
+<dt>description</dt>
+<dd><p>Character of length 1, a custom free-form human-readable
+text description of the target. Descriptions appear as target labels
+in functions like <code><a href="https://docs.ropensci.org/targets/reference/tar_manifest.html" class="external-link">tar_manifest()</a></code> and <code><a href="https://docs.ropensci.org/targets/reference/tar_visnetwork.html" class="external-link">tar_visnetwork()</a></code>,
+and they let you select subsets of targets for the <code>names</code> argument of
+functions like <code><a href="https://docs.ropensci.org/targets/reference/tar_make.html" class="external-link">tar_make()</a></code>. For example,
+<code>tar_manifest(names = tar_described_as(starts_with("survival model")))</code>
+lists all the targets whose descriptions start with the character
+string <code>"survival model"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
