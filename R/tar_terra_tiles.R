@@ -5,28 +5,20 @@
 #' be iterated over, potentially using parallel workers.
 #'
 #' @param raster a `SpatRaster` object to be split into tiles
-#' @param template passed to the `y` argument of [terra::makeTiles()]—a
-#'   `SpatRaster` or `SpatVector` defining the zones; or numeric specifying the
-#'   number of rows and columns for each zone (1 or 2 numbers if the number of
-#'   rows and columns is not the same)
-#' @param tiles_dir path to a directory to save the tiles to disk
+#' @param ncol ncol
+#' @param nrow nrow
 #' @param filetype character. File format expressed as GDAL driver names passed
 #'   to [terra::makeTiles()]
 #' @param gdal character. GDAL driver specific datasource creation options
 #'   passed to [terra::makeTiles()]
-#' @param format character of length 1.  Must be either "file" or "file_fast"
-#'   (ee the `format` argument of [targets::tar_target()] for details). Applies
-#'   only to the files target (see Value section)—use the `filetype` argument to
-#'   set the file format for raster targets.
 #'
 #' @param ... additional arguments not yet used
 #' @inheritParams targets::tar_target
 #' @author Eric Scott
-#' @returns A list of three targets, an upstream target that splits the raster
-#'   into tiles and saves them with `terra::makeTiles()`, a files target that
-#'   maps over the resulting paths with dynamic branching, and a downstream
-#'   target that reads those files in with `terra::rast()`. The files and
-#'   downstream targets are both patterns.
+#'
+#' @return a list of two targets: an upstream target that creates a list of
+#'   extents and a downstream pattern that maps over these extents to create a
+#'   list of SpatRaster objects.
 #' @export
 #'
 #' @examples
@@ -49,8 +41,8 @@
 #'             tar_terra_tiles(
 #'                 name = rast_split,
 #'                 raster = my_map,
-#'                 template = terra::rast(ncols = 2, nrows = 2, ext = ext(my_map)),
-#'                 tiles_dir = tempdir()
+#'                 ncol = 2,
+#'                 nrow = 2
 #'             )
 #'         )
 #'     })
@@ -60,16 +52,14 @@
 tar_terra_tiles <- function(
         name,
         raster,
-        template, #E.g. terra::rast(ncols = 3, nrows = 3)
-        tiles_dir, #dir to save tiles to disk.  Can't be inside _targets/ store
+        ncol,
+        nrow,
         filetype = geotargets_option_get("gdal.raster.driver"),
         gdal = geotargets_option_get("gdal.raster.creation.options"),
-        format = c("file", "file_fast"),
         ...,
         packages = targets::tar_option_get("packages"),
         library = targets::tar_option_get("library"),
         repository = targets::tar_option_get("repository"),
-        iteration = targets::tar_option_get("iteration"),
         error = targets::tar_option_get("error"),
         memory = targets::tar_option_get("memory"),
         garbage_collection = targets::tar_option_get("garbage_collection"),
@@ -82,20 +72,18 @@ tar_terra_tiles <- function(
         description = targets::tar_option_get("description")
 ) {
     name <- targets::tar_deparse_language(substitute(name))
-    format <- match.arg(format)
+
     tar_terra_tiles_raw(
         name = name,
         raster = rlang::enexpr(raster),
-        template = rlang::enexpr(template),
-        tiles_dir = tiles_dir,
+        ncol = ncol,
+        nrow = nrow,
         filetype = filetype,
         gdal = gdal,
-        format = format,
         ...,
         packages = packages,
         library = library,
         repository = repository,
-        iteration = iteration,
         error = error,
         memory = memory,
         garbage_collection = garbage_collection,
@@ -109,20 +97,19 @@ tar_terra_tiles <- function(
     )
 }
 
+
 #' @noRd
 tar_terra_tiles_raw <- function(
         name,
         raster,
-        template, #E.g. terra::rast(ncols = 3, nrows = 3)
-        tiles_dir, #dir to save tiles to disk.  Can't be inside _targets/ store
+        ncol,
+        nrow,
         filetype = geotargets_option_get("gdal.raster.driver"),
         gdal = geotargets_option_get("gdal.raster.creation.options"),
-        format = c("file", "file_fast"),
         ...,
         packages = targets::tar_option_get("packages"),
         library = targets::tar_option_get("library"),
         repository = targets::tar_option_get("repository"),
-        iteration = targets::tar_option_get("iteration"),
         error = targets::tar_option_get("error"),
         memory = targets::tar_option_get("memory"),
         garbage_collection = targets::tar_option_get("garbage_collection"),
@@ -138,32 +125,20 @@ tar_terra_tiles_raw <- function(
     targets::tar_assert_scalar(name, "name must have length 1.")
     filetype <- filetype %||% "GTiff"
     gdal <- gdal %||% character(0)
-    format <- match.arg(format)
 
-    name_tiles <- paste0(name, "_tile")
-    name_files <- paste0(name, "_files")
-    sym_tiles <- as.symbol(name_tiles)
-    sym_files <- as.symbol(name_files)
+    name_exts <- paste0(name, "_exts")
+    sym_exts <- as.symbol(name_exts)
 
-    #target to create files
-    upstream <- targets::tar_target_raw(
-        name = name_tiles,
-        command = rlang::expr(
-                terra::makeTiles(
-                    !!raster,
-                    !!template,
-                    filename = file.path(!!tiles_dir, !!name_tiles),
-                    overwrite = TRUE,
-                    filetype = !!filetype,
-                    gdal = !!gdal
-                )
-        ),
+    #target to create extents to map over
+    windows <- tar_target_raw(
+        name = name_exts,
+        command = rlang::expr(create_tile_exts(!!raster, ncol = !!ncol, nrow = !!nrow)),
         pattern = NULL,
         packages = packages,
         library = library,
         format = "rds",
         repository = repository,
-        iteration = iteration,
+        iteration = "list",
         error = error,
         memory = memory,
         garbage_collection = garbage_collection,
@@ -172,38 +147,16 @@ tar_terra_tiles_raw <- function(
         resources = resources,
         storage = storage,
         retrieval = retrieval,
-        cue = targets::tar_cue(mode = "always"), #TODO find a way to make this not necessary.  If resulting files get deleted, this doesn't get invalidated when cue = cue because this target isn't format = 'file'.  Currently though, this means this potentially expensive step runs every time!
-        description = description
-    )
-
-    #files target maps over the result of upstream with format = "file"
-    files <- targets::tar_target_raw(
-        name = name_files,
-        command = as.expression(sym_tiles),
-        pattern = as.expression(as.call(c(as.symbol("map"), sym_tiles))),
-        packages = packages,
-        library = library,
-        format = format,
-        repository = repository,
-        iteration = "list", #only list works (for now at least)
-        error = error,
-        memory = memory,
-        garbage_collection = garbage_collection,
-        deployment = deployment,
-        priority = priority,
-        storage = storage,
-        retrieval = retrieval,
         cue = cue,
         description = description
     )
 
-    #downstream target reads those files in as SpatRaster objects
-    #TODO ideally this would only be outdated when the upstream target changes rather than the files target.  That way the tiles files could save to a tempdir() that the user doesn't touch and they could even be deleted after the downstream target runs to prevent there from being duplicates.
-
-    downstream <- targets::tar_target_raw(
+    # target to crop raster to extents, mapping over extents
+    tiles <- tar_target_raw(
         name = name,
-        command = as.expression(as.call(c(as.symbol("rast"), sym_files))),
-        pattern = as.expression(as.call(c(as.symbol("map"), sym_files))),
+        # command = rlang::expr(terra::crop(!!raster, !!sym_exts)),
+        command = rlang::expr(set_window(!!raster, terra::ext(!!sym_exts))),
+        pattern = as.expression(as.call(c(as.symbol("map"), sym_exts))),
         packages = packages,
         library = library,
         format = targets::tar_format(
@@ -244,11 +197,66 @@ tar_terra_tiles_raw <- function(
             ), resources),
         storage = storage,
         retrieval = retrieval,
-        cue = cue, #TODO I think if we want to be able to delete the tiles stored outside of _targets/ in `tiles_dir`, then this needs to only be invalidated when the upstream target is invalidated and not care about the files target.  Then, the upstream target doesn't need to run "always" maybe?
+        cue = cue,
         description = description
     )
-    out <- list(upstream, files, downstream)
-    names(out) <- c(name_tiles, name_files, name)
-    out
+
+    list(windows, tiles)
 }
 
+#' Copy a raster with a window
+#'
+#' Create a new SpatRaster object based on an original SpatRaster and a window.
+#' This is a wrapper around [terra::window()] which, rather than modifying the
+#' SpatRaster in place, returns a new SpatRaster leaving the original unchanged.
+#'
+#' @param raster A SpatRaster object
+#' @param window A SpatExtent object
+#'
+#' @note While this may have general use, it was created primarily for use
+#'   within [tar_terra_tiles()].
+#' @author Eric Scott
+#' @export
+#' @examples
+#' f <- system.file("ex/elev.tif", package="terra")
+#' r <- rast(f)
+#' e <- ext(c(5.9, 6,49.95, 50))
+#' r2 <- set_window(rast, e)
+#' ext(r)
+#' ext(r2)
+#'
+set_window <- function(raster, window) {
+    raster_out <- c(raster) #forces copying the raster, not just the R object pointing to the same raster in memory
+    terra::window(raster_out) <- window
+    raster_out
+}
+
+
+
+#' Create extents for raster tiles
+#'
+#' A wrapper around [terra::getTileExtents()] for creating a tile specification.
+#' Rather than having to supply a template, one is created from the original
+#' raster extent and CRS using `ncol` and `nrow`.  The output is a list of named
+#' numeric vectors that can be coerced to SpatExtent objects with
+#' [terra::ext()].
+#'
+#' @param raster a SpatRaster object
+#' @param ncol integer; number of columns to split the SpatRaster into
+#' @param nrow integer; number of rows to split the SpatRaster into
+#'
+#' @note While this may have general use, it was created primarily for use
+#'   within [tar_terra_tiles()].
+#' @author Eric Scott
+#' @return list of named numeric vectors with xmin, xmax, ymin, and ymax values
+#' @export
+#'
+#' @examples
+#' f <- system.file("ex/elev.tif", package="terra")
+#' r <- rast(f)
+#' create_tile_exts(r, ncol = 2, nrow = 2)
+create_tile_exts <- function(raster, ncol, nrow) {
+    template <- terra::rast(terra::ext(raster), ncol = ncol, nrow = nrow, crs = terra::crs(raster))
+    tile_ext <- getTileExtents(raster, template)
+    lapply(1:nrow(tile_ext), \(i) tile_ext[i,])
+}
