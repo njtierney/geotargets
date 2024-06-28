@@ -1,7 +1,8 @@
 # geotargets (development version)
 
 * Created `tar_stars()` and `tar_stars_proxy()` that create `stars` and `stars_proxy` objects, respectively.
-* Created `tar_terra_tiles()`, a "target factory" for splitting a raster into multiple targets with dynamic branching.
+* Created `tar_terra_tiles()`, a "target factory" for splitting a raster into multiple tiles with dynamic branching.
+* Created helper functions `set_window()` and `create_tile_exts()` mostly for use within `tar_terra_tiles()`.
 
 # geotargets 0.1.0 (14 May 2024)
 
