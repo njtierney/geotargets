@@ -130,7 +130,7 @@ tar_terra_tiles_raw <- function(
     sym_exts <- as.symbol(name_exts)
 
     #target to create extents to map over
-    windows <- tar_target_raw(
+    windows <- targets::tar_target_raw(
         name = name_exts,
         command = rlang::expr(create_tile_exts(!!raster, ncol = !!ncol, nrow = !!nrow)),
         pattern = NULL,
@@ -152,9 +152,8 @@ tar_terra_tiles_raw <- function(
     )
 
     # target to crop raster to extents, mapping over extents
-    tiles <- tar_target_raw(
+    tiles <- targets::tar_target_raw(
         name = name,
-        # command = rlang::expr(terra::crop(!!raster, !!sym_exts)),
         command = rlang::expr(set_window(!!raster, terra::ext(!!sym_exts))),
         pattern = as.expression(as.call(c(as.symbol("map"), sym_exts))),
         packages = packages,
@@ -219,11 +218,11 @@ tar_terra_tiles_raw <- function(
 #' @export
 #' @examples
 #' f <- system.file("ex/elev.tif", package="terra")
-#' r <- rast(f)
-#' e <- ext(c(5.9, 6,49.95, 50))
-#' r2 <- set_window(rast, e)
-#' ext(r)
-#' ext(r2)
+#' r <- terra::rast(f)
+#' e <- terra::ext(c(5.9, 6,49.95, 50))
+#' r2 <- set_window(r, e)
+#' terra::ext(r)
+#' terra::ext(r2)
 #'
 set_window <- function(raster, window) {
     raster_out <- c(raster) #forces copying the raster, not just the R object pointing to the same raster in memory
@@ -253,10 +252,10 @@ set_window <- function(raster, window) {
 #'
 #' @examples
 #' f <- system.file("ex/elev.tif", package="terra")
-#' r <- rast(f)
+#' r <- terra::rast(f)
 #' create_tile_exts(r, ncol = 2, nrow = 2)
 create_tile_exts <- function(raster, ncol, nrow) {
     template <- terra::rast(terra::ext(raster), ncol = ncol, nrow = nrow, crs = terra::crs(raster))
-    tile_ext <- getTileExtents(raster, template)
+    tile_ext <- terra::getTileExtents(raster, template)
     lapply(1:nrow(tile_ext), \(i) tile_ext[i,])
 }

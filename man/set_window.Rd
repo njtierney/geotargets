@@ -22,11 +22,11 @@ within \code{\link[=tar_terra_tiles]{tar_terra_tiles()}}.
 }
 \examples{
 f <- system.file("ex/elev.tif", package="terra")
-r <- rast(f)
-e <- ext(c(5.9, 6,49.95, 50))
-r2 <- set_window(rast, e)
-ext(r)
-ext(r2)
+r <- terra::rast(f)
+e <- terra::ext(c(5.9, 6,49.95, 50))
+r2 <- set_window(r, e)
+terra::ext(r)
+terra::ext(r2)
 
 }
 \author{

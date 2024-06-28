@@ -29,7 +29,7 @@ within \code{\link[=tar_terra_tiles]{tar_terra_tiles()}}.
 }
 \examples{
 f <- system.file("ex/elev.tif", package="terra")
-r <- rast(f)
+r <- terra::rast(f)
 create_tile_exts(r, ncol = 2, nrow = 2)
 }
 \author{
