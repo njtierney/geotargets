@@ -7,16 +7,14 @@
 tar_terra_tiles(
   name,
   raster,
-  template,
-  tiles_dir,
+  ncol,
+  nrow,
   filetype = geotargets_option_get("gdal.raster.driver"),
   gdal = geotargets_option_get("gdal.raster.creation.options"),
-  format = c("file", "file_fast"),
   ...,
   packages = targets::tar_option_get("packages"),
   library = targets::tar_option_get("library"),
   repository = targets::tar_option_get("repository"),
-  iteration = targets::tar_option_get("iteration"),
   error = targets::tar_option_get("error"),
   memory = targets::tar_option_get("memory"),
   garbage_collection = targets::tar_option_get("garbage_collection"),
@@ -48,23 +46,15 @@ on the result to locally recreate the target's initial RNG state.}
 
 \item{raster}{a \code{SpatRaster} object to be split into tiles}
 
-\item{template}{passed to the \code{y} argument of \code{\link[terra:makeTiles]{terra::makeTiles()}}—a
-\code{SpatRaster} or \code{SpatVector} defining the zones; or numeric specifying the
-number of rows and columns for each zone (1 or 2 numbers if the number of
-rows and columns is not the same)}
+\item{ncol}{ncol}
 
-\item{tiles_dir}{path to a directory to save the tiles to disk}
+\item{nrow}{nrow}
 
 \item{filetype}{character. File format expressed as GDAL driver names passed
 to \code{\link[terra:makeTiles]{terra::makeTiles()}}}
 
 \item{gdal}{character. GDAL driver specific datasource creation options
 passed to \code{\link[terra:makeTiles]{terra::makeTiles()}}}
-
-\item{format}{character of length 1.  Must be either "file" or "file_fast"
-(ee the \code{format} argument of \code{\link[targets:tar_target]{targets::tar_target()}} for details). Applies
-only to the files target (see Value section)—use the \code{filetype} argument to
-set the file format for raster targets.}
 
 \item{...}{additional arguments not yet used}
 
@@ -98,25 +88,6 @@ then the target should create a single output file.
 That output file is uploaded to the cloud and tracked for changes
 where it exists in the cloud. The local file is deleted after
 the target runs.}
-
-\item{iteration}{Character of length 1, name of the iteration mode
-of the target. Choices:
-\itemize{
-\item \code{"vector"}: branching happens with \code{vctrs::vec_slice()} and
-aggregation happens with \code{vctrs::vec_c()}.
-\item \code{"list"}, branching happens with \verb{[[]]} and aggregation happens with
-\code{list()}.
-\item \code{"group"}: \code{dplyr::group_by()}-like functionality to branch over
-subsets of a non-dynamic data frame.
-For \code{iteration = "group"}, the target must not by dynamic
-(the \code{pattern} argument of \code{\link[targets:tar_target]{tar_target()}} must be left \code{NULL}).
-The target's return value must be a data
-frame with a special \code{tar_group} column of consecutive integers
-from 1 through the number of groups. Each integer designates a group,
-and a branch is created for each collection of rows in a group.
-See the \code{\link[targets:tar_group]{tar_group()}} function to see how you can
-create the special \code{tar_group} column with \code{dplyr::group_by()}.
-}}
 
 \item{error}{Character of length 1, what to do if the target
 stops and throws an error. Options:
@@ -230,11 +201,9 @@ lists all the targets whose descriptions start with the character
 string \code{"survival model"}.}
 }
 \value{
-A list of three targets, an upstream target that splits the raster
-into tiles and saves them with \code{terra::makeTiles()}, a files target that
-maps over the resulting paths with dynamic branching, and a downstream
-target that reads those files in with \code{terra::rast()}. The files and
-downstream targets are both patterns.
+a list of two targets: an upstream target that creates a list of
+extents and a downstream pattern that maps over these extents to create a
+list of SpatRaster objects.
 }
 \description{
 This target factory is useful when a raster is too large or too high
@@ -261,8 +230,8 @@ if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
             tar_terra_tiles(
                 name = rast_split,
                 raster = my_map,
-                template = terra::rast(ncols = 2, nrows = 2, ext = ext(my_map)),
-                tiles_dir = tempdir()
+                ncol = 2,
+                nrow = 2
             )
         )
     })
