@@ -205,7 +205,7 @@ tar_terra_tiles_raw <- function(
 
 #' Copy a raster within a window
 #'
-#' Create a new SpatRaster object based on an original SpatRaster and a window.
+#' Create a new SpatRaster object as specified by a window (area of interest) over the original SpatRaster.
 #' This is a wrapper around [terra::window()] which, rather than modifying the
 #' SpatRaster in place, returns a new SpatRaster leaving the original unchanged.
 #'
