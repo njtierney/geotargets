@@ -203,7 +203,7 @@ tar_terra_tiles_raw <- function(
     list(windows, tiles)
 }
 
-#' Copy a raster with a window
+#' Copy a raster within a window
 #'
 #' Create a new SpatRaster object based on an original SpatRaster and a window.
 #' This is a wrapper around [terra::window()] which, rather than modifying the
