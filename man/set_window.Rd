@@ -2,19 +2,20 @@
 % Please edit documentation in R/tar_terra_tiles.R
 \name{set_window}
 \alias{set_window}
-\title{Copy a raster with a window}
+\title{Copy a raster within a window}
 \usage{
 set_window(raster, window)
 }
 \arguments{
-\item{raster}{A SpatRaster object}
+\item{raster}{a SpatRaster object}
 
-\item{window}{A SpatExtent object}
+\item{window}{a SpatExtent object defining the area of interest}
 }
 \description{
-Create a new SpatRaster object based on an original SpatRaster and a window.
-This is a wrapper around \code{\link[terra:window]{terra::window()}} which, rather than modifying the
-SpatRaster in place, returns a new SpatRaster leaving the original unchanged.
+Create a new SpatRaster object as specified by a window (area of interest)
+over the original SpatRaster. This is a wrapper around \code{\link[terra:window]{terra::window()}}
+which, rather than modifying the SpatRaster in place, returns a new
+SpatRaster leaving the original unchanged.
 }
 \note{
 While this may have general use, it was created primarily for use

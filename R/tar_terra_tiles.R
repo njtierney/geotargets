@@ -5,8 +5,8 @@
 #' be iterated over, potentially using parallel workers.
 #'
 #' @param raster a `SpatRaster` object to be split into tiles
-#' @param ncol ncol
-#' @param nrow nrow
+#' @param ncol integer; number of columns to split the SpatRaster into
+#' @param nrow integer; number of rows to split the SpatRaster into
 #' @param filetype character. File format expressed as GDAL driver names passed
 #'   to [terra::makeTiles()]
 #' @param gdal character. GDAL driver specific datasource creation options
@@ -205,12 +205,13 @@ tar_terra_tiles_raw <- function(
 
 #' Copy a raster within a window
 #'
-#' Create a new SpatRaster object as specified by a window (area of interest) over the original SpatRaster.
-#' This is a wrapper around [terra::window()] which, rather than modifying the
-#' SpatRaster in place, returns a new SpatRaster leaving the original unchanged.
+#' Create a new SpatRaster object as specified by a window (area of interest)
+#' over the original SpatRaster. This is a wrapper around [terra::window()]
+#' which, rather than modifying the SpatRaster in place, returns a new
+#' SpatRaster leaving the original unchanged.
 #'
-#' @param raster A SpatRaster object
-#' @param window A SpatExtent object
+#' @param raster a SpatRaster object
+#' @param window a SpatExtent object defining the area of interest
 #'
 #' @note While this may have general use, it was created primarily for use
 #'   within [tar_terra_tiles()].

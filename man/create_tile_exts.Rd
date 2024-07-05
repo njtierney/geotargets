@@ -30,7 +30,8 @@ within \code{\link[=tar_terra_tiles]{tar_terra_tiles()}}.
 \examples{
 f <- system.file("ex/elev.tif", package="terra")
 r <- terra::rast(f)
-create_tile_exts(r, ncol = 2, nrow = 2)
+r_tiles <- create_tile_exts(r, ncol = 2, nrow = 2)
+r_tiles
 }
 \author{
 Eric Scott

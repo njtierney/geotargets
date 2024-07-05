@@ -46,9 +46,9 @@ on the result to locally recreate the target's initial RNG state.}
 
 \item{raster}{a \code{SpatRaster} object to be split into tiles}
 
-\item{ncol}{ncol}
+\item{ncol}{integer; number of columns to split the SpatRaster into}
 
-\item{nrow}{nrow}
+\item{nrow}{integer; number of rows to split the SpatRaster into}
 
 \item{filetype}{character. File format expressed as GDAL driver names passed
 to \code{\link[terra:makeTiles]{terra::makeTiles()}}}
