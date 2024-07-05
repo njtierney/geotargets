@@ -253,9 +253,10 @@ set_window <- function(raster, window) {
 #' @examples
 #' f <- system.file("ex/elev.tif", package="terra")
 #' r <- terra::rast(f)
-#' create_tile_exts(r, ncol = 2, nrow = 2)
+#' r_tiles <- create_tile_exts(r, ncol = 2, nrow = 2)
+#' r_tiles
 create_tile_exts <- function(raster, ncol, nrow) {
     template <- terra::rast(terra::ext(raster), ncol = ncol, nrow = nrow, crs = terra::crs(raster))
     tile_ext <- terra::getTileExtents(raster, template)
-    lapply(1:nrow(tile_ext), \(i) tile_ext[i,])
+    lapply(seq_len(nrow(tile_ext)), \(i) tile_ext[i,])
 }
