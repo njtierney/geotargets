@@ -1,45 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://njtierney.github.io/geotargets/404.html</loc>
-  </url>
-  <url>
-    <loc>https://njtierney.github.io/geotargets/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>https://njtierney.github.io/geotargets/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://njtierney.github.io/geotargets/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://njtierney.github.io/geotargets/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://njtierney.github.io/geotargets/index.html</loc>
-  </url>
-  <url>
-    <loc>https://njtierney.github.io/geotargets/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://njtierney.github.io/geotargets/reference/geotargets-options.html</loc>
-  </url>
-  <url>
-    <loc>https://njtierney.github.io/geotargets/reference/geotargets-package.html</loc>
-  </url>
-  <url>
-    <loc>https://njtierney.github.io/geotargets/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://njtierney.github.io/geotargets/reference/tar_stars.html</loc>
-  </url>
-  <url>
-    <loc>https://njtierney.github.io/geotargets/reference/tar_terra_rast.html</loc>
-  </url>
-  <url>
-    <loc>https://njtierney.github.io/geotargets/reference/tar_terra_sprc.html</loc>
-  </url>
-  <url>
-    <loc>https://njtierney.github.io/geotargets/reference/tar_terra_vect.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://njtierney.github.io/geotargets/404.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/LICENSE-text.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/LICENSE.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/authors.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/index.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/news/index.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/reference/create_tile_exts.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/reference/geotargets-options.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/reference/geotargets-package.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/reference/index.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/reference/set_window.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/reference/tar_stars.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/reference/tar_terra_rast.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/reference/tar_terra_sprc.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/reference/tar_terra_tiles.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/reference/tar_terra_vect.html</loc></url>
 </urlset>
+
