@@ -257,7 +257,20 @@ set_window <- function(raster, window) {
 #' r_tiles <- create_tile_exts(r, ncol = 2, nrow = 2)
 #' r_tiles
 create_tile_exts <- function(raster, ncol, nrow) {
-    template <- terra::rast(terra::ext(raster), ncol = ncol, nrow = nrow, crs = terra::crs(raster))
-    tile_ext <- terra::getTileExtents(raster, template)
-    lapply(seq_len(nrow(tile_ext)), \(i) tile_ext[i,])
+    template <- terra::rast(
+        x = terra::ext(raster),
+        ncol = ncol,
+        nrow = nrow,
+        crs = terra::crs(raster)
+        )
+    tile_ext <- terra::getTileExtents(
+        x = raster,
+        template
+        )
+    n_tiles <- seq_len(nrow(tile_ext))
+    tile_list <- lapply(
+        n_tiles,
+        \(i) tile_ext[i,]
+        )
+    tile_list
 }
