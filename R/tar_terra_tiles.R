@@ -21,7 +21,7 @@
 #'   extents and a downstream pattern that maps over these extents to create a
 #'   list of SpatRaster objects.
 #'
-#' @seealso [tile_helpers], [tar_terra_rast()]
+#' @seealso [tile_n()], [tile_blocksize()], [tar_terra_rast()]
 #' @export
 #'
 #' @examples

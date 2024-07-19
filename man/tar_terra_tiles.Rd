@@ -241,7 +241,7 @@ if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
 }
 }
 \seealso{
-\link{tile_helpers}, \code{\link[=tar_terra_rast]{tar_terra_rast()}}
+\code{\link[=tile_n]{tile_n()}}, \code{\link[=tile_blocksize]{tile_blocksize()}}, \code{\link[=tar_terra_rast]{tar_terra_rast()}}
 }
 \author{
 Eric Scott
