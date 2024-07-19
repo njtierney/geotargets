@@ -7,8 +7,7 @@
 tar_terra_tiles(
   name,
   raster,
-  ncol,
-  nrow,
+  tile_fun,
   filetype = geotargets_option_get("gdal.raster.driver"),
   gdal = geotargets_option_get("gdal.raster.creation.options"),
   ...,
@@ -46,9 +45,11 @@ on the result to locally recreate the target's initial RNG state.}
 
 \item{raster}{a \code{SpatRaster} object to be split into tiles}
 
-\item{ncol}{integer; number of columns to split the SpatRaster into}
-
-\item{nrow}{integer; number of rows to split the SpatRaster into}
+\item{tile_fun}{a helper function that returns a list of numeric vectors such as \link{tile_n} or \link{tile_blocksize} specified in one of the following ways:
+\itemize{
+\item A named function, e.g. \code{tile_blocksize} or \code{"tile_blocksize"}
+\item An anonymous function, e.g. \verb{\\(x) tile_n(x, nrow = 2, ncol = 2)}
+}}
 
 \item{filetype}{character. File format expressed as GDAL driver names passed
 to \code{\link[terra:makeTiles]{terra::makeTiles()}}}
@@ -238,6 +239,9 @@ if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
     targets::tar_manifest()
   })
 }
+}
+\seealso{
+\link{tile_helpers}, \code{\link[=tar_terra_rast]{tar_terra_rast()}}
 }
 \author{
 Eric Scott
