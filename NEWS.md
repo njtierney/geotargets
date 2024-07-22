@@ -4,7 +4,7 @@
 * Created `tar_terra_tiles()`, a "target factory" for splitting a raster into multiple tiles with dynamic branching.
 * Created helper functions `set_window()` and `create_tile_exts()` mostly for use within `tar_terra_tiles()`.
 * Added the `description` argument to all `tar_*()` functions which is passed to `tar_target()`
-* Hard-codes the `iteration` argument for `tar_terra_rast()` and `tar_terra_vect()` to `"lists"` since the other options don't work.
+* Hard-codes the `iteration` argument for `tar_terra_*()` and `tar_stars()`, to `"lists"` since the other options don't work.
 
 # geotargets 0.1.0 (14 May 2024)
 
