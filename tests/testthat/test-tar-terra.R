@@ -36,6 +36,27 @@ targets::tar_test("tar_terra_rast() works with multiple workers (tests marshalin
     expect_s4_class(targets::tar_read(rast1), "SpatRaster")
 })
 
+targets::tar_test("tar_terra_rast() works with dynamic branching", {
+    targets::tar_script({
+        list(
+            targets::tar_target(
+                to_add,
+                c(1,2)
+            ),
+            geotargets::tar_terra_rast(
+                my_map,
+                terra::rast(system.file("ex/elev.tif", package = "terra"))
+            ),
+            geotargets::tar_terra_rast(
+                my_map_plus,
+                my_map + to_add,
+                pattern = to_add
+            )
+        )
+    })
+    targets::tar_make()
+    expect_length(targets::tar_read(my_map_plus), 2)
+})
 targets::tar_test("tar_terra_vect() works", {
     targets::tar_script({
         lux_area <- function(projection = "EPSG:4326") {
@@ -85,6 +106,28 @@ targets::tar_test("tar_terra_vect() works with multiple workers (tests marshalin
     targets::tar_make()
     expect_true(all(is.na(targets::tar_meta()$error)))
     expect_s4_class(targets::tar_read(vect1), "SpatVector")
+})
+
+targets::tar_test("tar_terra_vect() works with dynamic branching", {
+    targets::tar_script({
+        list(
+            geotargets::tar_terra_vect(
+                my_vect,
+                terra::vect(system.file("ex", "lux.shp",package = "terra"))
+            ),
+            targets::tar_target(
+                to_sub,
+                c("Clervaux", "Redange")
+            ),
+            geotargets::tar_terra_vect(
+                my_vect_subs,
+                my_vect[my_vect$NAME_2 == to_sub],
+                pattern = to_sub
+            )
+        )
+    })
+    targets::tar_make()
+    expect_length(targets::tar_read(my_vect_subs), 2)
 })
 
 targets::tar_test("user resources are passed correctly", {

@@ -78,3 +78,25 @@ targets::tar_test("tar_stars(mdim=TRUE, ncdf=TRUE) works", {
   expect_s3_class(x, "stars")
   expect_snapshot(x)
 })
+
+targets::tar_test("tar_stars() works with dynamic branching", {
+    targets::tar_script({
+        list(
+            geotargets::tar_stars(
+                test_stars,
+                stars::read_stars(system.file("tif", "olinda_dem_utm25s.tif", package = "stars"))
+            ),
+            targets::tar_target(
+                to_add,
+                c(1,2)
+            ),
+            geotargets::tar_stars(
+                test_stars_plus,
+                test_stars + to_add,
+                pattern = map(to_add)
+            )
+        )
+    })
+    targets::tar_make()
+    expect_length(targets::tar_read(test_stars_plus), 2)
+})
