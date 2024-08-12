@@ -244,7 +244,7 @@ set_window <- function(raster, window) {
 #' `tile_blocksize()` creates extents using the raster's native blocksize (see
 #' [terra::fileBlocksize()]), which should be more memory efficient. `tile_grid()`
 #' allows specification of a number of rows and columns to split the raster
-#' into.  E.g. nrow = 2 and ncol = 2 would create 4 tiles.
+#' into.  E.g. nrow = 2 and ncol = 2 would create 4 tiles (because it specifies a 2x2 matrix, which has 4 elements).
 #'
 #' @param raster a SpatRaster object
 #' @param ncol integer; number of columns to split the SpatRaster into
