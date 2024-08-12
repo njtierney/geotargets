@@ -2,8 +2,9 @@
 
 * Created `tar_stars()` and `tar_stars_proxy()` that create `stars` and `stars_proxy` objects, respectively.
 * Created `tar_terra_tiles()`, a "target factory" for splitting a raster into multiple tiles with dynamic branching.
-* Created helper functions `set_window()` and `create_tile_exts()` mostly for use within `tar_terra_tiles()`.
-* Added the `description` argument to all `tar_*()` functions which is passed to `tar_target()`
+* Created two helper functions for use in `tar_terra_tiles()`: `tile_grid()` and `tile_blocksize()`.
+* Created utility function `set_window()` mostly for internal use within `tar_terra_tiles()`.
+* Added the `description` argument to all `tar_*()` functions which is passed to `tar_target()`.
 
 # geotargets 0.1.0 (14 May 2024)
 
