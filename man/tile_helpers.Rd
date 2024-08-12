@@ -30,7 +30,7 @@ to the \code{tile_fun} argument of \code{\link[=tar_terra_tiles]{tar_terra_tiles
 \code{tile_blocksize()} creates extents using the raster's native blocksize (see
 \code{\link[terra:readwrite]{terra::fileBlocksize()}}), which should be more memory efficient. \code{tile_grid()}
 allows specification of a number of rows and columns to split the raster
-into.  E.g. nrow = 2 and ncol = 2 would create 4 tiles.
+into.  E.g. nrow = 2 and ncol = 2 would create 4 tiles (because it specifies a 2x2 matrix, which has 4 elements).
 }
 \examples{
 f <- system.file("ex/elev.tif", package="terra")
