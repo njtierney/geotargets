@@ -5,9 +5,9 @@
 #' be iterated over, potentially using parallel workers.
 #'
 #' @param raster a `SpatRaster` object to be split into tiles
-#' @param tile_fun a helper function that returns a list of numeric vectors such as [tile_n] or [tile_blocksize] specified in one of the following ways:
+#' @param tile_fun a helper function that returns a list of numeric vectors such as [tile_grid] or [tile_blocksize] specified in one of the following ways:
 #'  - A named function, e.g. `tile_blocksize` or `"tile_blocksize"`
-#'  - An anonymous function, e.g. `\(x) tile_n(x, nrow = 2, ncol = 2)`
+#'  - An anonymous function, e.g. `\(x) tile_grid(x, nrow = 2, ncol = 2)`
 #' @param filetype character. File format expressed as GDAL driver names passed
 #'   to [terra::makeTiles()]
 #' @param gdal character. GDAL driver specific datasource creation options
@@ -21,7 +21,7 @@
 #'   extents and a downstream pattern that maps over these extents to create a
 #'   list of SpatRaster objects.
 #'
-#' @seealso [tile_n()], [tile_blocksize()], [tar_terra_rast()]
+#' @seealso [tile_grid()], [tile_blocksize()], [tar_terra_rast()]
 #' @export
 #'
 #' @examples
@@ -242,7 +242,7 @@ set_window <- function(raster, window) {
 #' to the `tile_fun` argument of [tar_terra_tiles()].
 #'
 #' `tile_blocksize()` creates extents using the raster's native blocksize (see
-#' [terra::fileBlocksize()]), which should be more memory efficient. `tile_n()`
+#' [terra::fileBlocksize()]), which should be more memory efficient. `tile_grid()`
 #' allows specification of a number of rows and columns to split the raster
 #' into.  E.g. nrow = 2 and ncol = 2 would create 4 tiles.
 #'
@@ -259,9 +259,9 @@ set_window <- function(raster, window) {
 #' @examples
 #' f <- system.file("ex/elev.tif", package="terra")
 #' r <- terra::rast(f)
-#' r_tiles <- tile_n(r, ncol = 2, nrow = 2)
+#' r_tiles <- tile_grid(r, ncol = 2, nrow = 2)
 #' r_tiles
-tile_n <- function(raster, ncol, nrow) {
+tile_grid <- function(raster, ncol, nrow) {
     template <- terra::rast(
         x = terra::ext(raster),
         ncol = ncol,

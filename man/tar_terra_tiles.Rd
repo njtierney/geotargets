@@ -45,10 +45,10 @@ on the result to locally recreate the target's initial RNG state.}
 
 \item{raster}{a \code{SpatRaster} object to be split into tiles}
 
-\item{tile_fun}{a helper function that returns a list of numeric vectors such as \link{tile_n} or \link{tile_blocksize} specified in one of the following ways:
+\item{tile_fun}{a helper function that returns a list of numeric vectors such as \link{tile_grid} or \link{tile_blocksize} specified in one of the following ways:
 \itemize{
 \item A named function, e.g. \code{tile_blocksize} or \code{"tile_blocksize"}
-\item An anonymous function, e.g. \verb{\\(x) tile_n(x, nrow = 2, ncol = 2)}
+\item An anonymous function, e.g. \verb{\\(x) tile_grid(x, nrow = 2, ncol = 2)}
 }}
 
 \item{filetype}{character. File format expressed as GDAL driver names passed
@@ -241,7 +241,7 @@ if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
 }
 }
 \seealso{
-\code{\link[=tile_n]{tile_n()}}, \code{\link[=tile_blocksize]{tile_blocksize()}}, \code{\link[=tar_terra_rast]{tar_terra_rast()}}
+\code{\link[=tile_grid]{tile_grid()}}, \code{\link[=tile_blocksize]{tile_blocksize()}}, \code{\link[=tar_terra_rast]{tar_terra_rast()}}
 }
 \author{
 Eric Scott
