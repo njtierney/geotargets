@@ -48,8 +48,7 @@ be iterated over, potentially using parallel workers.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tar_terra_tiles</span><span class="op">(</span></span>
 <span>  <span class="va">name</span>,</span>
 <span>  <span class="va">raster</span>,</span>
-<span>  <span class="va">ncol</span>,</span>
-<span>  <span class="va">nrow</span>,</span>
+<span>  <span class="va">tile_fun</span>,</span>
 <span>  filetype <span class="op">=</span> <span class="fu"><a href="geotargets-options.html">geotargets_option_get</a></span><span class="op">(</span><span class="st">"gdal.raster.driver"</span><span class="op">)</span>,</span>
 <span>  gdal <span class="op">=</span> <span class="fu"><a href="geotargets-options.html">geotargets_option_get</a></span><span class="op">(</span><span class="st">"gdal.raster.creation.options"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span>,</span>
@@ -95,12 +94,10 @@ on the result to locally recreate the target's initial RNG state.</p></dd>
 <dd><p>a <code>SpatRaster</code> object to be split into tiles</p></dd>
 
 
-<dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
-<dd><p>integer; number of columns to split the SpatRaster into</p></dd>
-
-
-<dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
-<dd><p>integer; number of rows to split the SpatRaster into</p></dd>
+<dt id="arg-tile-fun">tile_fun<a class="anchor" aria-label="anchor" href="#arg-tile-fun"></a></dt>
+<dd><p>a helper function that returns a list of numeric vectors such as <a href="tile_helpers.html">tile_grid</a> or <a href="tile_helpers.html">tile_blocksize</a> specified in one of the following ways:</p><ul><li><p>A named function, e.g. <code>tile_blocksize</code> or <code>"tile_blocksize"</code></p></li>
+<li><p>An anonymous function, e.g. <code>\(x) tile_grid(x, nrow = 2, ncol = 2)</code></p></li>
+</ul></dd>
 
 
 <dt id="arg-filetype">filetype<a class="anchor" aria-label="anchor" href="#arg-filetype"></a></dt>
@@ -278,6 +275,10 @@ string <code>"survival model"</code>.</p></dd>
     <p>a list of two targets: an upstream target that creates a list of
 extents and a downstream pattern that maps over these extents to create a
 list of SpatRaster objects.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="tile_helpers.html">tile_grid()</a></code>, <code><a href="tile_helpers.html">tile_blocksize()</a></code>, <code><a href="tar_terra_rast.html">tar_terra_rast()</a></code></p></div>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>

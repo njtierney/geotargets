@@ -6,7 +6,6 @@
 <url><loc>https://njtierney.github.io/geotargets/authors.html</loc></url>
 <url><loc>https://njtierney.github.io/geotargets/index.html</loc></url>
 <url><loc>https://njtierney.github.io/geotargets/news/index.html</loc></url>
-<url><loc>https://njtierney.github.io/geotargets/reference/create_tile_exts.html</loc></url>
 <url><loc>https://njtierney.github.io/geotargets/reference/geotargets-options.html</loc></url>
 <url><loc>https://njtierney.github.io/geotargets/reference/geotargets-package.html</loc></url>
 <url><loc>https://njtierney.github.io/geotargets/reference/index.html</loc></url>
@@ -16,5 +15,6 @@
 <url><loc>https://njtierney.github.io/geotargets/reference/tar_terra_sprc.html</loc></url>
 <url><loc>https://njtierney.github.io/geotargets/reference/tar_terra_tiles.html</loc></url>
 <url><loc>https://njtierney.github.io/geotargets/reference/tar_terra_vect.html</loc></url>
+<url><loc>https://njtierney.github.io/geotargets/reference/tile_helpers.html</loc></url>
 </urlset>
 
