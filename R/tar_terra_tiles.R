@@ -5,8 +5,9 @@
 #' be iterated over, potentially using parallel workers.
 #'
 #' @param raster a `SpatRaster` object to be split into tiles
-#' @param ncol integer; number of columns to split the SpatRaster into
-#' @param nrow integer; number of rows to split the SpatRaster into
+#' @param tile_fun a helper function that returns a list of numeric vectors such as [tile_grid] or [tile_blocksize] specified in one of the following ways:
+#'  - A named function, e.g. `tile_blocksize` or `"tile_blocksize"`
+#'  - An anonymous function, e.g. `\(x) tile_grid(x, nrow = 2, ncol = 2)`
 #' @param filetype character. File format expressed as GDAL driver names passed
 #'   to [terra::makeTiles()]
 #' @param gdal character. GDAL driver specific datasource creation options
@@ -19,6 +20,8 @@
 #' @return a list of two targets: an upstream target that creates a list of
 #'   extents and a downstream pattern that maps over these extents to create a
 #'   list of SpatRaster objects.
+#'
+#' @seealso [tile_grid()], [tile_blocksize()], [tar_terra_rast()]
 #' @export
 #'
 #' @examples
@@ -52,8 +55,7 @@
 tar_terra_tiles <- function(
         name,
         raster,
-        ncol,
-        nrow,
+        tile_fun,
         filetype = geotargets_option_get("gdal.raster.driver"),
         gdal = geotargets_option_get("gdal.raster.creation.options"),
         ...,
@@ -76,8 +78,7 @@ tar_terra_tiles <- function(
     tar_terra_tiles_raw(
         name = name,
         raster = rlang::enexpr(raster),
-        ncol = ncol,
-        nrow = nrow,
+        tile_fun = rlang::enexpr(tile_fun),
         filetype = filetype,
         gdal = gdal,
         ...,
@@ -102,8 +103,7 @@ tar_terra_tiles <- function(
 tar_terra_tiles_raw <- function(
         name,
         raster,
-        ncol,
-        nrow,
+        tile_fun,
         filetype = geotargets_option_get("gdal.raster.driver"),
         gdal = geotargets_option_get("gdal.raster.creation.options"),
         ...,
@@ -129,10 +129,11 @@ tar_terra_tiles_raw <- function(
     name_exts <- paste0(name, "_exts")
     sym_exts <- as.symbol(name_exts)
 
+
     #target to create extents to map over
     windows <- targets::tar_target_raw(
         name = name_exts,
-        command = rlang::expr(create_tile_exts(!!raster, ncol = !!ncol, nrow = !!nrow)),
+        command = rlang::call2(tile_fun, raster),
         pattern = NULL,
         packages = packages,
         library = library,
@@ -233,30 +234,34 @@ set_window <- function(raster, window) {
 
 
 
-#' Create extents for raster tiles
+#' Helper functions to create tiles
 #'
-#' A wrapper around [terra::getTileExtents()] for creating a tile specification.
-#' Rather than having to supply a template, one is created from the original
-#' raster extent and CRS using `ncol` and `nrow`.  The output is a list of named
-#' numeric vectors that can be coerced to SpatExtent objects with
-#' [terra::ext()].
+#' Wrappers around [terra::getTileExtents()] that return a list of named numeric
+#' vectors describing the extents of tiles rather than `SpatExtent` objects.
+#' While these may have general use, they are intended primarily for supplying
+#' to the `tile_fun` argument of [tar_terra_tiles()].
+#'
+#' `tile_blocksize()` creates extents using the raster's native blocksize (see
+#' [terra::fileBlocksize()]), which should be more memory efficient. `tile_grid()`
+#' allows specification of a number of rows and columns to split the raster
+#' into.  E.g. nrow = 2 and ncol = 2 would create 4 tiles (because it specifies a 2x2 matrix, which has 4 elements).
 #'
 #' @param raster a SpatRaster object
 #' @param ncol integer; number of columns to split the SpatRaster into
 #' @param nrow integer; number of rows to split the SpatRaster into
 #'
-#' @note While this may have general use, it was created primarily for use
-#'   within [tar_terra_tiles()].
 #' @author Eric Scott
 #' @return list of named numeric vectors with xmin, xmax, ymin, and ymax values
+#'   that can be coerced to SpatExtent objects with [terra::ext()].
 #' @export
+#' @rdname tile_helpers
 #'
 #' @examples
 #' f <- system.file("ex/elev.tif", package="terra")
 #' r <- terra::rast(f)
-#' r_tiles <- create_tile_exts(r, ncol = 2, nrow = 2)
+#' r_tiles <- tile_grid(r, ncol = 2, nrow = 2)
 #' r_tiles
-create_tile_exts <- function(raster, ncol, nrow) {
+tile_grid <- function(raster, ncol, nrow) {
     template <- terra::rast(
         x = terra::ext(raster),
         ncol = ncol,
@@ -274,3 +279,16 @@ create_tile_exts <- function(raster, ncol, nrow) {
         )
     tile_list
 }
+
+#' @export
+#' @rdname tile_helpers
+tile_blocksize <- function(raster) {
+    tile_ext <- terra::getTileExtents(raster, terra::fileBlocksize(raster))
+    n_tiles <- seq_len(nrow(tile_ext))
+    tile_list <- lapply(
+        n_tiles,
+        \(i) tile_ext[i,]
+    )
+    tile_list
+}
+
