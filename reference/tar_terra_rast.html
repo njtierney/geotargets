@@ -50,7 +50,6 @@
 <span>  packages <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"packages"</span><span class="op">)</span>,</span>
 <span>  library <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"library"</span><span class="op">)</span>,</span>
 <span>  repository <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"repository"</span><span class="op">)</span>,</span>
-<span>  iteration <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"iteration"</span><span class="op">)</span>,</span>
 <span>  error <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"error"</span><span class="op">)</span>,</span>
 <span>  memory <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"memory"</span><span class="op">)</span>,</span>
 <span>  garbage_collection <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"garbage_collection"</span><span class="op">)</span>,</span>
@@ -150,25 +149,6 @@ then the target should create a single output file.
 That output file is uploaded to the cloud and tracked for changes
 where it exists in the cloud. The local file is deleted after
 the target runs.</p></dd>
-
-
-<dt id="arg-iteration">iteration<a class="anchor" aria-label="anchor" href="#arg-iteration"></a></dt>
-<dd><p>Character of length 1, name of the iteration mode
-of the target. Choices:</p><ul><li><p><code>"vector"</code>: branching happens with <code><a href="https://vctrs.r-lib.org/reference/vec_slice.html" class="external-link">vctrs::vec_slice()</a></code> and
-aggregation happens with <code><a href="https://vctrs.r-lib.org/reference/vec_c.html" class="external-link">vctrs::vec_c()</a></code>.</p></li>
-<li><p><code>"list"</code>, branching happens with <code>[[]]</code> and aggregation happens with
-<code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></li>
-<li><p><code>"group"</code>: <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by()</a></code>-like functionality to branch over
-subsets of a non-dynamic data frame.
-For <code>iteration = "group"</code>, the target must not by dynamic
-(the <code>pattern</code> argument of <code><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target()</a></code> must be left <code>NULL</code>).
-The target's return value must be a data
-frame with a special <code>tar_group</code> column of consecutive integers
-from 1 through the number of groups. Each integer designates a group,
-and a branch is created for each collection of rows in a group.
-See the <code><a href="https://docs.ropensci.org/targets/reference/tar_group.html" class="external-link">tar_group()</a></code> function to see how you can
-create the special <code>tar_group</code> column with <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by()</a></code>.</p></li>
-</ul></dd>
 
 
 <dt id="arg-error">error<a class="anchor" aria-label="anchor" href="#arg-error"></a></dt>
@@ -297,6 +277,11 @@ string <code>"survival model"</code>.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>target class "tar_stem" for use in a target pipeline</p>
+    </div>
+    <div class="section level2">
+    <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
+    <p>The <code>iteration</code> argument is unavailable because it is hard-coded to
+<code>"list"</code>, the only option that works currently.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
