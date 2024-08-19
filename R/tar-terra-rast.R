@@ -9,6 +9,10 @@
 #' @param ... Additional arguments not yet used
 #'
 #' @inheritParams targets::tar_target
+#'
+#' @note The `iteration` argument is unavailable because it is hard-coded to
+#'   `"list"`, the only option that works currently.
+#'
 #' @returns target class "tar_stem" for use in a target pipeline
 #' @importFrom rlang %||% arg_match0
 #' @seealso [targets::tar_target_raw()]
@@ -39,7 +43,6 @@ tar_terra_rast <- function(name,
                            packages = targets::tar_option_get("packages"),
                            library = targets::tar_option_get("library"),
                            repository = targets::tar_option_get("repository"),
-                           iteration = targets::tar_option_get("iteration"),
                            error = targets::tar_option_get("error"),
                            memory = targets::tar_option_get("memory"),
                            garbage_collection = targets::tar_option_get("garbage_collection"),
@@ -104,7 +107,7 @@ tar_terra_rast <- function(name,
             unmarshal = function(object) terra::unwrap(object)
         ),
         repository = repository,
-        iteration = iteration,
+        iteration = "list", #only "list" works right now
         error = error,
         memory = memory,
         garbage_collection = garbage_collection,

@@ -211,6 +211,10 @@ This target factory is useful when a raster is too large or too high
 resolution to work on in-memory. It can instead be split into tiles that can
 be iterated over, potentially using parallel workers.
 }
+\note{
+The \code{iteration} argument is unavailable because it is hard-coded to
+\code{"list"}, the only option that works currently.
+}
 \examples{
 if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
   targets::tar_dir({

@@ -15,7 +15,6 @@ tar_terra_vect(
   tidy_eval = targets::tar_option_get("tidy_eval"),
   library = targets::tar_option_get("library"),
   repository = targets::tar_option_get("repository"),
-  iteration = targets::tar_option_get("iteration"),
   error = targets::tar_option_get("error"),
   memory = targets::tar_option_get("memory"),
   garbage_collection = targets::tar_option_get("garbage_collection"),
@@ -96,25 +95,6 @@ then the target should create a single output file.
 That output file is uploaded to the cloud and tracked for changes
 where it exists in the cloud. The local file is deleted after
 the target runs.}
-
-\item{iteration}{Character of length 1, name of the iteration mode
-of the target. Choices:
-\itemize{
-\item \code{"vector"}: branching happens with \code{vctrs::vec_slice()} and
-aggregation happens with \code{vctrs::vec_c()}.
-\item \code{"list"}, branching happens with \verb{[[]]} and aggregation happens with
-\code{list()}.
-\item \code{"group"}: \code{dplyr::group_by()}-like functionality to branch over
-subsets of a non-dynamic data frame.
-For \code{iteration = "group"}, the target must not by dynamic
-(the \code{pattern} argument of \code{\link[targets:tar_target]{tar_target()}} must be left \code{NULL}).
-The target's return value must be a data
-frame with a special \code{tar_group} column of consecutive integers
-from 1 through the number of groups. Each integer designates a group,
-and a branch is created for each collection of rows in a group.
-See the \code{\link[targets:tar_group]{tar_group()}} function to see how you can
-create the special \code{tar_group} column with \code{dplyr::group_by()}.
-}}
 
 \item{error}{Character of length 1, what to do if the target
 stops and throws an error. Options:
@@ -234,6 +214,9 @@ target class "tar_stem" for use in a target pipeline
 Provides a target format for \link[terra:SpatVector-class]{terra::SpatVector} objects.
 }
 \note{
+The \code{iteration} argument is unavailable because it is hard-coded to
+\code{"list"}, the only option that works currently.
+
 Although you may pass any supported GDAL vector driver to the
 \code{filetype} argument, not all formats are guaranteed to work with
 \code{geotargets}.  At the moment, we have tested \code{GeoJSON} and \verb{ESRI Shapefile}

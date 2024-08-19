@@ -17,6 +17,9 @@
 #' @inheritParams targets::tar_target
 #' @author Eric Scott
 #'
+#' @note The `iteration` argument is unavailable because it is hard-coded to
+#'   `"list"`, the only option that works currently.
+#'
 #' @return a list of two targets: an upstream target that creates a list of
 #'   extents and a downstream pattern that maps over these extents to create a
 #'   list of SpatRaster objects.

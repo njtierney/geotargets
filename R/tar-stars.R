@@ -10,6 +10,10 @@
 #' @param ... Additional arguments not yet used
 #'
 #' @inheritParams targets::tar_target
+#'
+#' @note The `iteration` argument is unavailable because it is hard-coded to
+#'   `"list"`, the only option that works currently.
+#'
 #' @seealso [targets::tar_target_raw()]
 #' @export
 #' @examplesIf rlang::is_installed("stars")
@@ -41,7 +45,6 @@ tar_stars <- function(name,
                       packages = targets::tar_option_get("packages"),
                       library = targets::tar_option_get("library"),
                       repository = targets::tar_option_get("repository"),
-                      iteration = targets::tar_option_get("iteration"),
                       error = targets::tar_option_get("error"),
                       memory = targets::tar_option_get("memory"),
                       garbage_collection = targets::tar_option_get("garbage_collection"),
@@ -83,7 +86,6 @@ tar_stars <- function(name,
         packages = packages,
         library = library,
         repository = repository,
-        iteration = iteration,
         error = error,
         memory = memory,
         garbage_collection = garbage_collection,
@@ -111,7 +113,6 @@ tar_stars_proxy <- function(name,
                             packages = targets::tar_option_get("packages"),
                             library = targets::tar_option_get("library"),
                             repository = targets::tar_option_get("repository"),
-                            iteration = targets::tar_option_get("iteration"),
                             error = targets::tar_option_get("error"),
                             memory = targets::tar_option_get("memory"),
                             garbage_collection = targets::tar_option_get("garbage_collection"),
@@ -154,7 +155,6 @@ tar_stars_proxy <- function(name,
         packages = packages,
         library = library,
         repository = repository,
-        iteration = iteration,
         error = error,
         memory = memory,
         garbage_collection = garbage_collection,
@@ -184,7 +184,6 @@ tar_stars_raw <- function(name,
                           packages = targets::tar_option_get("packages"),
                           library = targets::tar_option_get("library"),
                           repository = targets::tar_option_get("repository"),
-                          iteration = targets::tar_option_get("iteration"),
                           error = targets::tar_option_get("error"),
                           memory = targets::tar_option_get("memory"),
                           garbage_collection = targets::tar_option_get("garbage_collection"),
@@ -264,7 +263,7 @@ tar_stars_raw <- function(name,
             unmarshal = function(object) object
         ),
         repository = repository,
-        iteration = iteration,
+        iteration = "list", #the only option that works
         error = error,
         memory = memory,
         garbage_collection = garbage_collection,

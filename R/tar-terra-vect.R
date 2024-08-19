@@ -8,6 +8,10 @@
 #'   passed to [terra::writeVector()].
 #' @param ... Additional arguments not yet used
 #' @inheritParams targets::tar_target
+#'
+#' @note The `iteration` argument is unavailable because it is hard-coded to
+#'   `"list"`, the only option that works currently.
+#'
 #' @returns target class "tar_stem" for use in a target pipeline
 #'
 #' @note Although you may pass any supported GDAL vector driver to the
@@ -48,7 +52,6 @@ tar_terra_vect <- function(name,
                            tidy_eval = targets::tar_option_get("tidy_eval"),
                            library = targets::tar_option_get("library"),
                            repository = targets::tar_option_get("repository"),
-                           iteration = targets::tar_option_get("iteration"),
                            error = targets::tar_option_get("error"),
                            memory = targets::tar_option_get("memory"),
                            garbage_collection = targets::tar_option_get("garbage_collection"),
@@ -103,7 +106,7 @@ tar_terra_vect <- function(name,
         library = library,
         format = format,
         repository = repository,
-        iteration = iteration,
+        iteration = "list",  #only "list" works for now
         error = error,
         memory = memory,
         garbage_collection = garbage_collection,
