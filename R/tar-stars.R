@@ -10,6 +10,10 @@
 #' @param ... Additional arguments not yet used
 #'
 #' @inheritParams targets::tar_target
+#'
+#' @note the `iteration` argument is unavailable because it is hard-coded to
+#'   `"list"`, the only option that works currently.
+#'
 #' @seealso [targets::tar_target_raw()]
 #' @export
 #' @examplesIf rlang::is_installed("stars")

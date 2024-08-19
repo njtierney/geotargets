@@ -214,6 +214,9 @@ target class "tar_stem" for use in a target pipeline
 Provides a target format for \link[terra:SpatVector-class]{terra::SpatVector} objects.
 }
 \note{
+the \code{iteration} argument is unavailable because it is hard-coded to
+\code{"list"}, the only option that works currently.
+
 Although you may pass any supported GDAL vector driver to the
 \code{filetype} argument, not all formats are guaranteed to work with
 \code{geotargets}.  At the moment, we have tested \code{GeoJSON} and \verb{ESRI Shapefile}

@@ -243,6 +243,10 @@ string \code{"survival model"}.}
 \description{
 Provides a target format for stars objects.
 }
+\note{
+the \code{iteration} argument is unavailable because it is hard-coded to
+\code{"list"}, the only option that works currently.
+}
 \examples{
 \dontshow{if (rlang::is_installed("stars")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {

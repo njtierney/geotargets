@@ -213,6 +213,10 @@ target class "tar_stem" for use in a target pipeline
 \description{
 Provides a target format for \link[terra:SpatRaster-class]{terra::SpatRaster} objects.
 }
+\note{
+the \code{iteration} argument is unavailable because it is hard-coded to
+\code{"list"}, the only option that works currently.
+}
 \examples{
 if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
  targets::tar_dir({ # tar_dir() runs code from a temporary directory.
