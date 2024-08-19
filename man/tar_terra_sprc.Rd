@@ -215,7 +215,7 @@ Provides a target format for \link[terra:SpatRaster-class]{terra::SpatRasterColl
 which have no restriction in the extent or other geometric parameters.
 }
 \note{
-the \code{iteration} argument is unavailable because it is hard-coded to
+The \code{iteration} argument is unavailable because it is hard-coded to
 \code{"list"}, the only option that works currently.
 }
 \examples{

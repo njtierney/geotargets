@@ -212,7 +212,7 @@ resolution to work on in-memory. It can instead be split into tiles that can
 be iterated over, potentially using parallel workers.
 }
 \note{
-the \code{iteration} argument is unavailable because it is hard-coded to
+The \code{iteration} argument is unavailable because it is hard-coded to
 \code{"list"}, the only option that works currently.
 }
 \examples{

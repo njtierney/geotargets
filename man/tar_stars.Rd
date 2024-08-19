@@ -244,7 +244,7 @@ string \code{"survival model"}.}
 Provides a target format for stars objects.
 }
 \note{
-the \code{iteration} argument is unavailable because it is hard-coded to
+The \code{iteration} argument is unavailable because it is hard-coded to
 \code{"list"}, the only option that works currently.
 }
 \examples{

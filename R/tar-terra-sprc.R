@@ -11,7 +11,7 @@
 #'
 #' @inheritParams targets::tar_target
 #'
-#' @note the `iteration` argument is unavailable because it is hard-coded to
+#' @note The `iteration` argument is unavailable because it is hard-coded to
 #'   `"list"`, the only option that works currently.
 #'
 #' @returns target class "tar_stem" for use in a target pipeline

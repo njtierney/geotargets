@@ -214,7 +214,7 @@ target class "tar_stem" for use in a target pipeline
 Provides a target format for \link[terra:SpatRaster-class]{terra::SpatRaster} objects.
 }
 \note{
-the \code{iteration} argument is unavailable because it is hard-coded to
+The \code{iteration} argument is unavailable because it is hard-coded to
 \code{"list"}, the only option that works currently.
 }
 \examples{

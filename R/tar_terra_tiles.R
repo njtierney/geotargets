@@ -17,7 +17,7 @@
 #' @inheritParams targets::tar_target
 #' @author Eric Scott
 #'
-#' @note the `iteration` argument is unavailable because it is hard-coded to
+#' @note The `iteration` argument is unavailable because it is hard-coded to
 #'   `"list"`, the only option that works currently.
 #'
 #' @return a list of two targets: an upstream target that creates a list of
