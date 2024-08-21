@@ -65,5 +65,7 @@ targets::tar_test("recombined tiles are equal to original", {
     targets::tar_make()
     targets::tar_load(c(my_map, rast_split))
     recombined <- terra::merge(terra::sprc(rast_split))
-    expect_equal(terra::values(my_map), terra::values(recombined))
+    names(recombined) <- names(my_map) <- 1:3 #ignore dimnames because of bug #89
+    expect_equal(terra::values(my_map),
+                 terra::values(recombined))
 })
