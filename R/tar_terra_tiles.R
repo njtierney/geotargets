@@ -286,7 +286,7 @@ tile_grid <- function(raster, ncol, nrow) {
 #' @export
 #' @rdname tile_helpers
 tile_blocksize <- function(raster) {
-    tile_ext <- terra::getTileExtents(raster, terra::fileBlocksize(raster))
+    tile_ext <- terra::getTileExtents(raster, terra::fileBlocksize(raster)[1,])
     n_tiles <- seq_len(nrow(tile_ext))
     tile_list <- lapply(
         n_tiles,
