@@ -7,7 +7,8 @@ targets::tar_test("tar_terra_tiles() works", {
         list(
             tar_target(
                 my_file,
-                system.file("ex/elev.tif", package="terra"),
+                # system.file("ex/elev.tif", package="terra"),
+                system.file("ex/logo.tif", package = "terra"),
                 format = "file"
             ),
             tar_terra_rast(
@@ -46,7 +47,8 @@ targets::tar_test("recombined tiles are equal to original", {
         list(
             tar_target(
                 my_file,
-                system.file("ex/elev.tif", package="terra"),
+                # system.file("ex/elev.tif", package="terra"),
+                system.file("ex/logo.tif", package = "terra"),
                 format = "file"
             ),
             tar_terra_rast(
