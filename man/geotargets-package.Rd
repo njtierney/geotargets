@@ -6,6 +6,8 @@
 \alias{geotargets-package}
 \title{geotargets: 'Targets' Extensions for Geospatial Formats}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Provides extensions for various geospatial file formats, such as shapefiles and rasters. Currently provides support for the 'terra' geospatial formats. See the vignettes for worked examples, demonstrations, and explanations of how to use the various package extensions.
 }
 \seealso{
