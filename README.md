@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# geotargets
+# geotargets <a href="https://njtierney.github.io/geotargets/"><img src="man/figures/logo.svg" alt="geotargets website" align="right" height="139"/></a>
 
 <!-- badges: start -->
 
@@ -100,8 +100,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target terra_rast_example
-#> ● completed target terra_rast_example [0.019 seconds]
-#> ▶ ended pipeline [0.185 seconds]
+#> ● completed target terra_rast_example [0.018 seconds]
+#> ▶ ended pipeline [0.168 seconds]
 #> class       : SpatRaster 
 #> dimensions  : 90, 95, 1  (nrow, ncol, nlyr)
 #> resolution  : 0.008333333, 0.008333333  (x, y)
@@ -139,8 +139,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target terra_vect_example
-#> ● completed target terra_vect_example [0.034 seconds]
-#> ▶ ended pipeline [0.173 seconds]
+#> ● completed target terra_vect_example [0.037 seconds]
+#> ▶ ended pipeline [0.183 seconds]
 #>  class       : SpatVector 
 #>  geometry    : polygons 
 #>  dimensions  : 12, 6  (geometries, attributes)
@@ -187,11 +187,11 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target raster_elevs
-#> ● completed target raster_elevs [0.112 seconds]
+#> ● completed target raster_elevs [0.128 seconds]
 #> ▶ ended pipeline [0.266 seconds]
 #> Warning message:
 #> [rast] skipped sub-datasets (see 'describe(sds=TRUE)'):
-#> /private/var/folders/wr/by_lst2d2fngf67mknmgf4340000gn/T/Rtmpr9sjXA/targets_1085a12a40d0c/_targets/scratch/raster_elevs
+#> /private/var/folders/wr/by_lst2d2fngf67mknmgf4340000gn/T/RtmpjrYMSQ/targets_80c86866e24b/_targets/scratch/raster_elevs
 #> class       : SpatRasterCollection 
 #> length      : 2 
 #> nrow        : 90, 115 
@@ -222,8 +222,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target test_stars
-#> ● completed target test_stars [0.053 seconds]
-#> ▶ ended pipeline [0.17 seconds]
+#> ● completed target test_stars [0.031 seconds]
+#> ▶ ended pipeline [0.139 seconds]
 #> Warning message:
 #> In CPL_write_gdal(mat, file, driver, options, type, dims, from,  :
 #>   GDAL Message 6: creation option '' is not formatted with the key=value format
@@ -251,3 +251,7 @@ extensions with `terra` maturing and approaching stability. We would
 love for people to use the package to kick the tyres. We are using it in
 our own work, but want users to know that the API could change in subtle
 or breaking ways.
+
+## Acknowledgements
+
+Logo design by Hubert Hałun at Appsilon.

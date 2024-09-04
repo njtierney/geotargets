@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# geotargets
+# geotargets <a href="https://njtierney.github.io/geotargets/"><img src="man/figures/logo.svg" alt="geotargets website" align="right" height="139"/></a> 
 
 <!-- badges: start -->
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
@@ -191,3 +191,7 @@ Please note that the geotargets project is released with a [Contributor Code of 
 ## A note on development
 
 `geotargets` is still undergoing development. We currently consider the extensions with `terra` maturing and approaching stability. We would love for people to use the package to kick the tyres. We are using it in our own work, but want users to know that the API could change in subtle or breaking ways.
+
+## Acknowledgements
+
+Logo design by Hubert Hałun at Appsilon.
