@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# geotargets <a href="https://njtierney.github.io/geotargets/"><img src="man/figures/logo.svg" alt="geotargets website" align="right" height="139"/></a>
+# geotargets <a href="https://njtierney.github.io/geotargets/"><img src="man/figures/logo.png" alt="geotargets website" align="right" height="139"/></a>
 
 <!-- badges: start -->
 
