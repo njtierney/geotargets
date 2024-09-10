@@ -7,7 +7,8 @@ targets::tar_test("tar_terra_tiles() works", {
         list(
             tar_target(
                 my_file,
-                system.file("ex/elev.tif", package="terra"),
+                # system.file("ex/elev.tif", package="terra"),
+                system.file("ex/logo.tif", package = "terra"),
                 format = "file"
             ),
             tar_terra_rast(
@@ -46,12 +47,13 @@ targets::tar_test("recombined tiles are equal to original", {
         list(
             tar_target(
                 my_file,
-                system.file("ex/elev.tif", package="terra"),
+                system.file("ex/elev.tif", package = "terra"),
                 format = "file"
             ),
             tar_terra_rast(
                 my_map,
-                terra::rast(my_file)
+                #create multi-layer raster for testing
+                rast(c(my_file, my_file))
             ),
             tar_terra_tiles(
                 name = rast_split,
@@ -63,5 +65,6 @@ targets::tar_test("recombined tiles are equal to original", {
     targets::tar_make()
     targets::tar_load(c(my_map, rast_split))
     recombined <- terra::merge(terra::sprc(rast_split))
-    expect_equal(terra::values(my_map), terra::values(recombined))
+    expect_equal(terra::values(my_map),
+                 terra::values(recombined))
 })
