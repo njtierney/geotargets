@@ -307,6 +307,11 @@ format_terra_collections <- function(type = c("sprc", "sds")) {
                       "sds" = function(path) terra::sds(path)
         ),
         write = function(object, path) {
+            gdal <- strsplit(
+                Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
+                           unset = ";"),
+                ";")[[1]]
+
             for (i in seq(object)) {
                 if (i > 1) {
                     opt <- "APPEND_SUBDATASET=YES"
@@ -318,7 +323,7 @@ format_terra_collections <- function(type = c("sprc", "sds")) {
                     filename = path,
                     filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
                     overwrite = (i == 1),
-                    gdal = opt
+                    gdal = c(opt, gdal)
                 )
             }
         },
