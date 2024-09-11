@@ -21,9 +21,14 @@ targets::tar_test("tar_terra_tiles() works", {
                 tile_fun = tile_blocksize
             ),
             tar_terra_tiles(
-                name = rast_split_n,
+                name = rast_split_grid,
                 raster = my_map,
                 tile_fun = \(x) tile_grid(x, ncol = 2, nrow = 2)
+            ),
+            tar_terra_tiles(
+                name = rast_split_n,
+                raster = my_map,
+                tile_fun = \(x) tile_n(x, n = 6)
             )
         )
     })
