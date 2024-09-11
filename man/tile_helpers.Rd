@@ -43,6 +43,31 @@ r <- terra::rast(f)
 tile_grid(r, ncol = 2, nrow = 2)
 tile_blocksize(r)
 tile_n(r, 8)
+
+\dontrun{
+#usage with tar_terra_tiles
+list(
+    tar_terra_rast(
+        my_map,
+        terra::rast(system.file("ex/logo.tif", package = "terra"))
+    ),
+    tar_terra_tiles(
+        name = rast_split,
+        raster = my_map,
+        tile_fun = tile_blocksize
+    ),
+    tar_terra_tiles(
+        name = rast_split_grid,
+        raster = my_map,
+        tile_fun = \(x) tile_grid(x, ncol = 2, nrow = 2)
+    ),
+    tar_terra_tiles(
+        name = rast_split_n,
+        raster = my_map,
+        tile_fun = \(x) tile_n(x, n = 6)
+    )
+)
+}
 }
 \author{
 Eric Scott
