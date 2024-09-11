@@ -95,36 +95,13 @@ tar_terra_sprc <- function(name,
     tidy_eval = tidy_eval
   )
 
-  .write_terra_rasters_sprc <-
-          function(object, path) {
-              for (i in seq(object)) {
-                  if (i > 1) {
-                      opt <- "APPEND_SUBDATASET=YES"
-                  } else {
-                      opt <- ""
-                  }
-                  terra::writeRaster(
-                      x = object[i],
-                      filename = path,
-                      filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
-                      overwrite = (i == 1),
-                      gdal = opt
-                  )
-              }
-          }
-
   targets::tar_target_raw(
     name = name,
     command = command,
     pattern = pattern,
     packages = packages,
     library = library,
-    format = targets::tar_format(
-        read = function(path) terra::sprc(path),
-        write = .write_terra_rasters_sprc,
-        marshal = function(object) terra::wrap(object),
-        unmarshal = function(object) terra::unwrap(object)
-    ),
+    format = format_terra_sprc(),
     repository = repository,
     iteration = "list",
     error = error,
@@ -149,4 +126,28 @@ tar_terra_sprc <- function(name,
     cue = cue,
     description = description
   )
+}
+
+format_terra_sprc <- function() {
+    targets::tar_format(
+        read = function(path) terra::sprc(path),
+        write = function(object, path) {
+            for (i in seq(object)) {
+                if (i > 1) {
+                    opt <- "APPEND_SUBDATASET=YES"
+                } else {
+                    opt <- ""
+                }
+                terra::writeRaster(
+                    x = object[i],
+                    filename = path,
+                    filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
+                    overwrite = (i == 1),
+                    gdal = opt
+                )
+            }
+        },
+        marshal = function(object) terra::wrap(object),
+        unmarshal = function(object) terra::unwrap(object)
+    )
 }
