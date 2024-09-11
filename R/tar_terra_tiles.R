@@ -252,6 +252,7 @@ set_window <- function(raster, window) {
 #' @param raster a SpatRaster object
 #' @param ncol integer; number of columns to split the SpatRaster into
 #' @param nrow integer; number of rows to split the SpatRaster into
+#' @param n integer; total number of tiles to split the SpatRaster into
 #'
 #' @author Eric Scott
 #' @return list of named numeric vectors with xmin, xmax, ymin, and ymax values
@@ -262,8 +263,9 @@ set_window <- function(raster, window) {
 #' @examples
 #' f <- system.file("ex/elev.tif", package="terra")
 #' r <- terra::rast(f)
-#' r_tiles <- tile_grid(r, ncol = 2, nrow = 2)
-#' r_tiles
+#' tile_grid(r, ncol = 2, nrow = 2)
+#' tile_blocksize(r)
+#' tile_n(r, 8)
 tile_grid <- function(raster, ncol, nrow) {
     template <- terra::rast(
         x = terra::ext(raster),
@@ -295,3 +297,44 @@ tile_blocksize <- function(raster) {
     tile_list
 }
 
+#' @export
+#' @rdname tile_helpers
+tile_n <- function(raster, n) {
+    if (!rlang::is_integerish(n)) {
+        rlang::abort("`n` must be an integer.")
+    }
+    sq <- sqrt(n)
+    sq_round <- floor(sq)
+    quotient <- n/sq_round
+
+    if (rlang::is_integerish(quotient)) { #if even
+        nrow <- sq_round
+        ncol <- n/nrow
+    } else { #if odd
+        nrow <- sq_round
+        ncol <- ceiling(quotient) #round up
+
+        # #alternatively, only use rows??
+        # nrow <- n
+        # ncol <- 1
+    }
+
+    cli::cli_inform("creating {nrow} * {ncol} = {nrow*ncol} tile extents")
+    template <- terra::rast(
+        x = terra::ext(raster),
+        ncol = ncol,
+        nrow = nrow,
+        crs = terra::crs(raster)
+    )
+
+    tile_ext <- terra::getTileExtents(
+        x = raster,
+        template
+    )
+    n_tiles <- seq_len(nrow(tile_ext))
+    tile_list <- lapply(
+        n_tiles,
+        \(i) tile_ext[i,]
+    )
+    tile_list
+}
