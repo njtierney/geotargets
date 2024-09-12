@@ -3,11 +3,14 @@
 \name{tile_grid}
 \alias{tile_grid}
 \alias{tile_blocksize}
+\alias{tile_n}
 \title{Helper functions to create tiles}
 \usage{
 tile_grid(raster, ncol, nrow)
 
 tile_blocksize(raster)
+
+tile_n(raster, n)
 }
 \arguments{
 \item{raster}{a SpatRaster object}
@@ -15,6 +18,8 @@ tile_blocksize(raster)
 \item{ncol}{integer; number of columns to split the SpatRaster into}
 
 \item{nrow}{integer; number of rows to split the SpatRaster into}
+
+\item{n}{integer; total number of tiles to split the SpatRaster into}
 }
 \value{
 list of named numeric vectors with xmin, xmax, ymin, and ymax values
@@ -35,8 +40,34 @@ into.  E.g. nrow = 2 and ncol = 2 would create 4 tiles (because it specifies a 2
 \examples{
 f <- system.file("ex/elev.tif", package="terra")
 r <- terra::rast(f)
-r_tiles <- tile_grid(r, ncol = 2, nrow = 2)
-r_tiles
+tile_grid(r, ncol = 2, nrow = 2)
+tile_blocksize(r)
+tile_n(r, 8)
+
+\dontrun{
+#usage with tar_terra_tiles
+list(
+    tar_terra_rast(
+        my_map,
+        terra::rast(system.file("ex/logo.tif", package = "terra"))
+    ),
+    tar_terra_tiles(
+        name = rast_split,
+        raster = my_map,
+        tile_fun = tile_blocksize
+    ),
+    tar_terra_tiles(
+        name = rast_split_grid,
+        raster = my_map,
+        tile_fun = \(x) tile_grid(x, ncol = 2, nrow = 2)
+    ),
+    tar_terra_tiles(
+        name = rast_split_n,
+        raster = my_map,
+        tile_fun = \(x) tile_n(x, n = 6)
+    )
+)
+}
 }
 \author{
 Eric Scott
