@@ -331,11 +331,13 @@ tile_n <- function(raster, n) {
     sq <- sqrt(n)
     sq_round <- floor(sq)
     quotient <- n/sq_round
-
-    if (rlang::is_integerish(quotient)) { #if even
+    is_even <- rlang::is_integerish(quotient)
+    is_odd <- !is_even
+    if (is_even) {
         nrow <- sq_round
         ncol <- n/nrow
-    } else { #if odd
+    }
+    if (is_odd) {
         nrow <- sq_round
         ncol <- ceiling(quotient) #round up
 
