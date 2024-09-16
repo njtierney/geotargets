@@ -245,14 +245,20 @@ set_window <- function(raster, window) {
 #' to the `tile_fun` argument of [tar_terra_tiles()].
 #'
 #' `tile_blocksize()` creates extents using the raster's native blocksize (see
-#' [terra::fileBlocksize()]), which should be more memory efficient. `tile_grid()`
-#' allows specification of a number of rows and columns to split the raster
-#' into.  E.g. nrow = 2 and ncol = 2 would create 4 tiles (because it specifies a 2x2 matrix, which has 4 elements).
+#' [terra::fileBlocksize()]), which should be more memory efficient. Create
+#' tiles with multiples of the raster's blocksize with `n_blocks_row` and
+#' `n_blocks_col`. We strongly suggest the user explore how many tiles are
+#' created by `tile_blocksize()` before creating a dynamically branched target
+#' using this helper. `tile_grid()` allows specification of a number of rows and
+#' columns to split the raster into.  E.g. nrow = 2 and ncol = 2 would create 4
+#' tiles (because it specifies a 2x2 matrix, which has 4 elements).
 #'
 #' @param raster a SpatRaster object
 #' @param ncol integer; number of columns to split the SpatRaster into
 #' @param nrow integer; number of rows to split the SpatRaster into
 #' @param n integer; total number of tiles to split the SpatRaster into
+#' @param n_blocks_row integer; multiple of blocksize to include in each tile vertically
+#' @param n_blocks_col integer; multiple of blocksize to include in each tile horizontally
 #'
 #' @author Eric Scott
 #' @return list of named numeric vectors with xmin, xmax, ymin, and ymax values
@@ -297,23 +303,27 @@ tile_grid <- function(raster, ncol, nrow) {
         ncol = ncol,
         nrow = nrow,
         crs = terra::crs(raster)
-        )
+    )
     tile_ext <- terra::getTileExtents(
         x = raster,
         template
-        )
+    )
     n_tiles <- seq_len(nrow(tile_ext))
     tile_list <- lapply(
         n_tiles,
         \(i) tile_ext[i,]
-        )
+    )
     tile_list
 }
 
 #' @export
 #' @rdname tile_helpers
-tile_blocksize <- function(raster) {
-    tile_ext <- terra::getTileExtents(raster, terra::fileBlocksize(raster)[1,])
+tile_blocksize <- function(raster, n_blocks_row = 1, n_blocks_col = 1) {
+    tile_ext <-
+        terra::getTileExtents(
+            raster,
+            terra::fileBlocksize(raster)[1,] * c(n_blocks_row, n_blocks_col)
+        )
     n_tiles <- seq_len(nrow(tile_ext))
     tile_list <- lapply(
         n_tiles,
