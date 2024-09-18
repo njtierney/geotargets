@@ -1,0 +1,75 @@
+---
+title: "Using dynamic branching to paralellize over raster tiles"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using dynamic branching to paralellize over raster tiles}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(geotargets)
+library(targets)
+library(terra)
+library(dplyr)
+```
+
+```{r}
+tar_dir({
+    tar_script({
+        library(targets)
+        library(geotargets)
+        library(terra)
+        
+        list(
+            tar_target(
+                raster_file,
+                system.file("ex/elev.tif", package="terra"),
+                format = "file"
+            ),
+            tar_terra_rast(
+                raster,
+                rast(raster_file)
+            ),
+            tar_terra_rast(
+                raster_big,
+                disagg(raster, fact = 3)
+            ),
+            tar_terra_tiles(
+                tiles_blocksize,
+                raster = raster_big,
+                tile_fun = tile_blocksize
+            ),
+            tar_terra_tiles(
+                tiles_n,
+                raster = raster_big,
+                tile_fun = \(x) tile_n(raster_big, n = 72)
+            ),
+            tar_terra_rast(
+                sqrt_blocksize,
+                sqrt(tiles_blocksize),
+                pattern = map(tiles_blocksize)
+            ),
+            tar_terra_rast(
+                sqrt_n,
+                sqrt(tiles_n),
+                pattern = map(tiles_n)
+            )
+        )
+    })
+    tar_load(raster_big)
+    tile_blocksize(raster_big) |> length()
+    tar_make()
+    tar_meta() |>
+        select(name, seconds) |> 
+        filter(name %in% c("sqrt_blocksize", "sqrt_n"))
+})
+```
+
