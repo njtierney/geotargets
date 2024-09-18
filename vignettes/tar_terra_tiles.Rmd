@@ -21,9 +21,20 @@ library(terra)
 library(dplyr)
 ```
 
+## Why split into tiles?
+
+## Tile helpers
+
+## Blocksize, what is it and why use it
+
+## Example targets pipeline
+
+Here's an example `targets` pipeline using `tar_terra_tiles()` demonstrating the improved efficiency from using tiles that are multiples of the native file blocksize over using the same number of arbitrary shaped tiles.
+
 ```{r}
 tar_dir({
     tar_script({
+        ## contents of _targets.R ##############################################
         library(targets)
         library(geotargets)
         library(terra)
@@ -64,12 +75,12 @@ tar_dir({
             )
         )
     })
-    tar_load(raster_big)
-    tile_blocksize(raster_big) |> length()
+    ############################################################################
+    
     tar_make()
     tar_meta() |>
         select(name, seconds) |> 
-        filter(name %in% c("sqrt_blocksize", "sqrt_n"))
+        filter(name %in% c("sqrt_blocksize", "bytes", "sqrt_n"))
 })
 ```
 
