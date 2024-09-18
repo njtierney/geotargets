@@ -105,7 +105,7 @@ tar_terra_tiles <- function(
 #' @noRd
 tar_terra_tiles_raw <- function(
         name,
-        raster,
+        raster, #TODO: should we require this to be a name of an upstream target?
         tile_fun,
         filetype = geotargets_option_get("gdal.raster.driver"),
         gdal = geotargets_option_get("gdal.raster.creation.options"),
@@ -159,7 +159,7 @@ tar_terra_tiles_raw <- function(
     tiles <- targets::tar_target_raw(
         name = name,
         command = rlang::expr(set_window(!!raster, terra::ext(!!sym_exts))),
-        pattern = as.expression(as.call(c(as.symbol("map"), sym_exts))),
+        pattern = rlang::expr(map(!!sym_exts)),
         packages = packages,
         library = library,
         format = targets::tar_format(
