@@ -161,6 +161,10 @@ create_format_terra_vect <- function() {
 create_format_terra_vect_shz <- function() {
 
     check_pkg_installed("terra")
+    #difficult to test
+    if (terra::gdal(lib = "gdal") < "3.1") {
+        rlang::abort("Writing a .shz file requires GDAL version 3.1 or greater")
+    }
 
     targets::tar_format(
         read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),
