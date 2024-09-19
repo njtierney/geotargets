@@ -283,17 +283,26 @@ set_window <- function(raster, window) {
 #'     tar_terra_tiles(
 #'         name = rast_split,
 #'         raster = my_map,
-#'         tile_fun = tile_blocksize
+#'         tile_fun = tile_blocksize,
+#'         description = "Each tile is 1 block"
 #'     ),
+#'     tar_terra_tiles(
+#'         name = rast_split_2blocks,
+#'         raster = my_map,
+#'         tile_fun = \(x) tile_blocksize(x, n_blocks_row = 2, n_blocks_col = 1),
+#'         description = "Each tile is 2 blocks tall, 1 block wide"
+#'     )
 #'     tar_terra_tiles(
 #'         name = rast_split_grid,
 #'         raster = my_map,
-#'         tile_fun = \(x) tile_grid(x, ncol = 2, nrow = 2)
+#'         tile_fun = \(x) tile_grid(x, ncol = 2, nrow = 2),
+#'         description = "Split into 4 tiles in a 2x2 grid"
 #'     ),
 #'     tar_terra_tiles(
 #'         name = rast_split_n,
 #'         raster = my_map,
-#'         tile_fun = \(x) tile_n(x, n = 6)
+#'         tile_fun = \(x) tile_n(x, n = 6),
+#'         description = "Split into 6 tiles"
 #'     )
 #' )
 #' }
