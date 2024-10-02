@@ -54,7 +54,6 @@ tar_terra_rast <- function(name,
                            cue = targets::tar_option_get("cue"),
                            description = targets::tar_option_get("description")) {
     filetype <- filetype %||% "GTiff"
-    gdal <- gdal %||% character(0)
 
     #check that filetype option is available
     drv <- get_gdal_available_driver_list("raster")
@@ -95,16 +94,14 @@ tar_terra_rast <- function(name,
                 terra::writeRaster(
                     object,
                     path,
-                    filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
+                    filetype = filetype,
                     overwrite = TRUE,
-                    gdal = strsplit(
-                        Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
-                                   unset = ";"),
-                        ";")[[1]]
+                    gdal = gdal
                 )
             },
             marshal = function(object) terra::wrap(object),
-            unmarshal = function(object) terra::unwrap(object)
+            unmarshal = function(object) terra::unwrap(object),
+            substitute = list(filetype = filetype, gdal = gdal)
         ),
         repository = repository,
         iteration = "list", #only "list" works right now
@@ -113,18 +110,7 @@ tar_terra_rast <- function(name,
         garbage_collection = garbage_collection,
         deployment = deployment,
         priority = priority,
-        resources = utils::modifyList(
-            targets::tar_resources(
-                custom_format = targets::tar_resources_custom_format(
-                    #these envvars are used in write function of format
-                    envvars = c(
-                        "GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
-                        "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = (
-                            paste0(gdal, collapse = ";")
-                        )
-                    )
-                )
-            ), resources),
+        resources = resources,
         storage = storage,
         retrieval = retrieval,
         cue = cue,
