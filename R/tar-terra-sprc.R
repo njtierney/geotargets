@@ -318,12 +318,26 @@ format_terra_collections <- function(type = c("sprc", "sds")) {
                 } else {
                     opt <- ""
                 }
-                terra::writeRaster(
-                    x = object[i],
-                    filename = path,
-                    filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
-                    overwrite = (i == 1),
-                    gdal = c(opt, gdal)
+                withCallingHandlers(
+                    warning = function(cnd) {
+                        # The warning message "[rast] skipped sub-datasets..."
+                        # is printed because the return value of writeRaster()
+                        # is rast(<output>).  In this context it is not
+                        # informative since the write function is sprc(), not
+                        # rast()
+                        if (grepl("\\[rast\\] skipped sub-datasets", cnd$message)) {
+                            rlang::cnd_muffle(cnd)
+                        } else {
+                            warning(cnd$message)
+                        }
+                    },
+                    terra::writeRaster(
+                        x = object[i],
+                        filename = path,
+                        filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
+                        overwrite = (i == 1),
+                        gdal = c(opt, gdal)
+                    )
                 )
             }
         },
