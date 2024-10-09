@@ -54,7 +54,7 @@ targets::tar_test("tar_terra_sds() works", {
             geotargets::tar_terra_sds(
                 raster_elevs,
                 # two rasters, one unaltered, one scaled by factor of 2
-                command = terra::sprc(list(
+                command = terra::sds(list(
                     elev_scale(1),
                     elev_scale(2)
                 ))
@@ -96,8 +96,6 @@ test_that("wrapped write function doesn't print warning", {
             warning = function(cnd) {
                 if (grepl("\\[rast\\] skipped sub-datasets", cnd$message)) {
                     rlang::cnd_muffle(cnd)
-                } else {
-                    warning(cnd$message)
                 }
             },
             terra::writeRaster(
@@ -108,5 +106,21 @@ test_that("wrapped write function doesn't print warning", {
                 gdal = "APPEND_SUBDATASET=YES"
             )
         )
+    )
+
+    #other warnings should still make it through
+    expect_warning(
+        withCallingHandlers(
+            warning = function(cnd) {
+                if (grepl("\\[rast\\] skipped sub-datasets", cnd$message)) {
+                    rlang::cnd_muffle(cnd)
+                }
+            },
+            terra::writeRaster(
+                x = object[1],
+                filename = withr::local_tempfile(fileext = ".nc")
+            )
+        ),
+        "consider writeCDF to write ncdf files"
     )
 })
