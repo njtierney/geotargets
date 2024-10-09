@@ -327,8 +327,6 @@ format_terra_collections <- function(type = c("sprc", "sds")) {
                         # rast()
                         if (grepl("\\[rast\\] skipped sub-datasets", cnd$message)) {
                             rlang::cnd_muffle(cnd)
-                        } else {
-                            warning(cnd$message)
                         }
                     },
                     terra::writeRaster(
