@@ -53,13 +53,14 @@ tar_terra_rast <- function(name,
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue"),
                            description = targets::tar_option_get("description")) {
+    check_pkg_installed("terra")
+
     filetype <- filetype %||% "GTiff"
 
     #check that filetype option is available
     drv <- get_gdal_available_driver_list("raster")
     filetype <- rlang::arg_match0(filetype, drv$name)
 
-    check_pkg_installed("terra")
 
     #ensure that user-passed `resources` doesn't include `custom_format`
     if ("custom_format" %in% names(resources)) {
