@@ -166,3 +166,38 @@ targets::tar_test("user resources are passed correctly", {
     )
 })
 
+tar_test("That changing filetype invalidates a target", {
+    targets::tar_script({
+        library(targets)
+        library(geotargets)
+        library(terra)
+
+        list(
+            tar_terra_rast(
+                r,
+                rast(system.file("ex/elev.tif", package="terra")),
+                filetype = "COG"
+            )
+        )
+    })
+    tar_make()
+    first <- tar_meta()$time[2]
+    targets::tar_script({
+        library(targets)
+        library(geotargets)
+        library(terra)
+
+        list(
+            tar_terra_rast(
+                r,
+                rast(system.file("ex/elev.tif", package="terra")),
+                filetype = "GTiff"
+            )
+        )
+    })
+    tar_make()
+    second <- tar_meta()$time[2]
+    #There's gotta be a better way to test if a target is invalidated
+    expect_gt(second, first)
+
+})
