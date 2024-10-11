@@ -71,6 +71,9 @@ tar_terra_vect <- function(name,
     drv <- get_gdal_available_driver_list("vector")
     filetype <- rlang::arg_match0(filetype, drv$name)
 
+    if (filetype == "ESRI Shapefile") {
+        check_gdal_shz(min_version = "3.1")
+    }
 
     #ensure that user-passed `resources` doesn't include `custom_format`
     if ("custom_format" %in% names(resources)) {
