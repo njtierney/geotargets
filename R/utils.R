@@ -15,15 +15,13 @@ check_pkg_installed <- function(pkg, call = rlang::caller_env()) {
   }
 }
 
-check_gdal_version <- function(min_version = "3.1") {
-    terra_gdal <- numeric_version(terra::gdal(lib = "gdal"))
-    version <- numeric_version(min_version)
-    terra_gdal < min_version
+gdal_version <- function() {
+    numeric_version(terra::gdal(lib = "gdal"))
 }
 
 check_gdal_shz <- function(min_version = "3.1",
                            call = rlang::caller_env()){
-    if (check_gdal_version(min_version)) {
+    if (gdal_version() < numeric_version(min_version)) {
         cli::cli_abort(
             message = c(
                 "Must have {.pkg GDAL} version {.val {min_version}} or greater",
