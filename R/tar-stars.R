@@ -213,7 +213,7 @@ tar_stars_raw <- function(name,
         format = targets::tar_format(
             read = function(path) {
                 if (ncdf) {
-                    check_pkg_installed("ncmeta")
+                    geotargets:::check_pkg_installed("ncmeta")
                     stars::read_ncdf(path, proxy = proxy)
                 } else if (isTRUE(mdim)) {
                     stars::read_mdim(path, proxy = proxy)
