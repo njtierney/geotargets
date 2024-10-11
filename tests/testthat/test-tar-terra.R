@@ -181,7 +181,7 @@ tar_test("That changing filetype invalidates a target", {
         )
     })
     tar_make()
-    first <- tar_meta()$time[2]
+
     targets::tar_script({
         library(targets)
         library(geotargets)
@@ -195,9 +195,5 @@ tar_test("That changing filetype invalidates a target", {
             )
         )
     })
-    tar_make()
-    second <- tar_meta()$time[2]
-    #There's gotta be a better way to test if a target is invalidated
-    expect_gt(second, first)
-
+    expect_equal(tar_outdated(), "r")
 })
