@@ -67,7 +67,12 @@ targets::tar_test("tar_terra_sds() works", {
     expect_snapshot(x)
 })
 
-#difficult to test for this warning from tar_terra_sprc() because it doesn't end up in tar_meta() (bug?)
+#difficult to test for this warning from tar_terra_sprc() because it doesn't end
+#up in tar_meta() in current version of `targets`.  Added in dev version:
+#https://github.com/ropensci/targets/discussions/1345#discussioncomment-10908585.
+#Once this is released, this test can be replaced with a targets pipeline and a
+#check on `tar_meta(target, warnings)`
+
 test_that("wrapped write function doesn't print warning", {
     f <- system.file("ex/elev.tif", package="terra")
     r <- terra::rast(f)
