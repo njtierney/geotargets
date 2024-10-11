@@ -161,6 +161,8 @@ create_format_terra_vect <- function() {
 create_format_terra_vect_shz <- function() {
 
     check_pkg_installed("terra")
+    #difficult to test
+    check_gdal_shz(min_version = "3.1")
 
     targets::tar_format(
         read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),
