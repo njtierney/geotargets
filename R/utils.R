@@ -15,6 +15,26 @@ check_pkg_installed <- function(pkg, call = rlang::caller_env()) {
   }
 }
 
+check_gdal_version <- function(min_version = "3.1") {
+    terra_gdal <- numeric_version(terra::gdal(lib = "gdal"))
+    version <- numeric_version(min_version)
+    terra_gdal < min_version
+}
+
+check_gdal_shz <- function(min_version = "3.1",
+                           call = rlang::caller_env()){
+    if (check_gdal_version(min_version)) {
+        cli::cli_abort(
+            message = c(
+                "Must have {.pkg GDAL} version {.val {min_version}} or greater",
+                "i" = "To write a {.val .shz} file requires GDAL version \\
+        {.val {min_version}} or greater"
+            ),
+            call = call
+        )
+    }
+}
+
 get_gdal_available_driver_list <- function(driver_type) {
     # get list of drivers available for writing depending on what the user's GDAL supports
     drv <- terra::gdal(drivers = TRUE)
