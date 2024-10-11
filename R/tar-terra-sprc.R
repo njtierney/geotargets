@@ -99,11 +99,11 @@ tar_terra_sprc <- function(name,
         name = name,
         command = command,
         pattern = pattern,
+        type = "sprc",
         filetype = filetype,
         gdal = gdal,
         packages = packages,
         library = library,
-        format = format_terra_collections(type = "sprc"),
         repository = repository,
         error = error,
         memory = memory,
@@ -216,12 +216,12 @@ tar_terra_sds <- function(name,
     tar_terra_collection_raw(
         name = name,
         command = command,
-        pattern = pattern,
+        type = "sds",
         filetype = filetype,
+        pattern = pattern,
         gdal = gdal,
         packages = packages,
         library = library,
-        format = format_terra_collections(type = "sds"),
         repository = repository,
         error = error,
         memory = memory,
@@ -243,12 +243,12 @@ tar_terra_sds <- function(name,
 tar_terra_collection_raw <- function(
         name,
         command,
+        type = type,
         filetype = geotargets_option_get("gdal.raster.driver"),
         gdal = geotargets_option_get("gdal.raster.creation.options"),
         pattern = NULL,
         packages = targets::tar_option_get("packages"),
         library = targets::tar_option_get("library"),
-        format = format_terra_collections(),
         repository = targets::tar_option_get("repository"),
         error = targets::tar_option_get("error"),
         memory = targets::tar_option_get("memory"),
@@ -261,13 +261,38 @@ tar_terra_collection_raw <- function(
         cue = targets::tar_option_get("cue"),
         description = targets::tar_option_get("description")
 ) {
+
     targets::tar_target_raw(
         name = name,
         command = command,
         pattern = pattern,
         packages = packages,
         library = library,
-        format = format,
+        format = targets::tar_format(
+            read = switch(type,
+                          "sprc" = function(path) terra::sprc(path),
+                          "sds" = function(path) terra::sds(path)
+            ),
+            write = function(object, path) {
+                for (i in seq(object)) {
+                    if (i > 1) {
+                        opt <- "APPEND_SUBDATASET=YES"
+                    } else {
+                        opt <- ""
+                    }
+                    terra::writeRaster(
+                        x = object[i],
+                        filename = path,
+                        filetype = filetype,
+                        overwrite = (i == 1),
+                        gdal = c(opt, gdal)
+                    )
+                }
+            },
+            marshal = function(object) terra::wrap(object),
+            unmarshal = function(object) terra::unwrap(object),
+            substitute = list(type = type, gdal = gdal, filetype = filetype)
+        ),
         repository = repository,
         iteration = "list",
         error = error,
@@ -275,18 +300,7 @@ tar_terra_collection_raw <- function(
         garbage_collection = garbage_collection,
         deployment = deployment,
         priority = priority,
-        resources = utils::modifyList(
-            targets::tar_resources(
-                custom_format = targets::tar_resources_custom_format(
-                    #these envvars are used in write function of format
-                    envvars = c(
-                        "GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
-                        "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = (
-                            paste0(gdal, collapse = ";")
-                        )
-                    )
-                )
-            ), resources),
+        resources = resources,
         storage = storage,
         retrieval = retrieval,
         cue = cue,
@@ -295,39 +309,39 @@ tar_terra_collection_raw <- function(
 }
 
 
-
-
-#' Format function for sprc and sds
-#' @noRd
-format_terra_collections <- function(type = c("sprc", "sds")) {
-    type <- match.arg(type)
-    targets::tar_format(
-        read = switch(type,
-                      "sprc" = function(path) terra::sprc(path),
-                      "sds" = function(path) terra::sds(path)
-        ),
-        write = function(object, path) {
-            gdal <- strsplit(
-                Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
-                           unset = ";"),
-                ";")[[1]]
-
-            for (i in seq(object)) {
-                if (i > 1) {
-                    opt <- "APPEND_SUBDATASET=YES"
-                } else {
-                    opt <- ""
-                }
-                terra::writeRaster(
-                    x = object[i],
-                    filename = path,
-                    filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
-                    overwrite = (i == 1),
-                    gdal = c(opt, gdal)
-                )
-            }
-        },
-        marshal = function(object) terra::wrap(object),
-        unmarshal = function(object) terra::unwrap(object)
-    )
-}
+#'
+#'
+#' #' Format function for sprc and sds
+#' #' @noRd
+#' format_terra_collections <- function(type = c("sprc", "sds")) {
+#'     type <- match.arg(type)
+#'     targets::tar_format(
+#'         read = switch(type,
+#'                       "sprc" = function(path) terra::sprc(path),
+#'                       "sds" = function(path) terra::sds(path)
+#'         ),
+#'         write = function(object, path) {
+#'             gdal <- strsplit(
+#'                 Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
+#'                            unset = ";"),
+#'                 ";")[[1]]
+#'
+#'             for (i in seq(object)) {
+#'                 if (i > 1) {
+#'                     opt <- "APPEND_SUBDATASET=YES"
+#'                 } else {
+#'                     opt <- ""
+#'                 }
+#'                 terra::writeRaster(
+#'                     x = object[i],
+#'                     filename = path,
+#'                     filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
+#'                     overwrite = (i == 1),
+#'                     gdal = c(opt, gdal)
+#'                 )
+#'             }
+#'         },
+#'         marshal = function(object) terra::wrap(object),
+#'         unmarshal = function(object) terra::unwrap(object)
+#'     )
+#' }
