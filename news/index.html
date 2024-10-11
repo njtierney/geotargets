@@ -39,6 +39,7 @@
 <li>Created utility function <code><a href="../reference/set_window.html">set_window()</a></code> mostly for internal use within <code><a href="../reference/tar_terra_tiles.html">tar_terra_tiles()</a></code>.</li>
 <li>Removes the <code>iteration</code> argument from all <code>tar_*()</code> functions. <code>iteration</code> now hard-coded as <code>"list"</code> since it is the only option that works (for now at least).</li>
 <li>Added the <code>description</code> argument to all <code>tar_*()</code> functions which is passed to <code><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target()</a></code>.</li>
+<li>Requires GDAL 3.1 or greater to use “ESRI Shapefile” driver in <code><a href="../reference/tar_terra_vect.html">tar_terra_vect()</a></code> (<a href="https://github.com/njtierney/geotargets/issues/71" class="external-link">#71</a>, <a href="https://github.com/njtierney/geotargets/issues/97" class="external-link">#97</a>)</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="geotargets-010-14-may-2024">geotargets 0.1.0 (14 May 2024)<a class="anchor" aria-label="anchor" href="#geotargets-010-14-may-2024"></a></h2>
