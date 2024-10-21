@@ -40,7 +40,7 @@ geotargets_destroy_cache <- function(name = NULL, init = FALSE) {
 #' @export
 geotargets_init_cache <- function(name = NULL) {
     cachedir <- geotargets_option_get("cache.dir")
-    target_cache_dir <- file.path(cachedir %||% "geotargets_cache", name %||% "")
+    target_cache_dir <- file.path(cachedir %||% "_geotargets", name %||% "")
     dir.create(target_cache_dir,
                showWarnings = FALSE,
                recursive = TRUE)
