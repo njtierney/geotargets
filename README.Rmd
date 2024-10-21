@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# geotargets
+# geotargets <a href="https://njtierney.github.io/geotargets/"><img src="man/figures/logo.svg" alt="geotargets website" align="right" height="139"/></a> 
 
 <!-- badges: start -->
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
@@ -22,9 +22,21 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/njtierney/geotargets/branch/master/graph/badge.svg)](https://app.codecov.io/gh/njtierney/geotargets?branch=master)
 <!-- badges: end -->
 
-`geotargets` extends targets to work with geospatial data formats, such as rasters and vectors (e.g., shapefiles). 
+`geotargets` extends [`targets`](https://github.com/ropensci/targets) to work with geospatial data formats, such as rasters and vectors (e.g., shapefiles). Currently we support raster and vector formats for the [`terra`](https://github.com/rspatial/terra) package
 
-A relatively common gotcha moment when using popular libraries like `terra` with targets is running into erros with read and write. Due to the limitations that come with the underlying C++ implementation in the `terra` library, there are specific ways to write and read these objects. See `?terra` for details. `geotargets` helps handle these write and read steps, so you don't have to worry about them and can use targets as you are used to.
+## Installation
+
+You can install the development version of geotargets like so:
+
+``` r
+install.packages("geotargets", repos = c("https://njtierney.r-universe.dev", "https://cran.r-project.org"))
+```
+
+## Why `geotargets`
+
+If you want to use geospatial data formats (such as `terra`) with the [`targets`](https://github.com/ropensci/targets) package to build analytic reproducible pipelines, it involves writing a lot of custom targets wrappers. We wrote `geotargets` so you can use geospatial data formats with `targets`.
+
+To provide more detail on this, a common problem when using popular libraries like `terra` with `targets` is running into errors with read and write. Due to the limitations that come with the underlying C++ implementation in the `terra` library, there are specific ways to write and read these objects. See `?terra` for details. `geotargets` helps handle these write and read steps, so you don't have to worry about them and can use targets as you are used to.
 
 In essence, if you've ever come across the error:
 
@@ -39,49 +51,43 @@ or
 Error: external pointer is not valid
 ```
 
-When trying to read in a geospatial raster or vector in targets, then this is for you :)
-
-## Installation
-
-You can install the development version of geotargets like so:
-
-``` r
-install.packages("geotargets", repos = c("https://njtierney.r-universe.dev", "https://cran.r-project.org"))
-```
-
-## A note on development
-
-`geotargets` is still undergoing development, and we would love for people to use the package to kick the tyres. We are using it in our own work, but want users to know that the API could change in subtle or breaking ways.
+When trying to read in a geospatial raster or vector in targets, then `geotargets` for you :)
 
 # Examples
 
-Below we show three examples of target factories:
+We currently provide support for the `terra` package with `targets`. Below we show three examples of target factories:
 
 - `tar_terra_rast()`
 - `tar_terra_vect()`
 - `tar_terra_sprc()`
+- `tar_stars()`
 
-You would use these in place of `tar_target()` in your targets pipeline, when you are doing work with terra raster or terra vector data.
+You would use these in place of `tar_target()` in your targets pipeline, when you are doing work with `terra` raster, vector, or raster collection data.
 
-It is a bit tricky to implement targets workflows in a README, but if you would like to see and download working examples for yourself, see the repo, [demo-geotargets](https://github.com/njtierney/demo-geotargets).
+If you would like to see and download working examples for yourself, see the repo, [demo-geotargets](https://github.com/njtierney/demo-geotargets).
 
 ## `tar_terra_rast()`: targets with terra rasters
 
 ```{r}
 #| label: tar-terra-rast
-#| eval: false
 library(targets)
+
 tar_dir({ # tar_dir() runs code from a temporary directory.
   tar_script({
-    library(targets)
     library(geotargets)
+    
+    get_elev <- function() {
+        terra::rast(system.file("ex", "elev.tif", package = "terra"))
+    }
+    
     list(
       tar_terra_rast(
         terra_rast_example,
-        system.file("ex/elev.tif", package = "terra") |> terra::rast()
+        get_elev()
       )
     )
   })
+  
   tar_make()
   x <- tar_read(terra_rast_example)
   x
@@ -93,18 +99,16 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
 
 ```{r}
 #| label: tar-terra-vect
-#| eval: false
 tar_dir({ # tar_dir() runs code from a temporary directory.
   tar_script({
     library(geotargets)
+    
     lux_area <- function(projection = "EPSG:4326") {
-      terra::project(
-        terra::vect(system.file("ex", "lux.shp",
-          package = "terra"
-        )),
-        projection
-      )
+      terra::project(terra::vect(system.file("ex", "lux.shp",
+                                             package = "terra")),
+                     projection)
     }
+    
     list(
       tar_terra_vect(
         terra_vect_example,
@@ -112,6 +116,7 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
       )
     )
   })
+  
   tar_make()
   x <- tar_read(terra_vect_example)
   x
@@ -123,21 +128,23 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
 
 ```{r}
 #| label: tar-terra-sprc
-#| eval: false
-targets::tar_dir({ # tar_dir() runs code from a temporary directory.
-  library(geotargets)
-  targets::tar_script({
+tar_dir({ # tar_dir() runs code from a temporary directory.
+  tar_script({
+    
+    library(geotargets)
+    
     elev_scale <- function(z = 1, projection = "EPSG:4326") {
       terra::project(
         terra::rast(system.file("ex", "elev.tif", package = "terra")) * z,
         projection
       )
     }
+    
     list(
       tar_terra_sprc(
         raster_elevs,
         # two rasters, one unaltered, one scaled by factor of 2 and
-        # reprojected to interrupted good homolosine
+        # reprojected to interrupted goode homolosine
         command = terra::sprc(list(
           elev_scale(1),
           elev_scale(2, "+proj=igh")
@@ -145,11 +152,46 @@ targets::tar_dir({ # tar_dir() runs code from a temporary directory.
       )
     )
   })
-  targets::tar_make()
-  x <- targets::tar_read(raster_elevs)
+  
+  tar_make()
+  x <- tar_read(raster_elevs)
+  x
 })
 ```
+
+
+
+## `tar_stars()`: targets with stars objects
+
+```{r}
+#| label: tar-stars
+tar_dir({ # tar_dir() runs code from a temporary directory.
+  tar_script({
+    library(geotargets)
+    
+    list(
+      tar_stars(
+        test_stars,
+        stars::read_stars(system.file("tif", "olinda_dem_utm25s.tif", package = "stars"))
+      )
+    )
+  })
+  
+  tar_make()
+  x <- tar_read(test_stars)
+  x
+})
+```
+
 
 ## Code of Conduct
 
 Please note that the geotargets project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
+
+## A note on development
+
+`geotargets` is still undergoing development. We currently consider the extensions with `terra` maturing and approaching stability. We would love for people to use the package to kick the tyres. We are using it in our own work, but want users to know that the API could change in subtle or breaking ways.
+
+## Acknowledgements
+
+Logo design by Hubert Hałun at Appsilon.

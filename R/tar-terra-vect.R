@@ -9,6 +9,11 @@
 #' @param ... Additional arguments not yet used
 #' @inheritParams targets::tar_target
 #'
+#' @note The `iteration` argument is unavailable because it is hard-coded to
+#'   `"list"`, the only option that works currently.
+#'
+#' @returns target class "tar_stem" for use in a target pipeline
+#'
 #' @note Although you may pass any supported GDAL vector driver to the
 #'   `filetype` argument, not all formats are guaranteed to work with
 #'   `geotargets`.  At the moment, we have tested `GeoJSON` and `ESRI Shapefile`
@@ -47,7 +52,6 @@ tar_terra_vect <- function(name,
                            tidy_eval = targets::tar_option_get("tidy_eval"),
                            library = targets::tar_option_get("library"),
                            repository = targets::tar_option_get("repository"),
-                           iteration = targets::tar_option_get("iteration"),
                            error = targets::tar_option_get("error"),
                            memory = targets::tar_option_get("memory"),
                            garbage_collection = targets::tar_option_get("garbage_collection"),
@@ -56,7 +60,8 @@ tar_terra_vect <- function(name,
                            resources = targets::tar_option_get("resources"),
                            storage = targets::tar_option_get("storage"),
                            retrieval = targets::tar_option_get("retrieval"),
-                           cue = targets::tar_option_get("cue")) {
+                           cue = targets::tar_option_get("cue"),
+                           description = targets::tar_option_get("description")) {
     filetype <- filetype %||% "GeoJSON"
     gdal <- gdal %||% "ENCODING=UTF-8"
 
@@ -65,6 +70,11 @@ tar_terra_vect <- function(name,
     filetype <- rlang::arg_match0(filetype, drv$name)
 
     check_pkg_installed("terra")
+
+    #ensure that user-passed `resources` doesn't include `custom_format`
+    if ("custom_format" %in% names(resources)) {
+        cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_vect}")
+    }
 
     name <- targets::tar_deparse_language(substitute(name))
 
@@ -96,22 +106,28 @@ tar_terra_vect <- function(name,
         library = library,
         format = format,
         repository = repository,
-        iteration = iteration,
+        iteration = "list",  #only "list" works for now
         error = error,
         memory = memory,
         garbage_collection = garbage_collection,
         deployment = deployment,
         priority = priority,
-        resources = targets::tar_resources(
-            custom_format = targets::tar_resources_custom_format(
-                #these envvars are used in write function of format
-                envvars = c("GEOTARGETS_GDAL_VECTOR_DRIVER" = filetype,
-                            "GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS" = paste0(gdal, collapse = ";"))
-            )
-        ),
+        resources = utils::modifyList(
+            targets::tar_resources(
+                custom_format = targets::tar_resources_custom_format(
+                    #these envvars are used in write function of format
+                    envvars = c(
+                        "GEOTARGETS_GDAL_VECTOR_DRIVER" = filetype,
+                        "GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS" = (
+                            paste0(gdal, collapse = ";")
+                        )
+                    )
+                )
+            ), resources),
         storage = storage,
         retrieval = retrieval,
-        cue = cue
+        cue = cue,
+        description = description
     )
 }
 
@@ -129,7 +145,10 @@ create_format_terra_vect <- function() {
                 path,
                 filetype = Sys.getenv("GEOTARGETS_GDAL_VECTOR_DRIVER"),
                 overwrite = TRUE,
-                options = strsplit(Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS", unset = ";"), ";")[[1]]
+                options = strsplit(
+                    Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS",
+                               unset = ";"),
+                    ";")[[1]]
             )
         },
         marshal = function(object) terra::wrap(object),
@@ -142,6 +161,8 @@ create_format_terra_vect <- function() {
 create_format_terra_vect_shz <- function() {
 
     check_pkg_installed("terra")
+    #difficult to test
+    check_gdal_shz(min_version = "3.1")
 
     targets::tar_format(
         read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),
@@ -151,7 +172,10 @@ create_format_terra_vect_shz <- function() {
                 filename = paste0(path, ".shz"),
                 filetype = "ESRI Shapefile",
                 overwrite = TRUE,
-                options = strsplit(Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS", unset = ";"), ";")[[1]]
+                options = strsplit(
+                    Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS",
+                               unset = ";"),
+                    ";")[[1]]
             )
             file.rename(paste0(path, ".shz"), path)
         },

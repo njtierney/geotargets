@@ -9,6 +9,11 @@
 #' @param ... Additional arguments not yet used
 #'
 #' @inheritParams targets::tar_target
+#'
+#' @note The `iteration` argument is unavailable because it is hard-coded to
+#'   `"list"`, the only option that works currently.
+#'
+#' @returns target class "tar_stem" for use in a target pipeline
 #' @importFrom rlang %||% arg_match0
 #' @seealso [targets::tar_target_raw()]
 #' @export
@@ -38,7 +43,6 @@ tar_terra_rast <- function(name,
                            packages = targets::tar_option_get("packages"),
                            library = targets::tar_option_get("library"),
                            repository = targets::tar_option_get("repository"),
-                           iteration = targets::tar_option_get("iteration"),
                            error = targets::tar_option_get("error"),
                            memory = targets::tar_option_get("memory"),
                            garbage_collection = targets::tar_option_get("garbage_collection"),
@@ -47,7 +51,8 @@ tar_terra_rast <- function(name,
                            resources = targets::tar_option_get("resources"),
                            storage = targets::tar_option_get("storage"),
                            retrieval = targets::tar_option_get("retrieval"),
-                           cue = targets::tar_option_get("cue")) {
+                           cue = targets::tar_option_get("cue"),
+                           description = targets::tar_option_get("description")) {
     filetype <- filetype %||% "GTiff"
     gdal <- gdal %||% character(0)
 
@@ -56,6 +61,11 @@ tar_terra_rast <- function(name,
     filetype <- rlang::arg_match0(filetype, drv$name)
 
     check_pkg_installed("terra")
+
+    #ensure that user-passed `resources` doesn't include `custom_format`
+    if ("custom_format" %in% names(resources)) {
+        cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_rast}")
+    }
 
     name <- targets::tar_deparse_language(substitute(name))
 
@@ -87,28 +97,37 @@ tar_terra_rast <- function(name,
                     path,
                     filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
                     overwrite = TRUE,
-                    gdal = strsplit(Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS", unset = ";"), ";")[[1]]
+                    gdal = strsplit(
+                        Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
+                                   unset = ";"),
+                        ";")[[1]]
                 )
             },
             marshal = function(object) terra::wrap(object),
             unmarshal = function(object) terra::unwrap(object)
         ),
         repository = repository,
-        iteration = iteration,
+        iteration = "list", #only "list" works right now
         error = error,
         memory = memory,
         garbage_collection = garbage_collection,
         deployment = deployment,
         priority = priority,
-        resources = targets::tar_resources(
-            custom_format = targets::tar_resources_custom_format(
-                #these envvars are used in write function of format
-                envvars = c("GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
-                            "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = paste0(gdal, collapse = ";"))
-            )
-        ),
+        resources = utils::modifyList(
+            targets::tar_resources(
+                custom_format = targets::tar_resources_custom_format(
+                    #these envvars are used in write function of format
+                    envvars = c(
+                        "GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
+                        "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = (
+                            paste0(gdal, collapse = ";")
+                        )
+                    )
+                )
+            ), resources),
         storage = storage,
         retrieval = retrieval,
-        cue = cue
+        cue = cue,
+        description = description
     )
 }

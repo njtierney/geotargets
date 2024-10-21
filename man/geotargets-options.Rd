@@ -45,6 +45,10 @@ is not set.}
 
 \item{name}{character; option name to get.}
 }
+\value{
+Specific options, such as "gdal.raster.driver". See "Details" for
+more information.
+}
 \description{
 Get or set behavior for geospatial data target stores using
 geotargets-specific global options.
@@ -53,4 +57,27 @@ geotargets-specific global options.
 These options can also be set using \code{options()}.  For example,
 \code{geotargets_options_set(gdal_raster_driver = "GTiff")} is equivalent to
 \code{options("geotargets.gdal.raster.driver" = "GTiff")}.
+}
+\examples{
+if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
+ targets::tar_dir({ # tar_dir() runs code from a temporary directory.
+   library(geotargets)
+  op <- getOption("geotargets.gdal.raster.driver")
+  withr::defer(options("geotargets.gdal.raster.driver" = op))
+  geotargets_option_set(gdal_raster_driver = "COG")
+   targets::tar_script({
+     list(
+       geotargets::tar_terra_rast(
+         terra_rast_example,
+         system.file("ex/elev.tif", package = "terra") |> terra::rast()
+       )
+     )
+   })
+   targets::tar_make()
+   x <- targets::tar_read(terra_rast_example)
+ })
+}
+
+geotargets_option_get("gdal.raster.driver")
+geotargets_option_get("gdal.raster.creation.options")
 }
