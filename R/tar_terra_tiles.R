@@ -168,16 +168,14 @@ tar_terra_tiles_raw <- function(
                 terra::writeRaster(
                     object,
                     path,
-                    filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
+                    filetype = filetype,
                     overwrite = TRUE,
-                    gdal = strsplit(
-                        Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
-                                   unset = ";"),
-                        ";")[[1]]
+                    gdal = gdal
                 )
             },
             marshal = function(object) terra::wrap(object),
-            unmarshal = function(object) terra::unwrap(object)
+            unmarshal = function(object) terra::unwrap(object),
+            substitute = list(filetype = filetype, gdal = gdal)
         ),
         repository = repository,
         iteration = "list", #only list works (for now at least)
@@ -186,18 +184,7 @@ tar_terra_tiles_raw <- function(
         garbage_collection = garbage_collection,
         deployment = deployment,
         priority = priority,
-        resources = utils::modifyList(
-            targets::tar_resources(
-                custom_format = targets::tar_resources_custom_format(
-                    #these envvars are used in write function of format
-                    envvars = c(
-                        "GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
-                        "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = (
-                            paste0(gdal, collapse = ";")
-                        )
-                    )
-                )
-            ), resources),
+        resources = resources,
         storage = storage,
         retrieval = retrieval,
         cue = cue,

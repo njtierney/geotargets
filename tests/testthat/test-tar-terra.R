@@ -217,3 +217,35 @@ targets::tar_test("user resources are passed correctly", {
         tar_resources_crew(controller = "persistent")
     )
 })
+
+tar_test("That changing filetype invalidates a target", {
+    targets::tar_script({
+        library(targets)
+        library(geotargets)
+        library(terra)
+
+        list(
+            tar_terra_rast(
+                r,
+                rast(system.file("ex/elev.tif", package="terra")),
+                filetype = "COG"
+            )
+        )
+    })
+    tar_make()
+
+    targets::tar_script({
+        library(targets)
+        library(geotargets)
+        library(terra)
+
+        list(
+            tar_terra_rast(
+                r,
+                rast(system.file("ex/elev.tif", package="terra")),
+                filetype = "GTiff"
+            )
+        )
+    })
+    expect_equal(tar_outdated(), "r")
+})

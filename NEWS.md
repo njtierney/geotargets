@@ -7,6 +7,7 @@
 * Removes the `iteration` argument from all `tar_*()` functions.  `iteration` now hard-coded as `"list"` since it is the only option that works (for now at least).
 * Added the `description` argument to all `tar_*()` functions which is passed to `tar_target()`.
 * Requires GDAL 3.1 or greater to use "ESRI Shapefile" driver in `tar_terra_vect()` (#71, #97)
+* `geotargets` now requires `targets` version 1.8.0 or higher
 
 # geotargets 0.1.0 (14 May 2024)
 
