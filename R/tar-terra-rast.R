@@ -90,16 +90,8 @@ tar_terra_rast <- function(name,
         packages = packages,
         library = library,
         format = targets::tar_format(
-            read = function(path) terra::rast(path),
-            write = function(object, path) {
-                terra::writeRaster(
-                    object,
-                    path,
-                    filetype = filetype,
-                    overwrite = TRUE,
-                    gdal = gdal
-                )
-            },
+            read = terra_rast_read(),
+            write = terra_rast_write(filetype, gdal),
             marshal = function(object) terra::wrap(object),
             unmarshal = function(object) terra::unwrap(object),
             substitute = list(filetype = filetype, gdal = gdal)
@@ -117,4 +109,22 @@ tar_terra_rast <- function(name,
         cue = cue,
         description = description
     )
+}
+
+terra_rast_read <- function() {
+    function(path) {
+        terra::rast(path)
+    }
+}
+
+terra_rast_write <- function(filetype, gdal) {
+    function(object, path) {
+        terra::writeRaster(
+            object,
+            path,
+            filetype = filetype,
+            overwrite = TRUE,
+            gdal = gdal
+        )
+    }
 }
