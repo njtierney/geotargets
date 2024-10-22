@@ -40,3 +40,17 @@ test_that("options aren't reset with multiple calls to geotargets_option_set()",
     expect_equal(geotargets_option_get("gdal_vector_driver"), "GPKG")
     expect_equal(geotargets_option_get("gdal_raster_driver"), "GPKG")
 })
+
+targets::tar_test("getotargets_option_set() works for targets", {
+    targets::tar_script({
+        library(targets)
+        library(geotargets)
+        library(terra)
+        geotargets_option_set(gdal_raster_driver = "COG")
+        list(
+            tar_terra_rast(r, terra::rast(system.file("ex/elev.tif", package="terra")))
+        )
+    })
+    targets::tar_make()
+    expect_equal(check_driver("_targets/objects/r"), "COG")
+})

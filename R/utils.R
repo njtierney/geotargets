@@ -52,3 +52,10 @@ semicolon_paste <- function(vec){
     paste0(vec, collapse = ";")
 }
 
+check_driver <- function(path) {
+    info <-
+        sf::gdal_utils(util = "info", source = path, options = "-json") |>
+        jsonlite::fromJSON()
+    info$driverShortName
+}
+

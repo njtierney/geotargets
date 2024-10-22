@@ -60,6 +60,7 @@ geotargets_option_set <- function(
         gdal_raster_creation_options = NULL,
         gdal_vector_driver = NULL,
         gdal_vector_creation_options = NULL,
+        use_cache = NULL,
         cache_dir = NULL
 ) {
     # TODO do this programmatically with formals() or something?  `options()` also accepts a named list
