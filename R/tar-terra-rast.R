@@ -6,6 +6,13 @@
 #'   to [terra::writeRaster()]
 #' @param gdal character. GDAL driver specific datasource creation options
 #'   passed to [terra::writeRaster()]
+#' @param use_cache logical. When `FALSE` (default), you may find that some
+#'   metadata is "stripped" from raster targets. If set to `TRUE`, the actual
+#'   raster file and any "sidecar" metadata files are stored in `cach_dir` and
+#'   only a `PackedSpatRaster` object is stored (as .rds) in the targets store.
+#' @param cache_dir character. A relative path to a directory to use as a cache
+#'   for raster files and associated "sidecar" files containing metadata.
+#'   Defaults to `"_geotargets"`. Ignored if `use_cache` is `FALSE`.
 #' @param ... Additional arguments not yet used
 #'
 #' @inheritParams targets::tar_target
@@ -38,6 +45,8 @@ tar_terra_rast <- function(name,
                            pattern = NULL,
                            filetype = geotargets_option_get("gdal.raster.driver"),
                            gdal = geotargets_option_get("gdal.raster.creation.options"),
+                           use_cache = geotargets_option_get("use.cache"),
+                           cache_dir = geotargets_option_get("cache.dir"),
                            ...,
                            tidy_eval = targets::tar_option_get("tidy_eval"),
                            packages = targets::tar_option_get("packages"),
@@ -61,6 +70,12 @@ tar_terra_rast <- function(name,
     drv <- get_gdal_available_driver_list("raster")
     filetype <- rlang::arg_match0(filetype, drv$name)
 
+    #handle optional cache strat
+    use_cache <- use_cache %||% FALSE
+    cache_dir <- cache_dir %||% "_geotargets"
+    if (isTRUE(use_cache)) {
+        geotargets_init_cache(cache_dir)
+    }
 
     #ensure that user-passed `resources` doesn't include `custom_format`
     if ("custom_format" %in% names(resources)) {
@@ -90,11 +105,11 @@ tar_terra_rast <- function(name,
         packages = packages,
         library = library,
         format = targets::tar_format(
-            read = terra_rast_read(),
-            write = terra_rast_write(filetype, gdal),
+            read = terra_rast_read(use_cache),
+            write = terra_rast_write(filetype, gdal, use_cache, cache_dir),
             marshal = function(object) terra::wrap(object),
             unmarshal = function(object) terra::unwrap(object),
-            substitute = list(filetype = filetype, gdal = gdal)
+            substitute = list(filetype = filetype, gdal = gdal, use_cache = use_cache, cache_dir = cache_dir)
         ),
         repository = repository,
         iteration = "list", #only "list" works right now
@@ -111,20 +126,40 @@ tar_terra_rast <- function(name,
     )
 }
 
-terra_rast_read <- function() {
-    function(path) {
-        terra::rast(path)
+terra_rast_read <- function(use_cache) {
+    if (isTRUE(use_cache)) {
+        function(path) {
+            terra::unwrap(readRDS(path))
+        }
+    } else {
+        function(path) {
+            terra::rast(path)
+        }
     }
 }
 
-terra_rast_write <- function(filetype, gdal) {
-    function(object, path) {
-        terra::writeRaster(
-            object,
-            path,
-            filetype = filetype,
-            overwrite = TRUE,
-            gdal = gdal
-        )
+terra_rast_write <- function(filetype, gdal, use_cache, cache_dir) {
+    if (isTRUE(use_cache)) {
+        function(object, path) {
+            saveRDS(
+                terra::wrapCache(
+                    object,
+                    filename = file.path(cache_dir, basename(path)),
+                    filetype = filetype,
+                    gdal = gdal,
+                    overwrite = TRUE),
+                file = path
+            )
+        }
+    } else {
+        function(object, path) {
+            terra::writeRaster(
+                object,
+                path,
+                filetype = filetype,
+                gdal = gdal,
+                overwrite = TRUE
+            )
+        }
     }
 }

@@ -72,7 +72,7 @@ geotargets_option_set <- function(
             geotargets_option_get("gdal.vector.driver"),
         "geotargets.gdal.vector.creation.options" = gdal_vector_creation_options %||%
             geotargets_option_get("gdal.vector.creation.options"),
-        "geotargets.cache.dir" = cache_dir %||% 
+        "geotargets.cache.dir" = cache_dir %||%
             geotargets_option_get("cache.dir")
     )
 
@@ -94,6 +94,7 @@ geotargets_option_get <- function(name) {
             "geotargets.gdal.raster.creation.options",
             "geotargets.gdal.vector.driver",
             "geotargets.gdal.vector.creation.options",
+            "geotargets.use.cache",
             "geotargets.cache.dir"
         ))
 

@@ -38,10 +38,10 @@ geotargets_destroy_cache <- function(name = NULL, init = FALSE) {
 
 #' @rdname geotargets-cache
 #' @export
-geotargets_init_cache <- function(name = NULL) {
-    cachedir <- geotargets_option_get("cache.dir")
-    target_cache_dir <- file.path(cachedir %||% "_geotargets", name %||% "")
-    dir.create(target_cache_dir,
+geotargets_init_cache <- function(cache_dir = geotargets_option_get("cache.dir")) {
+    #TODO: possibly write a README file with "do not edit by hand" in it??
+    cache_dir <- cache_dir %||% "_geotargets"
+    dir.create(cache_dir,
                showWarnings = FALSE,
                recursive = TRUE)
 }
