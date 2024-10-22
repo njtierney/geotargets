@@ -62,6 +62,8 @@ tar_terra_vect <- function(name,
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue"),
                            description = targets::tar_option_get("description")) {
+    check_pkg_installed("terra")
+
     filetype <- filetype %||% "GeoJSON"
     gdal <- gdal %||% "ENCODING=UTF-8"
 
@@ -69,7 +71,9 @@ tar_terra_vect <- function(name,
     drv <- get_gdal_available_driver_list("vector")
     filetype <- rlang::arg_match0(filetype, drv$name)
 
-    check_pkg_installed("terra")
+    if (filetype == "ESRI Shapefile") {
+        check_gdal_shz(min_version = "3.1")
+    }
 
     #ensure that user-passed `resources` doesn't include `custom_format`
     if ("custom_format" %in% names(resources)) {
@@ -91,20 +95,36 @@ tar_terra_vect <- function(name,
         tidy_eval = tidy_eval
     )
 
-    format <- ifelse(
-        test = filetype == "ESRI Shapefile",
-        #special handling of ESRI shapefiles because the output is a dir of multiple files.
-        yes = create_format_terra_vect_shz(),
-        no =  create_format_terra_vect()
-    )
-
     targets::tar_target_raw(
         name = name,
         command = command,
         pattern = pattern,
         packages = packages,
         library = library,
-        format = format,
+        format = targets::tar_format(
+            read = function(path) {
+                if (filetype == "ESRI Shapefile") {
+                    terra::vect(paste0("/vsizip/{", path, "}"))
+                } else {
+                    terra::vect(path)
+                }
+            },
+            write = function(object, path) {
+                terra::writeVector(
+                    object,
+                    filename = ifelse(filetype == "ESRI Shapefile", paste0(path, ".shz"), path),
+                    filetype = filetype,
+                    overwrite = TRUE,
+                    options = gdal
+                )
+                if (filetype == "ESRI Shapefile") {
+                    file.rename(paste0(path, ".shz"), path)
+                }
+            },
+            marshal = function(object) terra::wrap(object),
+            unmarshal = function(object) terra::unwrap(object),
+            substitute = list(filetype = filetype, gdal = gdal)
+        ),
         repository = repository,
         iteration = "list",  #only "list" works for now
         error = error,
@@ -112,72 +132,10 @@ tar_terra_vect <- function(name,
         garbage_collection = garbage_collection,
         deployment = deployment,
         priority = priority,
-        resources = utils::modifyList(
-            targets::tar_resources(
-                custom_format = targets::tar_resources_custom_format(
-                    #these envvars are used in write function of format
-                    envvars = c(
-                        "GEOTARGETS_GDAL_VECTOR_DRIVER" = filetype,
-                        "GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS" = (
-                            paste0(gdal, collapse = ";")
-                        )
-                    )
-                )
-            ), resources),
+        resources =  resources,
         storage = storage,
         retrieval = retrieval,
         cue = cue,
         description = description
-    )
-}
-
-
-#' @noRd
-create_format_terra_vect <- function() {
-
-    check_pkg_installed("terra")
-
-    targets::tar_format(
-        read = function(path) terra::vect(path),
-        write = function(object, path) {
-            terra::writeVector(
-                object,
-                path,
-                filetype = Sys.getenv("GEOTARGETS_GDAL_VECTOR_DRIVER"),
-                overwrite = TRUE,
-                options = strsplit(
-                    Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS",
-                               unset = ";"),
-                    ";")[[1]]
-            )
-        },
-        marshal = function(object) terra::wrap(object),
-        unmarshal = function(object) terra::unwrap(object)
-    )
-}
-
-#' Special handling for ESRI Shapefiles
-#' @noRd
-create_format_terra_vect_shz <- function() {
-
-    check_pkg_installed("terra")
-
-    targets::tar_format(
-        read = function(path) terra::vect(paste0("/vsizip/{", path, "}")),
-        write = function(object, path) {
-            terra::writeVector(
-                x = object,
-                filename = paste0(path, ".shz"),
-                filetype = "ESRI Shapefile",
-                overwrite = TRUE,
-                options = strsplit(
-                    Sys.getenv("GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS",
-                               unset = ";"),
-                    ";")[[1]]
-            )
-            file.rename(paste0(path, ".shz"), path)
-        },
-        marshal = function(object) terra::wrap(object),
-        unmarshal = function(object) terra::unwrap(object)
     )
 }

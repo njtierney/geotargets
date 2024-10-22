@@ -28,8 +28,13 @@ tar_terra_vect(
 )
 }
 \arguments{
-\item{name}{Symbol, name of the target. A target
-name must be a valid name for a symbol in R, and it
+\item{name}{Symbol, name of the target.
+In \code{\link[targets:tar_target]{tar_target()}}, \code{name} is an unevaluated symbol, e.g.
+\code{tar_target(name = data)}.
+In \code{\link[targets:tar_target_raw]{tar_target_raw()}}, \code{name} is a character string, e.g.
+\code{tar_target_raw(name = "data")}.
+
+A target name must be a valid name for a symbol in R, and it
 must not start with a dot. Subsequent targets
 can refer to this name symbolically to induce a dependency relationship:
 e.g. \code{tar_target(downstream_target, f(upstream_target))} is a
@@ -44,10 +49,20 @@ You can recover the seed of a completed target
 with \code{tar_meta(your_target, seed)} and run \code{\link[targets:tar_seed_set]{tar_seed_set()}}
 on the result to locally recreate the target's initial RNG state.}
 
-\item{command}{R code to run the target.}
+\item{command}{R code to run the target.
+In \code{\link[targets:tar_target]{tar_target()}}, \code{command} is an unevaluated expression, e.g.
+\code{tar_target(command = data)}.
+In \code{\link[targets:tar_target_raw]{tar_target_raw()}}, \code{command} is an evaluated expression, e.g.
+\code{tar_target_raw(command = quote(data))}.}
 
-\item{pattern}{Language to define branching for a target.
-For example, in a pipeline with numeric vector targets \code{x} and \code{y},
+\item{pattern}{Code to define a dynamic branching branching for a target.
+In \code{\link[targets:tar_target]{tar_target()}}, \code{pattern} is an unevaluated expression, e.g.
+\code{tar_target(pattern = map(data))}.
+In \code{\link[targets:tar_target_raw]{tar_target_raw()}}, \code{command} is an evaluated expression, e.g.
+\code{tar_target_raw(pattern = quote(map(data)))}.
+
+To demonstrate dynamic branching patterns, suppose we have
+a pipeline with numeric vector targets \code{x} and \code{y}. Then,
 \code{tar_target(z, x + y, pattern = map(x, y))} implicitly defines
 branches of \code{z} that each compute \code{x[1] + y[1]}, \code{x[2] + y[2]},
 and so on. See the user manual for details.}
@@ -88,6 +103,8 @@ for details for instructions.
 See the cloud storage section of
 \url{https://books.ropensci.org/targets/data.html}
 for details for instructions.
+\item A character string from \code{\link[targets:tar_repository_cas]{tar_repository_cas()}} for content-addressable
+storage.
 }
 
 Note: if \code{repository} is not \code{"local"} and \code{format} is \code{"file"}
@@ -101,13 +118,25 @@ stops and throws an error. Options:
 \itemize{
 \item \code{"stop"}: the whole pipeline stops and throws an error.
 \item \code{"continue"}: the whole pipeline keeps going.
-\item \code{"abridge"}: any currently running targets keep running,
-but no new targets launch after that.
-(Visit \url{https://books.ropensci.org/targets/debugging.html}
-to learn how to debug targets using saved workspaces.)
 \item \code{"null"}: The errored target continues and returns \code{NULL}.
 The data hash is deliberately wrong so the target is not
 up to date for the next run of the pipeline.
+\item \code{"abridge"}: any currently running targets keep running,
+but no new targets launch after that.
+\item \code{"trim"}: all currently running targets stay running. A queued
+target is allowed to start if:
+\enumerate{
+\item It is not downstream of the error, and
+\item It is not a sibling branch from the same \code{\link[targets:tar_target]{tar_target()}} call
+(if the error happened in a dynamic branch).
+}
+
+The idea is to avoid starting any new work that the immediate error
+impacts. \code{error = "trim"} is just like \code{error = "abridge"},
+but it allows potentially healthy regions of the dependency graph
+to begin running.
+(Visit \url{https://books.ropensci.org/targets/debugging.html}
+to learn how to debug targets using saved workspaces.)
 }}
 
 \item{memory}{Character of length 1, memory strategy.
