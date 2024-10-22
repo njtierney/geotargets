@@ -2,9 +2,25 @@
 #'
 #' Provides a target format for [terra::SpatRaster-class] objects.
 #'
+#' @details
+#' [terra::SpatRaster-class] objects do not contain raster data directly—they
+#' contain a C++ pointer to memory where the data is stored.  As a result, these
+#' objects are not portable between R sessions without special handling, which
+#' causes problems when including them in `targets` pipelines with
+#' `tar_target()`. `tar_terra_rast()` handles this issue by writing and reading
+#' the target as a geospatial file (specified by `filetype`) rather than saving
+#' the `SpatRaster` object itself.
+#'
+#'
+#' @param name Symbol, name of the target. A target
+#'   name must be a valid name for a symbol in R, and it
+#'   must not start with a dot. See [targets::tar_target()] for more information.
+#' @param command R code to run the target.
+#' @param pattern Code to define a dynamic branching pattern for a target. See
+#'   [targets::tar_target()] for more information
 #' @param filetype character. File format expressed as GDAL driver names passed
 #'   to [terra::writeRaster()]
-#' @param gdal character. GDAL driver specific datasource creation options
+#' @param gdal character. GDAL driver specific data source creation options
 #'   passed to [terra::writeRaster()]
 #' @param ... Additional arguments not yet used
 #'
@@ -15,7 +31,7 @@
 #'
 #' @returns target class "tar_stem" for use in a target pipeline
 #' @importFrom rlang %||% arg_match0
-#' @seealso [targets::tar_target_raw()]
+#' @seealso [targets::tar_target()]
 #' @export
 #' @examples
 #' if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
