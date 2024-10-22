@@ -67,8 +67,8 @@ targets::tar_test("tar_terra_rast() works with `use_cache = TRUE`", {
         rast_with_metadata <- function(file) {
             r <- terra::rast(file)
             terra::time(r) <- as.Date("2024-10-22")
-            units(r) <- "m"
-            metags(r) <- c(tag = "custom tag")
+            terra::units(r) <- "m"
+            terra::metags(r) <- c(tag = "custom tag")
             r
         }
 
@@ -88,10 +88,7 @@ targets::tar_test("tar_terra_rast() works with `use_cache = TRUE`", {
     expect_true(file.exists("_geotargets/r.aux.json"))
     r <- targets::tar_read(r)
     expect_snapshot(r)
-    #need to load terra for SpatRaster method for units()
-    withr::with_package("terra", {
-        expect_equal(units(r), "m")
-    })
+    expect_equal(terra::units(r), "m")
     expect_equal(terra::time(r), as.Date("2024-10-22"))
     # expect_equal(terra::metags(r)["tag"], "custom tag") #Doesn't work with wrapCache(), so won't work here. Possible `terra` bug.
 
