@@ -47,43 +47,20 @@
                          1 Diekirch     2 Diekirch   218 32543
                          1 Diekirch     3  Redange   259 18664
 
-# tar_terra_rast_wrap works
+# tar_terra_rast() works with `use_cache = TRUE`
 
     Code
-      x
+      r
     Output
       class       : SpatRaster 
       dimensions  : 90, 95, 1  (nrow, ncol, nlyr)
       resolution  : 0.008333333, 0.008333333  (x, y)
       extent      : 5.741667, 6.533333, 49.44167, 50.19167  (xmin, xmax, ymin, ymax)
       coord. ref. : lon/lat WGS 84 (EPSG:4326) 
-      source      : rast1.gpkg 
+      source      : r 
       name        : elevation 
       min value   :       141 
       max value   :       547 
       unit        :         m 
-
----
-
-    Code
-      y
-    Output
-      class       : SpatRaster 
-      dimensions  : 90, 95, 1  (nrow, ncol, nlyr)
-      resolution  : 0.008333333, 0.008333333  (x, y)
-      extent      : 5.741667, 6.533333, 49.44167, 50.19167  (xmin, xmax, ymin, ymax)
-      coord. ref. : lon/lat WGS 84 (EPSG:4326) 
-      source      : rast2.tif 
-      categories  : category 
-      name        : category 
-      min value   :      low 
-      max value   :       hi 
-
----
-
-    Code
-      z
-    Output
-      [1] "geotargets_cache/rast1/rast1.gpkg"         
-      [2] "geotargets_cache/rast1/rast1.gpkg.aux.json"
+      time (days) : 2024-10-22 
 
