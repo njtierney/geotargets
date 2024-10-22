@@ -46,11 +46,13 @@ targets::tar_test("getotargets_option_set() works for targets", {
         library(targets)
         library(geotargets)
         library(terra)
-        geotargets_option_set(gdal_raster_driver = "COG")
+        geotargets_option_set(gdal_raster_driver = "GPKG", use_cache = TRUE)
         list(
+            tar_target(opt, geotargets_option_get("use.cache")),
             tar_terra_rast(r, terra::rast(system.file("ex/elev.tif", package="terra")))
         )
     })
     targets::tar_make()
-    expect_equal(check_driver("_targets/objects/r"), "COG")
+    expect_equal(targets::tar_read(opt), TRUE)
+    expect_equal(check_driver("_geotargets/r"), "GPKG")
 })

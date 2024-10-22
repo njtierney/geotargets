@@ -73,6 +73,7 @@ geotargets_option_set <- function(
             geotargets_option_get("gdal.vector.driver"),
         "geotargets.gdal.vector.creation.options" = gdal_vector_creation_options %||%
             geotargets_option_get("gdal.vector.creation.options"),
+        "geotargets.use.cache" = use_cache %||% geotargets_option_get("use.cache"),
         "geotargets.cache.dir" = cache_dir %||%
             geotargets_option_get("cache.dir")
     )
