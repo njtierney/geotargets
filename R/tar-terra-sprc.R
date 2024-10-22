@@ -3,6 +3,12 @@
 #' Provides a target format for [terra::SpatRasterCollection] objects,
 #'   which have no restriction in the extent or other geometric parameters.
 #'
+#' @param name Symbol, name of the target. A target
+#'   name must be a valid name for a symbol in R, and it
+#'   must not start with a dot. See [targets::tar_target()] for more information.
+#' @param command R code to run the target.
+#' @param pattern Code to define a dynamic branching pattern for a target. See
+#'   [targets::tar_target()] for more information
 #' @param filetype character. File format expressed as GDAL driver names passed
 #'   to [terra::writeRaster()]
 #' @param gdal character. GDAL driver specific datasource creation options
@@ -124,6 +130,12 @@ tar_terra_sprc <- function(name,
 #' Provides a target format for [terra::SpatRasterDataset] objects,
 #'   which hold sub-datasets, each a `SpatRaster` that can have multiple layers.
 #'
+#' @param name Symbol, name of the target. A target
+#'   name must be a valid name for a symbol in R, and it
+#'   must not start with a dot. See [targets::tar_target()] for more information.
+#' @param command R code to run the target.
+#' @param pattern Code to define a dynamic branching pattern for a target. See
+#'   [targets::tar_target()] for more information
 #' @param filetype character. File format expressed as GDAL driver names passed
 #'   to [terra::writeRaster()]
 #' @param gdal character. GDAL driver specific datasource creation options

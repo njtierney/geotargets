@@ -2,8 +2,10 @@
 #'
 #' This target factory is useful when a raster is too large or too high
 #' resolution to work on in-memory. It can instead be split into tiles that can
-#' be iterated over, potentially using parallel workers.
-#'
+#' be iterated over using dynamic branching.
+#' @param name Symbol, name of the target. A target
+#'   name must be a valid name for a symbol in R, and it
+#'   must not start with a dot. See [targets::tar_target()] for more information.
 #' @param raster a `SpatRaster` object to be split into tiles
 #' @param tile_fun a helper function that returns a list of numeric vectors such as [tile_grid] or [tile_blocksize] specified in one of the following ways:
 #'  - A named function, e.g. `tile_blocksize` or `"tile_blocksize"`
@@ -24,7 +26,7 @@
 #'   extents and a downstream pattern that maps over these extents to create a
 #'   list of SpatRaster objects.
 #'
-#' @seealso [tile_grid()], [tile_blocksize()], [tar_terra_rast()]
+#' @seealso [tile_n()], [tile_grid()], [tile_blocksize()], [tar_terra_rast()]
 #' @export
 #'
 #' @examples
