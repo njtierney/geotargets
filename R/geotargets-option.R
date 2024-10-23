@@ -21,7 +21,10 @@
 #'   a unique set of creation options. For example, with the default `"GeoJSON"`
 #'   driver:
 #'   <https://gdal.org/drivers/vector/geojson.html#layer-creation-options>
-#'
+#' @param cache_dir character. Path to directory where file sources for
+#'  `PackedSpatRaster` objects can be stored. Default: `"geotargets_cache"`
+#'   when `geotargets::geotargets_option_get("cache.dir")`
+#'   is not set.
 #' @details
 #' These options can also be set using `options()`.  For example,
 #' `geotargets_options_set(gdal_raster_driver = "GTiff")` is equivalent to
@@ -56,7 +59,9 @@ geotargets_option_set <- function(
         gdal_raster_driver = NULL,
         gdal_raster_creation_options = NULL,
         gdal_vector_driver = NULL,
-        gdal_vector_creation_options = NULL
+        gdal_vector_creation_options = NULL,
+        use_cache = NULL,
+        cache_dir = NULL
 ) {
     # TODO do this programmatically with formals() or something?  `options()` also accepts a named list
     options(
@@ -67,7 +72,10 @@ geotargets_option_set <- function(
         "geotargets.gdal.vector.driver" = gdal_vector_driver %||%
             geotargets_option_get("gdal.vector.driver"),
         "geotargets.gdal.vector.creation.options" = gdal_vector_creation_options %||%
-            geotargets_option_get("gdal.vector.creation.options")
+            geotargets_option_get("gdal.vector.creation.options"),
+        "geotargets.use.cache" = use_cache %||% geotargets_option_get("use.cache"),
+        "geotargets.cache.dir" = cache_dir %||%
+            geotargets_option_get("cache.dir")
     )
 
 }
@@ -87,7 +95,9 @@ geotargets_option_get <- function(name) {
             "geotargets.gdal.raster.driver",
             "geotargets.gdal.raster.creation.options",
             "geotargets.gdal.vector.driver",
-            "geotargets.gdal.vector.creation.options"
+            "geotargets.gdal.vector.creation.options",
+            "geotargets.use.cache",
+            "geotargets.cache.dir"
         ))
 
     env_name <- gsub("\\.", "_", toupper(option_name))

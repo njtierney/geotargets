@@ -37,6 +37,7 @@ Imports:
     cli (>= 3.6.2)
 Suggests: 
     crew (>= 0.9.2),
+    jsonlite,
     ncmeta,
     sf,
     stars,
