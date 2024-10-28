@@ -126,3 +126,26 @@ tar_test("That changing filetype invalidates a target", {
     })
     expect_equal(tar_outdated(), "r")
 })
+
+tar_test("metadata is maintained", {
+    tar_script({
+        library(targets)
+        library(geotargets)
+        library(terra)
+        make_rast <- function() {
+            f <- system.file("ex/elev.tif", package="terra")
+            r <- terra::rast(f)
+            r <- c(r, r + 10, r/2)
+            terra::units(r) <- rep("m", 3)
+            terra::time(r) <- as.Date("2024-10-01") + c(0,1,2)
+            r
+        }
+        list(
+            tar_terra_rast(r, make_rast(), preserve_metadata = TRUE)
+        )
+    })
+    tar_make()
+    x <- tar_read(r)
+    expect_equal(terra::units(x), "m")
+    expect_equal(terra::time(x), as.Date("2024-10-01") + c(0,1,2))
+})
