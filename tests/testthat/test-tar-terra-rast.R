@@ -146,6 +146,6 @@ tar_test("metadata is maintained", {
     })
     tar_make()
     x <- tar_read(r)
-    expect_equal(terra::units(x), "m")
+    expect_equal(terra::units(x), rep("m", 3))
     expect_equal(terra::time(x), as.Date("2024-10-01") + c(0,1,2))
 })
