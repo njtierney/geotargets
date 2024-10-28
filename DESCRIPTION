@@ -42,7 +42,8 @@ Suggests:
     stars,
     terra (>= 1.7.71),
     testthat (>= 3.0.0),
-    withr (>= 3.0.0)
+    withr (>= 3.0.0),
+    zip
 Config/testthat/edition: 3
 URL: https://github.com/njtierney/geotargets, https://njtierney.github.io/geotargets/
 BugReports: https://github.com/njtierney/geotargets/issues
