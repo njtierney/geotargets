@@ -9,6 +9,7 @@
 * Requires GDAL 3.1 or greater to use "ESRI Shapefile" driver in `tar_terra_vect()` (#71, #97)
 * `geotargets` now requires `targets` version 1.8.0 or higher
 * `tar_terra_rast()` gains a `preserve_metadata` option that when `TRUE` reads/writes targets as zip archives that include aux.json "sidecar" files sometimes written by `terra` (#58)
+* `terra` (>= 1.7.71), `withr` (>= 3.0.0), and `zip` are now required dependencies of `geotargets` (moved from `Suggests` to `Imports`)
 
 # geotargets 0.1.0 (14 May 2024)
 
