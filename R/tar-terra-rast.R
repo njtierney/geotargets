@@ -61,7 +61,6 @@ tar_terra_rast <- function(name,
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue"),
                            description = targets::tar_option_get("description")) {
-    check_pkg_installed("terra")
 
     filetype <- filetype %||% "GTiff"
 

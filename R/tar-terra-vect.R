@@ -62,8 +62,6 @@ tar_terra_vect <- function(name,
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue"),
                            description = targets::tar_option_get("description")) {
-    check_pkg_installed("terra")
-
     filetype <- filetype %||% "GeoJSON"
     gdal <- gdal %||% "ENCODING=UTF-8"
 
