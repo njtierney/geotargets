@@ -132,6 +132,7 @@ tar_test("metadata is maintained", {
         library(targets)
         library(geotargets)
         library(terra)
+        geotargets_option_set(terra_preserve_metadata = "zip")
         make_rast <- function() {
             f <- system.file("ex/elev.tif", package="terra")
             r <- terra::rast(f)
@@ -141,7 +142,7 @@ tar_test("metadata is maintained", {
             r
         }
         list(
-            tar_terra_rast(r, make_rast(), preserve_metadata = TRUE)
+            tar_terra_rast(r, make_rast())
         )
     })
     tar_make()

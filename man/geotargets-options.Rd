@@ -9,7 +9,8 @@ geotargets_option_set(
   gdal_raster_driver = NULL,
   gdal_raster_creation_options = NULL,
   gdal_vector_driver = NULL,
-  gdal_vector_creation_options = NULL
+  gdal_vector_creation_options = NULL,
+  terra_preserve_metadata = NULL
 )
 
 geotargets_option_get(name)
@@ -36,6 +37,14 @@ options used when writing vector files to target store (default:
 a unique set of creation options. For example, with the default \code{"GeoJSON"}
 driver:
 \url{https://gdal.org/drivers/vector/geojson.html#layer-creation-options}}
+
+\item{terra_preserve_metadata}{character. When \code{"drop"} (default), any
+auxiliary files that would be written by \code{\link[terra:writeRaster]{terra::writeRaster()}} containing
+raster metadata such as units and datetimes are lost (note that this does
+not include layer names set with \verb{names() <-}).  When \code{"zip"}, these
+metadata are retained by archiving all written files as a zip file upon
+writing and unzipping them upon reading. This adds extra overhead and will
+slow pipelines.}
 
 \item{name}{character; option name to get.}
 }

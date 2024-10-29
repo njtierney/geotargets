@@ -6,12 +6,13 @@
 #'   to [terra::writeRaster()]
 #' @param gdal character. GDAL driver specific datasource creation options
 #'   passed to [terra::writeRaster()]
-#' @param preserve_metadata logical. When `FALSE` (default), any auxiliary files
-#'   that would be written by [terra::writeRaster()] containing raster metadata
-#'   such as units and datetimes are lost (note that this does not include layer
-#'   names set with `names() <-`).  When `TRUE`, these metadata are retained by
-#'   archiving all written files as a zip file upon writing and unzipping them
-#'   upon reading. This adds extra overhead and will slow pipelines.
+#' @param preserve_metadata character. When `"drop"` (default), any auxiliary
+#'   files that would be written by [terra::writeRaster()] containing raster
+#'   metadata such as units and datetimes are lost (note that this does not
+#'   include layer names set with `names() <-`).  When `"zip"`, these metadata
+#'   are retained by archiving all written files as a zip file upon writing and
+#'   unzipping them upon reading. This adds extra overhead and will slow
+#'   pipelines.
 #' @param ... Additional arguments not yet used
 #'
 #' @inheritParams targets::tar_target
@@ -44,7 +45,7 @@ tar_terra_rast <- function(name,
                            pattern = NULL,
                            filetype = geotargets_option_get("gdal.raster.driver"),
                            gdal = geotargets_option_get("gdal.raster.creation.options"),
-                           preserve_metadata = FALSE, #TODO: add a geotargets option for this
+                           preserve_metadata = geotargets_option_get("terra.preserve.metadata"),
                            ...,
                            tidy_eval = targets::tar_option_get("tidy_eval"),
                            packages = targets::tar_option_get("packages"),
@@ -68,6 +69,9 @@ tar_terra_rast <- function(name,
     drv <- get_gdal_available_driver_list("raster")
     filetype <- rlang::arg_match0(filetype, drv$name)
 
+    #currently only "drop" and "zip" are valid options
+    preserve_metadata <- preserve_metadata %||% "drop"
+    preserve_metadata <- rlang::arg_match0(preserve_metadata, c("drop", "zip"))
 
     #ensure that user-passed `resources` doesn't include `custom_format`
     if ("custom_format" %in% names(resources)) {
@@ -119,19 +123,19 @@ tar_terra_rast <- function(name,
 }
 
 tar_rast_read <- function(preserve_metadata) {
-    if (isTRUE(preserve_metadata)) {
+    if (preserve_metadata == "zip") {
         function(path) {
             tmp <- withr::local_tempdir()
             zip::unzip(zipfile = path, exdir = tmp)
             terra::rast(file.path(tmp, basename(path)))
         }
-    } else {
+    } else if (preserve_metadata == "drop") {
         function(path) terra::rast(path)
     }
 }
 
 tar_rast_write <- function(filetype, gdal, preserve_metadata) {
-    if (isTRUE(preserve_metadata)) {
+    if (preserve_metadata == "zip") {
         function(object, path) {
             #write the raster in a fresh local tempdir() that disappears when function is done
             tmp <- withr::local_tempdir()
@@ -155,7 +159,7 @@ tar_rast_write <- function(filetype, gdal, preserve_metadata) {
             #move the zip file to the expected place
             file.rename(file.path(tmp, basename(path)), path)
         }
-    } else {
+    } else if (preserve_metadata == "drop") {
         function(object, path) {
             terra::writeRaster(
                 object,
