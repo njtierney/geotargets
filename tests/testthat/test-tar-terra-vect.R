@@ -1,3 +1,4 @@
+# test_that()
 targets::tar_test("tar_terra_vect() works", {
     targets::tar_script({
         lux_area <- function(projection = "EPSG:4326") {
