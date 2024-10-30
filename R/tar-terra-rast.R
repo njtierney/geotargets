@@ -122,20 +122,21 @@ tar_terra_rast <- function(name,
 }
 
 tar_rast_read <- function(preserve_metadata) {
-    if (preserve_metadata == "zip") {
-        function(path) {
+    switch(
+        preserve_metadata,
+        zip = function(path) {
             tmp <- withr::local_tempdir()
             zip::unzip(zipfile = path, exdir = tmp)
             terra::rast(file.path(tmp, basename(path)))
-        }
-    } else if (preserve_metadata == "drop") {
-        function(path) terra::rast(path)
-    }
+        },
+        drop = function(path) terra::rast(path)
+    )
 }
 
 tar_rast_write <- function(filetype, gdal, preserve_metadata) {
-    if (preserve_metadata == "zip") {
-        function(object, path) {
+    switch(
+        preserve_metadata,
+        zip = function(object, path) {
             #write the raster in a fresh local tempdir() that disappears when function is done
             tmp <- withr::local_tempdir()
             dir.create(file.path(tmp, dirname(path)), recursive = TRUE)
@@ -157,9 +158,8 @@ tar_rast_write <- function(filetype, gdal, preserve_metadata) {
             )
             #move the zip file to the expected place
             file.rename(file.path(tmp, basename(path)), path)
-        }
-    } else if (preserve_metadata == "drop") {
-        function(object, path) {
+        },
+        drop = function(object, path) {
             terra::writeRaster(
                 object,
                 path,
@@ -168,5 +168,5 @@ tar_rast_write <- function(filetype, gdal, preserve_metadata) {
                 gdal = gdal
             )
         }
-    }
+    )
 }
