@@ -59,27 +59,12 @@ tar_stars_proxy(
 \arguments{
 \item{name}{Symbol, name of the target. A target
 name must be a valid name for a symbol in R, and it
-must not start with a dot. Subsequent targets
-can refer to this name symbolically to induce a dependency relationship:
-e.g. \code{tar_target(downstream_target, f(upstream_target))} is a
-target named \code{downstream_target} which depends on a target
-\code{upstream_target} and a function \code{f()}. In addition, a target's
-name determines its random number generator seed. In this way,
-each target runs with a reproducible seed so someone else
-running the same pipeline should get the same results,
-and no two targets in the same pipeline share the same seed.
-(Even dynamic branches have different names and thus different seeds.)
-You can recover the seed of a completed target
-with \code{tar_meta(your_target, seed)} and run \code{\link[targets:tar_seed_set]{tar_seed_set()}}
-on the result to locally recreate the target's initial RNG state.}
+must not start with a dot. See \code{\link[targets:tar_target]{targets::tar_target()}} for more information.}
 
 \item{command}{R code to run the target.}
 
-\item{pattern}{Language to define branching for a target.
-For example, in a pipeline with numeric vector targets \code{x} and \code{y},
-\code{tar_target(z, x + y, pattern = map(x, y))} implicitly defines
-branches of \code{z} that each compute \code{x[1] + y[1]}, \code{x[2] + y[2]},
-and so on. See the user manual for details.}
+\item{pattern}{Code to define a dynamic branching pattern for a target. See
+\code{\link[targets:tar_target]{targets::tar_target()}} for more information.}
 
 \item{proxy}{logical. Passed to \code{\link[stars:read_stars]{stars::read_stars()}}. If \code{TRUE} the target will be read as an object of class \code{stars_proxy}. Otherwise, the object is class \code{stars}.}
 
@@ -89,9 +74,9 @@ and so on. See the user manual for details.}
 
 \item{driver}{character. File format expressed as GDAL driver names passed to \code{\link[stars:write_stars]{stars::write_stars()}}. See \code{\link[sf:st_drivers]{sf::st_drivers()}}.}
 
-\item{options}{character. GDAL driver specific datasource creation options passed to \code{\link[stars:write_stars]{stars::write_stars()}}}
+\item{options}{character. GDAL driver specific datasource creation options passed to \code{\link[stars:write_stars]{stars::write_stars()}}.}
 
-\item{...}{Additional arguments not yet used}
+\item{...}{Additional arguments not yet used.}
 
 \item{tidy_eval}{Logical, whether to enable tidy evaluation
 when interpreting \code{command} and \code{pattern}. If \code{TRUE}, you can use the
@@ -121,6 +106,8 @@ for details for instructions.
 See the cloud storage section of
 \url{https://books.ropensci.org/targets/data.html}
 for details for instructions.
+\item A character string from \code{\link[targets:tar_repository_cas]{tar_repository_cas()}} for content-addressable
+storage.
 }
 
 Note: if \code{repository} is not \code{"local"} and \code{format} is \code{"file"}
@@ -134,13 +121,25 @@ stops and throws an error. Options:
 \itemize{
 \item \code{"stop"}: the whole pipeline stops and throws an error.
 \item \code{"continue"}: the whole pipeline keeps going.
-\item \code{"abridge"}: any currently running targets keep running,
-but no new targets launch after that.
-(Visit \url{https://books.ropensci.org/targets/debugging.html}
-to learn how to debug targets using saved workspaces.)
 \item \code{"null"}: The errored target continues and returns \code{NULL}.
 The data hash is deliberately wrong so the target is not
 up to date for the next run of the pipeline.
+\item \code{"abridge"}: any currently running targets keep running,
+but no new targets launch after that.
+\item \code{"trim"}: all currently running targets stay running. A queued
+target is allowed to start if:
+\enumerate{
+\item It is not downstream of the error, and
+\item It is not a sibling branch from the same \code{\link[targets:tar_target]{tar_target()}} call
+(if the error happened in a dynamic branch).
+}
+
+The idea is to avoid starting any new work that the immediate error
+impacts. \code{error = "trim"} is just like \code{error = "abridge"},
+but it allows potentially healthy regions of the dependency graph
+to begin running.
+(Visit \url{https://books.ropensci.org/targets/debugging.html}
+to learn how to debug targets using saved workspaces.)
 }}
 
 \item{memory}{Character of length 1, memory strategy.
@@ -267,5 +266,5 @@ if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[targets:tar_target_raw]{targets::tar_target_raw()}}
+\code{\link[targets:tar_target]{targets::tar_target()}}
 }

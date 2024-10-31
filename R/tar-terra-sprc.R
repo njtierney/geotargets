@@ -3,11 +3,17 @@
 #' Provides a target format for [terra::SpatRasterCollection] objects,
 #'   which have no restriction in the extent or other geometric parameters.
 #'
+#' @param name Symbol, name of the target. A target
+#'   name must be a valid name for a symbol in R, and it
+#'   must not start with a dot. See [targets::tar_target()] for more information.
+#' @param command R code to run the target.
+#' @param pattern Code to define a dynamic branching pattern for a target. See
+#'   [targets::tar_target()] for more information.
 #' @param filetype character. File format expressed as GDAL driver names passed
-#'   to [terra::writeRaster()]
-#' @param gdal character. GDAL driver specific datasource creation options
+#'   to [terra::writeRaster()].
+#' @param gdal character. GDAL driver specific datasource creation options.
 #'   passed to [terra::writeRaster()]
-#' @param ... Additional arguments not yet used
+#' @param ... Additional arguments not yet used.
 #'
 #' @inheritParams targets::tar_target
 #'
@@ -66,7 +72,6 @@ tar_terra_sprc <- function(name,
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue"),
                            description = targets::tar_option_get("description")) {
-    check_pkg_installed("terra")
     #ensure that user-passed `resources` doesn't include `custom_format`
     if ("custom_format" %in% names(resources)) {
         cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_sprc}")
@@ -99,11 +104,11 @@ tar_terra_sprc <- function(name,
         name = name,
         command = command,
         pattern = pattern,
+        type = "sprc",
         filetype = filetype,
         gdal = gdal,
         packages = packages,
         library = library,
-        format = format_terra_collections(type = "sprc"),
         repository = repository,
         error = error,
         memory = memory,
@@ -124,11 +129,17 @@ tar_terra_sprc <- function(name,
 #' Provides a target format for [terra::SpatRasterDataset] objects,
 #'   which hold sub-datasets, each a `SpatRaster` that can have multiple layers.
 #'
+#' @param name Symbol, name of the target. A target
+#'   name must be a valid name for a symbol in R, and it
+#'   must not start with a dot. See [targets::tar_target()] for more information.
+#' @param command R code to run the target.
+#' @param pattern Code to define a dynamic branching pattern for a target. See
+#'   [targets::tar_target()] for more information.
 #' @param filetype character. File format expressed as GDAL driver names passed
-#'   to [terra::writeRaster()]
-#' @param gdal character. GDAL driver specific datasource creation options
+#'   to [terra::writeRaster()].
+#' @param gdal character. GDAL driver specific datasource creation options.
 #'   passed to [terra::writeRaster()]
-#' @param ... Additional arguments not yet used
+#' @param ... Additional arguments not yet used.
 #'
 #' @inheritParams targets::tar_target
 #'
@@ -184,7 +195,6 @@ tar_terra_sds <- function(name,
                           retrieval = targets::tar_option_get("retrieval"),
                           cue = targets::tar_option_get("cue"),
                           description = targets::tar_option_get("description")) {
-    check_pkg_installed("terra")
     #ensure that user-passed `resources` doesn't include `custom_format`
     if ("custom_format" %in% names(resources)) {
         cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_sprc}")
@@ -216,12 +226,12 @@ tar_terra_sds <- function(name,
     tar_terra_collection_raw(
         name = name,
         command = command,
-        pattern = pattern,
+        type = "sds",
         filetype = filetype,
+        pattern = pattern,
         gdal = gdal,
         packages = packages,
         library = library,
-        format = format_terra_collections(type = "sds"),
         repository = repository,
         error = error,
         memory = memory,
@@ -243,12 +253,12 @@ tar_terra_sds <- function(name,
 tar_terra_collection_raw <- function(
         name,
         command,
+        type = type,
         filetype = geotargets_option_get("gdal.raster.driver"),
         gdal = geotargets_option_get("gdal.raster.creation.options"),
         pattern = NULL,
         packages = targets::tar_option_get("packages"),
         library = targets::tar_option_get("library"),
-        format = format_terra_collections(),
         repository = targets::tar_option_get("repository"),
         error = targets::tar_option_get("error"),
         memory = targets::tar_option_get("memory"),
@@ -261,13 +271,50 @@ tar_terra_collection_raw <- function(
         cue = targets::tar_option_get("cue"),
         description = targets::tar_option_get("description")
 ) {
+
     targets::tar_target_raw(
         name = name,
         command = command,
         pattern = pattern,
         packages = packages,
         library = library,
-        format = format,
+        format = targets::tar_format(
+            read = switch(type,
+                          "sprc" = function(path) terra::sprc(path),
+                          "sds" = function(path) terra::sds(path)
+            ),
+            write = function(object, path) {
+                for (i in seq(object)) {
+                    if (i > 1) {
+                        opt <- "APPEND_SUBDATASET=YES"
+                    } else {
+                        opt <- ""
+                    }
+                    withCallingHandlers(
+                        warning = function(cnd) {
+                            # The warning message "[rast] skipped sub-datasets..."
+                            # is printed because the return value of writeRaster()
+                            # is rast(<output>).  In this context it is not
+                            # informative since the read function is sprc(), not
+                            # rast()
+                            if (grepl("\\[rast\\] skipped sub-datasets", cnd$message)) {
+                                rlang::cnd_muffle(cnd)
+                            }
+                        },
+                        terra::writeRaster(
+                            x = object[i],
+                            filename = path,
+                            filetype = filetype,
+                            overwrite = (i == 1),
+                            gdal = c(opt, gdal)
+                        )
+                    )
+                }
+            },
+            marshal = function(object) terra::wrap(object),
+            unmarshal = function(object) terra::unwrap(object),
+            substitute = list(type = type, gdal = gdal, filetype = filetype)
+        ),
         repository = repository,
         iteration = "list",
         error = error,
@@ -275,71 +322,10 @@ tar_terra_collection_raw <- function(
         garbage_collection = garbage_collection,
         deployment = deployment,
         priority = priority,
-        resources = utils::modifyList(
-            targets::tar_resources(
-                custom_format = targets::tar_resources_custom_format(
-                    #these envvars are used in write function of format
-                    envvars = c(
-                        "GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
-                        "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = (
-                            paste0(gdal, collapse = ";")
-                        )
-                    )
-                )
-            ), resources),
+        resources = resources,
         storage = storage,
         retrieval = retrieval,
         cue = cue,
         description = description
-    )
-}
-
-
-
-
-#' Format function for sprc and sds
-#' @noRd
-format_terra_collections <- function(type = c("sprc", "sds")) {
-    type <- match.arg(type)
-    targets::tar_format(
-        read = switch(type,
-                      "sprc" = function(path) terra::sprc(path),
-                      "sds" = function(path) terra::sds(path)
-        ),
-        write = function(object, path) {
-            gdal <- strsplit(
-                Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
-                           unset = ";"),
-                ";")[[1]]
-
-            for (i in seq(object)) {
-                if (i > 1) {
-                    opt <- "APPEND_SUBDATASET=YES"
-                } else {
-                    opt <- ""
-                }
-                withCallingHandlers(
-                    warning = function(cnd) {
-                        # The warning message "[rast] skipped sub-datasets..."
-                        # is printed because the return value of writeRaster()
-                        # is rast(<output>).  In this context it is not
-                        # informative since the read function is sprc(), not
-                        # rast()
-                        if (grepl("\\[rast\\] skipped sub-datasets", cnd$message)) {
-                            rlang::cnd_muffle(cnd)
-                        }
-                    },
-                    terra::writeRaster(
-                        x = object[i],
-                        filename = path,
-                        filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
-                        overwrite = (i == 1),
-                        gdal = c(opt, gdal)
-                    )
-                )
-            }
-        },
-        marshal = function(object) terra::wrap(object),
-        unmarshal = function(object) terra::unwrap(object)
     )
 }
