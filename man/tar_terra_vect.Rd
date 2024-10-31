@@ -28,52 +28,22 @@ tar_terra_vect(
 )
 }
 \arguments{
-\item{name}{Symbol, name of the target.
-In \code{\link[targets:tar_target]{tar_target()}}, \code{name} is an unevaluated symbol, e.g.
-\code{tar_target(name = data)}.
-In \code{\link[targets:tar_target_raw]{tar_target_raw()}}, \code{name} is a character string, e.g.
-\code{tar_target_raw(name = "data")}.
+\item{name}{Symbol, name of the target. A target
+name must be a valid name for a symbol in R, and it
+must not start with a dot. See \code{\link[targets:tar_target]{targets::tar_target()}} for more information.}
 
-A target name must be a valid name for a symbol in R, and it
-must not start with a dot. Subsequent targets
-can refer to this name symbolically to induce a dependency relationship:
-e.g. \code{tar_target(downstream_target, f(upstream_target))} is a
-target named \code{downstream_target} which depends on a target
-\code{upstream_target} and a function \code{f()}. In addition, a target's
-name determines its random number generator seed. In this way,
-each target runs with a reproducible seed so someone else
-running the same pipeline should get the same results,
-and no two targets in the same pipeline share the same seed.
-(Even dynamic branches have different names and thus different seeds.)
-You can recover the seed of a completed target
-with \code{tar_meta(your_target, seed)} and run \code{\link[targets:tar_seed_set]{tar_seed_set()}}
-on the result to locally recreate the target's initial RNG state.}
+\item{command}{R code to run the target.}
 
-\item{command}{R code to run the target.
-In \code{\link[targets:tar_target]{tar_target()}}, \code{command} is an unevaluated expression, e.g.
-\code{tar_target(command = data)}.
-In \code{\link[targets:tar_target_raw]{tar_target_raw()}}, \code{command} is an evaluated expression, e.g.
-\code{tar_target_raw(command = quote(data))}.}
-
-\item{pattern}{Code to define a dynamic branching branching for a target.
-In \code{\link[targets:tar_target]{tar_target()}}, \code{pattern} is an unevaluated expression, e.g.
-\code{tar_target(pattern = map(data))}.
-In \code{\link[targets:tar_target_raw]{tar_target_raw()}}, \code{command} is an evaluated expression, e.g.
-\code{tar_target_raw(pattern = quote(map(data)))}.
-
-To demonstrate dynamic branching patterns, suppose we have
-a pipeline with numeric vector targets \code{x} and \code{y}. Then,
-\code{tar_target(z, x + y, pattern = map(x, y))} implicitly defines
-branches of \code{z} that each compute \code{x[1] + y[1]}, \code{x[2] + y[2]},
-and so on. See the user manual for details.}
+\item{pattern}{Code to define a dynamic branching pattern for a target. See
+\code{\link[targets:tar_target]{targets::tar_target()}} for more information.}
 
 \item{filetype}{character. File format expressed as GDAL driver names passed
-to \code{\link[terra:writeVector]{terra::writeVector()}}. See 'Note' for more details}
+to \code{\link[terra:writeVector]{terra::writeVector()}}. See 'Note' for more details.}
 
 \item{gdal}{character. GDAL driver specific datasource creation options
 passed to \code{\link[terra:writeVector]{terra::writeVector()}}.}
 
-\item{...}{Additional arguments not yet used}
+\item{...}{Additional arguments not yet used.}
 
 \item{packages}{Character vector of packages to load right before
 the target runs or the output data is reloaded for
@@ -241,6 +211,15 @@ target class "tar_stem" for use in a target pipeline
 }
 \description{
 Provides a target format for \link[terra:SpatVector-class]{terra::SpatVector} objects.
+}
+\details{
+\link[terra:SpatVector-class]{terra::SpatVector} objects do not contain vector data directly—they
+contain a C++ pointer to memory where the data is stored.  As a result, these
+objects are not portable between R sessions without special handling, which
+causes problems when including them in \code{targets} pipelines with
+\code{tar_target()}. \code{tar_terra_rast()} handles this issue by writing and reading
+the target as a geospatial file (specified by \code{filetype}) rather than saving
+the \code{SpatVector} object itself.
 }
 \note{
 The \code{iteration} argument is unavailable because it is hard-coded to

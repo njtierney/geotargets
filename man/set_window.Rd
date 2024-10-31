@@ -7,9 +7,9 @@
 set_window(raster, window)
 }
 \arguments{
-\item{raster}{a SpatRaster object}
+\item{raster}{a SpatRaster object.}
 
-\item{window}{a SpatExtent object defining the area of interest}
+\item{window}{a SpatExtent object defining the area of interest.}
 }
 \description{
 Create a new SpatRaster object as specified by a window (area of interest)

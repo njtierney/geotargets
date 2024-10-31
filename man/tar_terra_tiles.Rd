@@ -27,42 +27,25 @@ tar_terra_tiles(
 )
 }
 \arguments{
-\item{name}{Symbol, name of the target.
-In \code{\link[targets:tar_target]{tar_target()}}, \code{name} is an unevaluated symbol, e.g.
-\code{tar_target(name = data)}.
-In \code{\link[targets:tar_target_raw]{tar_target_raw()}}, \code{name} is a character string, e.g.
-\code{tar_target_raw(name = "data")}.
+\item{name}{Symbol, name of the target. A target
+name must be a valid name for a symbol in R, and it
+must not start with a dot. See \code{\link[targets:tar_target]{targets::tar_target()}} for more information.}
 
-A target name must be a valid name for a symbol in R, and it
-must not start with a dot. Subsequent targets
-can refer to this name symbolically to induce a dependency relationship:
-e.g. \code{tar_target(downstream_target, f(upstream_target))} is a
-target named \code{downstream_target} which depends on a target
-\code{upstream_target} and a function \code{f()}. In addition, a target's
-name determines its random number generator seed. In this way,
-each target runs with a reproducible seed so someone else
-running the same pipeline should get the same results,
-and no two targets in the same pipeline share the same seed.
-(Even dynamic branches have different names and thus different seeds.)
-You can recover the seed of a completed target
-with \code{tar_meta(your_target, seed)} and run \code{\link[targets:tar_seed_set]{tar_seed_set()}}
-on the result to locally recreate the target's initial RNG state.}
-
-\item{raster}{a \code{SpatRaster} object to be split into tiles}
+\item{raster}{a \code{SpatRaster} object to be split into tiles.}
 
 \item{tile_fun}{a helper function that returns a list of numeric vectors such as \link{tile_grid} or \link{tile_blocksize} specified in one of the following ways:
 \itemize{
-\item A named function, e.g. \code{tile_blocksize} or \code{"tile_blocksize"}
-\item An anonymous function, e.g. \verb{\\(x) tile_grid(x, nrow = 2, ncol = 2)}
+\item A named function, e.g. \code{tile_blocksize} or \code{"tile_blocksize"}.
+\item An anonymous function, e.g. \verb{\\(x) tile_grid(x, nrow = 2, ncol = 2)}.
 }}
 
 \item{filetype}{character. File format expressed as GDAL driver names passed
-to \code{\link[terra:makeTiles]{terra::makeTiles()}}}
+to \code{\link[terra:makeTiles]{terra::makeTiles()}}.}
 
 \item{gdal}{character. GDAL driver specific datasource creation options
-passed to \code{\link[terra:makeTiles]{terra::makeTiles()}}}
+passed to \code{\link[terra:makeTiles]{terra::makeTiles()}}.}
 
-\item{...}{additional arguments not yet used}
+\item{...}{additional arguments not yet used.}
 
 \item{packages}{Character vector of packages to load right before
 the target runs or the output data is reloaded for
@@ -228,7 +211,7 @@ list of SpatRaster objects.
 \description{
 This target factory is useful when a raster is too large or too high
 resolution to work on in-memory. It can instead be split into tiles that can
-be iterated over, potentially using parallel workers.
+be iterated over using dynamic branching.
 }
 \note{
 The \code{iteration} argument is unavailable because it is hard-coded to
@@ -264,7 +247,7 @@ if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
 }
 }
 \seealso{
-\code{\link[=tile_grid]{tile_grid()}}, \code{\link[=tile_blocksize]{tile_blocksize()}}, \code{\link[=tar_terra_rast]{tar_terra_rast()}}
+\code{\link[=tile_n]{tile_n()}}, \code{\link[=tile_grid]{tile_grid()}}, \code{\link[=tile_blocksize]{tile_blocksize()}}, \code{\link[=tar_terra_rast]{tar_terra_rast()}}
 }
 \author{
 Eric Scott

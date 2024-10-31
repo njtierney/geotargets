@@ -13,17 +13,17 @@ tile_blocksize(raster, n_blocks_row = 1, n_blocks_col = 1)
 tile_n(raster, n)
 }
 \arguments{
-\item{raster}{a SpatRaster object}
+\item{raster}{a SpatRaster object.}
 
-\item{ncol}{integer; number of columns to split the SpatRaster into}
+\item{ncol}{integer; number of columns to split the SpatRaster into.}
 
-\item{nrow}{integer; number of rows to split the SpatRaster into}
+\item{nrow}{integer; number of rows to split the SpatRaster into.}
 
-\item{n_blocks_row}{integer; multiple of blocksize to include in each tile vertically}
+\item{n_blocks_row}{integer; multiple of blocksize to include in each tile vertically.}
 
-\item{n_blocks_col}{integer; multiple of blocksize to include in each tile horizontally}
+\item{n_blocks_col}{integer; multiple of blocksize to include in each tile horizontally.}
 
-\item{n}{integer; total number of tiles to split the SpatRaster into}
+\item{n}{integer; total number of tiles to split the SpatRaster into.}
 }
 \value{
 list of named numeric vectors with xmin, xmax, ymin, and ymax values

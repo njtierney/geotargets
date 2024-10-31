@@ -5,13 +5,13 @@
 #'
 #' @param gdal_raster_driver character, length 1; set the driver used for raster
 #'   data in target store (default: `"GTiff"`). Options for driver names can be
-#'   found here: <https://gdal.org/drivers/raster/index.html>
+#'   found here: <https://gdal.org/drivers/raster/index.html>.
 #' @param gdal_raster_creation_options character; set the GDAL creation options
 #'   used when writing raster files to target store (default: `""`). You may
 #'   specify multiple values e.g. `c("COMPRESS=DEFLATE", "TFW=YES")`. Each GDAL
 #'   driver supports a unique set of creation options. For example, with the
 #'   default `"GTiff"` driver:
-#'   <https://gdal.org/drivers/raster/gtiff.html#creation-options>
+#'   <https://gdal.org/drivers/raster/gtiff.html#creation-options>.
 #' @param gdal_vector_driver character, length 1; set the file type used for
 #' vector data in target store (default: `"GeoJSON"`).
 #' @param gdal_vector_creation_options character; set the GDAL layer creation
