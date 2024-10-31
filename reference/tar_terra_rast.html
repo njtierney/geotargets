@@ -44,6 +44,7 @@
 <span>  pattern <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  filetype <span class="op">=</span> <span class="fu"><a href="geotargets-options.html">geotargets_option_get</a></span><span class="op">(</span><span class="st">"gdal.raster.driver"</span><span class="op">)</span>,</span>
 <span>  gdal <span class="op">=</span> <span class="fu"><a href="geotargets-options.html">geotargets_option_get</a></span><span class="op">(</span><span class="st">"gdal.raster.creation.options"</span><span class="op">)</span>,</span>
+<span>  preserve_metadata <span class="op">=</span> <span class="fu"><a href="geotargets-options.html">geotargets_option_get</a></span><span class="op">(</span><span class="st">"terra.preserve.metadata"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  tidy_eval <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"tidy_eval"</span><span class="op">)</span>,</span>
 <span>  packages <span class="op">=</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_get.html" class="external-link">tar_option_get</a></span><span class="op">(</span><span class="st">"packages"</span><span class="op">)</span>,</span>
@@ -117,6 +118,16 @@ to <code><a href="https://rspatial.github.io/terra/reference/writeRaster.html" c
 <dt id="arg-gdal">gdal<a class="anchor" aria-label="anchor" href="#arg-gdal"></a></dt>
 <dd><p>character. GDAL driver specific datasource creation options
 passed to <code><a href="https://rspatial.github.io/terra/reference/writeRaster.html" class="external-link">terra::writeRaster()</a></code></p></dd>
+
+
+<dt id="arg-preserve-metadata">preserve_metadata<a class="anchor" aria-label="anchor" href="#arg-preserve-metadata"></a></dt>
+<dd><p>character. When <code>"drop"</code> (default), any auxiliary
+files that would be written by <code><a href="https://rspatial.github.io/terra/reference/writeRaster.html" class="external-link">terra::writeRaster()</a></code> containing raster
+metadata such as units and datetimes are lost (note that this does not
+include layer names set with <code>names() &lt;-</code>).  When <code>"zip"</code>, these metadata
+are retained by archiving all written files as a zip file upon writing and
+unzipping them upon reading. This adds extra overhead and will slow
+pipelines.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

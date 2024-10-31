@@ -45,7 +45,8 @@ geotargets-specific global options.</p>
 <span>  gdal_raster_driver <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  gdal_raster_creation_options <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  gdal_vector_driver <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  gdal_vector_creation_options <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  gdal_vector_creation_options <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  terra_preserve_metadata <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">geotargets_option_get</span><span class="op">(</span><span class="va">name</span><span class="op">)</span></span></code></pre></div>
@@ -83,6 +84,16 @@ options used when writing vector files to target store (default:
 a unique set of creation options. For example, with the default <code>"GeoJSON"</code>
 driver:
 <a href="https://gdal.org/drivers/vector/geojson.html#layer-creation-options" class="external-link">https://gdal.org/drivers/vector/geojson.html#layer-creation-options</a></p></dd>
+
+
+<dt id="arg-terra-preserve-metadata">terra_preserve_metadata<a class="anchor" aria-label="anchor" href="#arg-terra-preserve-metadata"></a></dt>
+<dd><p>character. When <code>"drop"</code> (default), any
+auxiliary files that would be written by <code><a href="https://rspatial.github.io/terra/reference/writeRaster.html" class="external-link">terra::writeRaster()</a></code> containing
+raster metadata such as units and datetimes are lost (note that this does
+not include layer names set with <code>names() &lt;-</code>).  When <code>"zip"</code>, these
+metadata are retained by archiving all written files as a zip file upon
+writing and unzipping them upon reading. This adds extra overhead and will
+slow pipelines.</p></dd>
 
 
 <dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>

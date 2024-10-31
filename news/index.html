@@ -42,6 +42,10 @@
 <li>Requires GDAL 3.1 or greater to use “ESRI Shapefile” driver in <code><a href="../reference/tar_terra_vect.html">tar_terra_vect()</a></code> (<a href="https://github.com/njtierney/geotargets/issues/71" class="external-link">#71</a>, <a href="https://github.com/njtierney/geotargets/issues/97" class="external-link">#97</a>)</li>
 <li>
 <code>geotargets</code> now requires <code>targets</code> version 1.8.0 or higher</li>
+<li>
+<code><a href="../reference/tar_terra_rast.html">tar_terra_rast()</a></code> gains a <code>preserve_metadata</code> option that when set to <code>"zip"</code> reads/writes targets as zip archives that include aux.json “sidecar” files sometimes written by <code>terra</code> (<a href="https://github.com/njtierney/geotargets/issues/58" class="external-link">#58</a>)</li>
+<li>
+<code>terra</code> (&gt;= 1.7.71), <code>withr</code> (&gt;= 3.0.0), and <code>zip</code> are now required dependencies of <code>geotargets</code> (moved from <code>Suggests</code> to <code>Imports</code>)</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="geotargets-010-14-may-2024">geotargets 0.1.0 (14 May 2024)<a class="anchor" aria-label="anchor" href="#geotargets-010-14-may-2024"></a></h2>
