@@ -323,7 +323,7 @@ format_terra_collections <- function(type = c("sprc", "sds")) {
                         # The warning message "[rast] skipped sub-datasets..."
                         # is printed because the return value of writeRaster()
                         # is rast(<output>).  In this context it is not
-                        # informative since the write function is sprc(), not
+                        # informative since the read function is sprc(), not
                         # rast()
                         if (grepl("\\[rast\\] skipped sub-datasets", cnd$message)) {
                             rlang::cnd_muffle(cnd)
