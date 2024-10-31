@@ -290,12 +290,24 @@ tar_terra_collection_raw <- function(
                     } else {
                         opt <- ""
                     }
-                    terra::writeRaster(
-                        x = object[i],
-                        filename = path,
-                        filetype = filetype,
-                        overwrite = (i == 1),
-                        gdal = c(opt, gdal)
+                    withCallingHandlers(
+                        warning = function(cnd) {
+                            # The warning message "[rast] skipped sub-datasets..."
+                            # is printed because the return value of writeRaster()
+                            # is rast(<output>).  In this context it is not
+                            # informative since the read function is sprc(), not
+                            # rast()
+                            if (grepl("\\[rast\\] skipped sub-datasets", cnd$message)) {
+                                rlang::cnd_muffle(cnd)
+                            }
+                        },
+                        terra::writeRaster(
+                            x = object[i],
+                            filename = path,
+                            filetype = filetype,
+                            overwrite = (i == 1),
+                            gdal = c(opt, gdal)
+                        )
                     )
                 }
             },
@@ -317,41 +329,3 @@ tar_terra_collection_raw <- function(
         description = description
     )
 }
-
-
-#'
-#'
-#' #' Format function for sprc and sds
-#' #' @noRd
-#' format_terra_collections <- function(type = c("sprc", "sds")) {
-#'     type <- match.arg(type)
-#'     targets::tar_format(
-#'         read = switch(type,
-#'                       "sprc" = function(path) terra::sprc(path),
-#'                       "sds" = function(path) terra::sds(path)
-#'         ),
-#'         write = function(object, path) {
-#'             gdal <- strsplit(
-#'                 Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
-#'                            unset = ";"),
-#'                 ";")[[1]]
-#'
-#'             for (i in seq(object)) {
-#'                 if (i > 1) {
-#'                     opt <- "APPEND_SUBDATASET=YES"
-#'                 } else {
-#'                     opt <- ""
-#'                 }
-#'                 terra::writeRaster(
-#'                     x = object[i],
-#'                     filename = path,
-#'                     filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
-#'                     overwrite = (i == 1),
-#'                     gdal = c(opt, gdal)
-#'                 )
-#'             }
-#'         },
-#'         marshal = function(object) terra::wrap(object),
-#'         unmarshal = function(object) terra::unwrap(object)
-#'     )
-#' }
