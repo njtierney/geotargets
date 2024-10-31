@@ -10,6 +10,7 @@ tar_terra_rast(
   pattern = NULL,
   filetype = geotargets_option_get("gdal.raster.driver"),
   gdal = geotargets_option_get("gdal.raster.creation.options"),
+  preserve_metadata = geotargets_option_get("terra.preserve.metadata"),
   ...,
   tidy_eval = targets::tar_option_get("tidy_eval"),
   packages = targets::tar_option_get("packages"),
@@ -38,12 +39,20 @@ must not start with a dot. See \code{\link[targets:tar_target]{targets::tar_targ
 \code{\link[targets:tar_target]{targets::tar_target()}} for more information.}
 
 \item{filetype}{character. File format expressed as GDAL driver names passed
-to \code{\link[terra:writeRaster]{terra::writeRaster()}}.}
+to \code{\link[terra:writeRaster]{terra::writeRaster()}}}
 
-\item{gdal}{character. GDAL driver specific data source creation options
-passed to \code{\link[terra:writeRaster]{terra::writeRaster()}}.}
+\item{gdal}{character. GDAL driver specific datasource creation options
+passed to \code{\link[terra:writeRaster]{terra::writeRaster()}}}
 
-\item{...}{Additional arguments not yet used.}
+\item{preserve_metadata}{character. When \code{"drop"} (default), any auxiliary
+files that would be written by \code{\link[terra:writeRaster]{terra::writeRaster()}} containing raster
+metadata such as units and datetimes are lost (note that this does not
+include layer names set with \verb{names() <-}).  When \code{"zip"}, these metadata
+are retained by archiving all written files as a zip file upon writing and
+unzipping them upon reading. This adds extra overhead and will slow
+pipelines.}
+
+\item{...}{Additional arguments not yet used}
 
 \item{tidy_eval}{Logical, whether to enable tidy evaluation
 when interpreting \code{command} and \code{pattern}. If \code{TRUE}, you can use the

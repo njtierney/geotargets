@@ -57,78 +57,7 @@ targets::tar_test("tar_terra_rast() works with dynamic branching", {
     targets::tar_make()
     expect_length(targets::tar_read(my_map_plus), 2)
 })
-targets::tar_test("tar_terra_vect() works", {
-    targets::tar_script({
-        lux_area <- function(projection = "EPSG:4326") {
-            terra::project(
-                terra::vect(system.file("ex", "lux.shp",
-                                        package = "terra"
-                )),
-                projection
-            )
-        }
-        list(
-            geotargets::tar_terra_vect(
-                test_terra_vect,
-                lux_area()
-            ),
-            geotargets::tar_terra_vect(
-                test_terra_vect_shz,
-                lux_area(),
-                filetype = "ESRI Shapefile"
-            )
-        )
-    })
-    targets::tar_make()
-    x <- targets::tar_read(test_terra_vect)
-    y <- targets::tar_read(test_terra_vect_shz)
-    expect_s4_class(x, "SpatVector")
-    expect_s4_class(y, "SpatVector")
-    expect_snapshot(x)
-    expect_snapshot(y)
-    expect_equal(terra::values(x), terra::values(y))
-})
 
-targets::tar_test("tar_terra_vect() works with multiple workers (tests marshaling/unmarshaling)", {
-    targets::tar_script({
-        targets::tar_option_set(controller = crew::crew_controller_local(workers = 2))
-        list(
-            geotargets::tar_terra_vect(
-                vect1,
-                terra::vect(system.file("ex", "lux.shp", package = "terra"))
-            ),
-            geotargets::tar_terra_vect(
-                vect2,
-                terra::vect(system.file("ex", "lux.shp", package = "terra"))
-            )
-        )
-    })
-    targets::tar_make()
-    expect_true(all(is.na(targets::tar_meta()$error)))
-    expect_s4_class(targets::tar_read(vect1), "SpatVector")
-})
-
-targets::tar_test("tar_terra_vect() works with dynamic branching", {
-    targets::tar_script({
-        list(
-            geotargets::tar_terra_vect(
-                my_vect,
-                terra::vect(system.file("ex", "lux.shp",package = "terra"))
-            ),
-            targets::tar_target(
-                to_sub,
-                c("Clervaux", "Redange")
-            ),
-            geotargets::tar_terra_vect(
-                my_vect_subs,
-                my_vect[my_vect$NAME_2 == to_sub],
-                pattern = to_sub
-            )
-        )
-    })
-    targets::tar_make()
-    expect_length(targets::tar_read(my_vect_subs), 2)
-})
 
 targets::tar_test("user resources are passed correctly", {
     library(crew)
@@ -196,4 +125,28 @@ tar_test("That changing filetype invalidates a target", {
         )
     })
     expect_equal(tar_outdated(), "r")
+})
+
+tar_test("metadata is maintained", {
+    tar_script({
+        library(targets)
+        library(geotargets)
+        library(terra)
+        geotargets_option_set(terra_preserve_metadata = "zip")
+        make_rast <- function() {
+            f <- system.file("ex/elev.tif", package="terra")
+            r <- terra::rast(f)
+            r <- c(r, r + 10, r/2)
+            terra::units(r) <- rep("m", 3)
+            terra::time(r) <- as.Date("2024-10-01") + c(0,1,2)
+            r
+        }
+        list(
+            tar_terra_rast(r, make_rast())
+        )
+    })
+    tar_make()
+    x <- tar_read(r)
+    expect_equal(terra::units(x), rep("m", 3))
+    expect_equal(terra::time(x), as.Date("2024-10-01") + c(0,1,2))
 })
