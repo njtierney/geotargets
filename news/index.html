@@ -39,6 +39,7 @@
 <li>Created utility function <code><a href="../reference/set_window.html">set_window()</a></code> mostly for internal use within <code><a href="../reference/tar_terra_tiles.html">tar_terra_tiles()</a></code>.</li>
 <li>Removes the <code>iteration</code> argument from all <code>tar_*()</code> functions. <code>iteration</code> now hard-coded as <code>"list"</code> since it is the only option that works (for now at least).</li>
 <li>Added the <code>description</code> argument to all <code>tar_*()</code> functions which is passed to <code><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target()</a></code>.</li>
+<li>Suppressed the warning “[rast] skipped sub-datasets” from <code><a href="../reference/tar_terra_sprc.html">tar_terra_sprc()</a></code>, which is misleading in this context (<a href="https://github.com/njtierney/geotargets/issues/92" class="external-link">#92</a>, <a href="https://github.com/njtierney/geotargets/issues/104" class="external-link">#104</a>).</li>
 <li>Requires GDAL 3.1 or greater to use “ESRI Shapefile” driver in <code><a href="../reference/tar_terra_vect.html">tar_terra_vect()</a></code> (<a href="https://github.com/njtierney/geotargets/issues/71" class="external-link">#71</a>, <a href="https://github.com/njtierney/geotargets/issues/97" class="external-link">#97</a>)</li>
 <li>
 <code>geotargets</code> now requires <code>targets</code> version 1.8.0 or higher</li>
