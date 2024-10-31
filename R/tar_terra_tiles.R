@@ -6,16 +6,16 @@
 #' @param name Symbol, name of the target. A target
 #'   name must be a valid name for a symbol in R, and it
 #'   must not start with a dot. See [targets::tar_target()] for more information.
-#' @param raster a `SpatRaster` object to be split into tiles
+#' @param raster a `SpatRaster` object to be split into tiles.
 #' @param tile_fun a helper function that returns a list of numeric vectors such as [tile_grid] or [tile_blocksize] specified in one of the following ways:
-#'  - A named function, e.g. `tile_blocksize` or `"tile_blocksize"`
-#'  - An anonymous function, e.g. `\(x) tile_grid(x, nrow = 2, ncol = 2)`
+#'  - A named function, e.g. `tile_blocksize` or `"tile_blocksize"`.
+#'  - An anonymous function, e.g. `\(x) tile_grid(x, nrow = 2, ncol = 2)`.
 #' @param filetype character. File format expressed as GDAL driver names passed
-#'   to [terra::makeTiles()]
+#'   to [terra::makeTiles()].
 #' @param gdal character. GDAL driver specific datasource creation options
-#'   passed to [terra::makeTiles()]
+#'   passed to [terra::makeTiles()].
 #'
-#' @param ... additional arguments not yet used
+#' @param ... additional arguments not yet used.
 #' @inheritParams targets::tar_target
 #' @author Eric Scott
 #'
@@ -203,8 +203,8 @@ tar_terra_tiles_raw <- function(
 #' which, rather than modifying the SpatRaster in place, returns a new
 #' SpatRaster leaving the original unchanged.
 #'
-#' @param raster a SpatRaster object
-#' @param window a SpatExtent object defining the area of interest
+#' @param raster a SpatRaster object.
+#' @param window a SpatExtent object defining the area of interest.
 #'
 #' @note While this may have general use, it was created primarily for use
 #'   within [tar_terra_tiles()].
@@ -224,8 +224,6 @@ set_window <- function(raster, window) {
     raster_out
 }
 
-
-
 #' Helper functions to create tiles
 #'
 #' Wrappers around [terra::getTileExtents()] that return a list of named numeric
@@ -242,12 +240,12 @@ set_window <- function(raster, window) {
 #' columns to split the raster into.  E.g. nrow = 2 and ncol = 2 would create 4
 #' tiles (because it specifies a 2x2 matrix, which has 4 elements).
 #'
-#' @param raster a SpatRaster object
-#' @param ncol integer; number of columns to split the SpatRaster into
-#' @param nrow integer; number of rows to split the SpatRaster into
-#' @param n integer; total number of tiles to split the SpatRaster into
-#' @param n_blocks_row integer; multiple of blocksize to include in each tile vertically
-#' @param n_blocks_col integer; multiple of blocksize to include in each tile horizontally
+#' @param raster a SpatRaster object.
+#' @param ncol integer; number of columns to split the SpatRaster into.
+#' @param nrow integer; number of rows to split the SpatRaster into.
+#' @param n integer; total number of tiles to split the SpatRaster into.
+#' @param n_blocks_row integer; multiple of blocksize to include in each tile vertically.
+#' @param n_blocks_col integer; multiple of blocksize to include in each tile horizontally.
 #'
 #' @author Eric Scott
 #' @return list of named numeric vectors with xmin, xmax, ymin, and ymax values

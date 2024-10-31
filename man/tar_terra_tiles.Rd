@@ -31,21 +31,21 @@ tar_terra_tiles(
 name must be a valid name for a symbol in R, and it
 must not start with a dot. See \code{\link[targets:tar_target]{targets::tar_target()}} for more information.}
 
-\item{raster}{a \code{SpatRaster} object to be split into tiles}
+\item{raster}{a \code{SpatRaster} object to be split into tiles.}
 
 \item{tile_fun}{a helper function that returns a list of numeric vectors such as \link{tile_grid} or \link{tile_blocksize} specified in one of the following ways:
 \itemize{
-\item A named function, e.g. \code{tile_blocksize} or \code{"tile_blocksize"}
-\item An anonymous function, e.g. \verb{\\(x) tile_grid(x, nrow = 2, ncol = 2)}
+\item A named function, e.g. \code{tile_blocksize} or \code{"tile_blocksize"}.
+\item An anonymous function, e.g. \verb{\\(x) tile_grid(x, nrow = 2, ncol = 2)}.
 }}
 
 \item{filetype}{character. File format expressed as GDAL driver names passed
-to \code{\link[terra:makeTiles]{terra::makeTiles()}}}
+to \code{\link[terra:makeTiles]{terra::makeTiles()}}.}
 
 \item{gdal}{character. GDAL driver specific datasource creation options
-passed to \code{\link[terra:makeTiles]{terra::makeTiles()}}}
+passed to \code{\link[terra:makeTiles]{terra::makeTiles()}}.}
 
-\item{...}{additional arguments not yet used}
+\item{...}{additional arguments not yet used.}
 
 \item{packages}{Character vector of packages to load right before
 the target runs or the output data is reloaded for
@@ -126,17 +126,8 @@ and \code{"transient"} means it gets deleted as soon as possible.
 The former conserves bandwidth,
 and the latter conserves local storage.}
 
-\item{garbage_collection}{Logical: \code{TRUE} to run \code{base::gc()}
-just before the target runs,
-\code{FALSE} to omit garbage collection.
-In the case of high-performance computing,
-\code{gc()} runs both locally and on the parallel worker.
-All this garbage collection is skipped if the actual target
-is skipped in the pipeline.
-Non-logical values of \code{garbage_collection} are converted to \code{TRUE} or
-\code{FALSE} using \code{isTRUE()}. In other words, non-logical values are
-converted \code{FALSE}. For example, \code{garbage_collection = 2}
-is equivalent to \code{garbage_collection = FALSE}.}
+\item{garbage_collection}{Logical, whether to run \code{base::gc()}
+just before the target runs.}
 
 \item{deployment}{Character of length 1. If \code{deployment} is
 \code{"main"}, then the target will run on the central controlling R process.

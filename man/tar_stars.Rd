@@ -64,7 +64,7 @@ must not start with a dot. See \code{\link[targets:tar_target]{targets::tar_targ
 \item{command}{R code to run the target.}
 
 \item{pattern}{Code to define a dynamic branching pattern for a target. See
-\code{\link[targets:tar_target]{targets::tar_target()}} for more information}
+\code{\link[targets:tar_target]{targets::tar_target()}} for more information.}
 
 \item{proxy}{logical. Passed to \code{\link[stars:read_stars]{stars::read_stars()}}. If \code{TRUE} the target will be read as an object of class \code{stars_proxy}. Otherwise, the object is class \code{stars}.}
 
@@ -74,9 +74,9 @@ must not start with a dot. See \code{\link[targets:tar_target]{targets::tar_targ
 
 \item{driver}{character. File format expressed as GDAL driver names passed to \code{\link[stars:write_stars]{stars::write_stars()}}. See \code{\link[sf:st_drivers]{sf::st_drivers()}}.}
 
-\item{options}{character. GDAL driver specific datasource creation options passed to \code{\link[stars:write_stars]{stars::write_stars()}}}
+\item{options}{character. GDAL driver specific datasource creation options passed to \code{\link[stars:write_stars]{stars::write_stars()}}.}
 
-\item{...}{Additional arguments not yet used}
+\item{...}{Additional arguments not yet used.}
 
 \item{tidy_eval}{Logical, whether to enable tidy evaluation
 when interpreting \code{command} and \code{pattern}. If \code{TRUE}, you can use the
@@ -162,17 +162,8 @@ and \code{"transient"} means it gets deleted as soon as possible.
 The former conserves bandwidth,
 and the latter conserves local storage.}
 
-\item{garbage_collection}{Logical: \code{TRUE} to run \code{base::gc()}
-just before the target runs,
-\code{FALSE} to omit garbage collection.
-In the case of high-performance computing,
-\code{gc()} runs both locally and on the parallel worker.
-All this garbage collection is skipped if the actual target
-is skipped in the pipeline.
-Non-logical values of \code{garbage_collection} are converted to \code{TRUE} or
-\code{FALSE} using \code{isTRUE()}. In other words, non-logical values are
-converted \code{FALSE}. For example, \code{garbage_collection = 2}
-is equivalent to \code{garbage_collection = FALSE}.}
+\item{garbage_collection}{Logical, whether to run \code{base::gc()}
+just before the target runs.}
 
 \item{deployment}{Character of length 1. If \code{deployment} is
 \code{"main"}, then the target will run on the central controlling R process.

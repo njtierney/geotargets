@@ -16,12 +16,12 @@
 #'   must not start with a dot. See [targets::tar_target()] for more information.
 #' @param command R code to run the target.
 #' @param pattern Code to define a dynamic branching pattern for a target. See
-#'   [targets::tar_target()] for more information
+#'   [targets::tar_target()] for more information.
 #' @param filetype character. File format expressed as GDAL driver names passed
-#'   to [terra::writeVector()]. See 'Note' for more details
+#'   to [terra::writeVector()]. See 'Note' for more details.
 #' @param gdal character. GDAL driver specific datasource creation options
 #'   passed to [terra::writeVector()].
-#' @param ... Additional arguments not yet used
+#' @param ... Additional arguments not yet used.
 #' @inheritParams targets::tar_target
 #'
 #' @note The `iteration` argument is unavailable because it is hard-coded to
