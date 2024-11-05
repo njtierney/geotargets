@@ -143,9 +143,9 @@ tar_rast_read <- function(preserve_metadata) {
         zip = function(path) {
             tmp <- withr::local_tempdir()
             zip::unzip(zipfile = path, exdir = tmp)
-            terra::rast(file.path(tmp, basename(path)))
+            terra::rast(file.path(tmp, basename(path))) + 0
         },
-        drop = function(path) terra::rast(path)
+        drop = function(path) terra::rast(path) + 0
     )
 }
 
