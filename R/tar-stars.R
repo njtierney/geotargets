@@ -1,20 +1,25 @@
 #' Create a stars _stars_ Target
 #'
 #' Provides a target format for stars objects.
-#'
+#' @param name Symbol, name of the target. A target
+#'   name must be a valid name for a symbol in R, and it
+#'   must not start with a dot. See [targets::tar_target()] for more information.
+#' @param command R code to run the target.
+#' @param pattern Code to define a dynamic branching pattern for a target. See
+#'   [targets::tar_target()] for more information.
 #' @param driver character. File format expressed as GDAL driver names passed to [stars::write_stars()]. See [sf::st_drivers()].
-#' @param options character. GDAL driver specific datasource creation options passed to [stars::write_stars()]
+#' @param options character. GDAL driver specific datasource creation options passed to [stars::write_stars()].
 #' @param proxy logical. Passed to [stars::read_stars()]. If `TRUE` the target will be read as an object of class `stars_proxy`. Otherwise, the object is class `stars`.
 #' @param mdim logical. Use the [Multidimensional Raster Data Model](https://gdal.org/user/multidim_raster_data_model.html) via [stars::write_mdim()]? Default: `FALSE`. Only supported for some drivers, e.g. `"netCDF"` or `"Zarr"`.
 #' @param ncdf logical. Use the NetCDF library directly to read data via [stars::read_ncdf()]? Default: `FALSE`. Only supported for `driver="netCDF"`.
-#' @param ... Additional arguments not yet used
+#' @param ... Additional arguments not yet used.
 #'
 #' @inheritParams targets::tar_target
 #'
 #' @note The `iteration` argument is unavailable because it is hard-coded to
 #'   `"list"`, the only option that works currently.
 #'
-#' @seealso [targets::tar_target_raw()]
+#' @seealso [targets::tar_target()]
 #' @export
 #' @examplesIf rlang::is_installed("stars")
 #' if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
@@ -204,52 +209,6 @@ tar_stars_raw <- function(name,
 
     driver <- rlang::arg_match0(driver, drv$name)
 
-    .read_stars <- eval(substitute(
-        function(path) {
-
-        ## TODO: it appears envvar custom resources do not work in read function?
-        READ_FUN <- stars::read_stars
-        #  mdim <- as.logical(Sys.getenv("GEOTARGETS_GDAL_RASTER_MDIM", unset = FALSE))
-        if (mdim) {
-            READ_FUN <- stars::read_mdim
-        }
-
-        # ncdf <- as.logical(Sys.getenv("GEOTARGETS_USE_NCMETA", unset = FALSE))
-        if (ncdf && requireNamespace("ncmeta")) {
-            READ_FUN <- stars::read_ncdf
-        }
-
-        # proxy <- as.logical(Sys.getenv("GEOTARGETS_PROXY", unset = FALSE))
-        READ_FUN(path, proxy = proxy)
-
-    }, list(ncdf = ncdf, mdim = mdim, proxy = proxy)))
-
-    # TODO: should multidimensional array use the same `options` as 2D?
-    .write_stars <- function(object, path) {
-
-        WRITE_FUN <- stars::write_stars
-
-        mdim <- as.logical(Sys.getenv("GEOTARGETS_GDAL_RASTER_MDIM",
-                                      unset = FALSE))
-        if (mdim) {
-            WRITE_FUN <- stars::write_mdim
-        }
-
-        dr <- Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER")
-
-        # stars requires character(0), not "", for no options set
-        co <- Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS")
-        co2 <- strsplit(co, ";")[[1]]
-
-        WRITE_FUN(
-            object,
-            path,
-            overwrite = TRUE,
-            driver = dr,
-            options = co
-        )
-    }
-
     targets::tar_target_raw(
         name = name,
         command = command,
@@ -257,10 +216,43 @@ tar_stars_raw <- function(name,
         packages = packages,
         library = library,
         format = targets::tar_format(
-            read = .read_stars,
-            write = .write_stars,
-            marshal = function(object) object, # Not currently used
-            unmarshal = function(object) object
+            read = function(path) {
+                if (ncdf) {
+                    geotargets:::check_pkg_installed("ncmeta")
+                    stars::read_ncdf(path, proxy = proxy)
+                } else if (isTRUE(mdim)) {
+                    stars::read_mdim(path, proxy = proxy)
+                } else {
+                    stars::read_stars(path, proxy = proxy)
+                }
+            },
+            write = function(object, path) {
+                if (mdim) {
+                    stars::write_mdim(
+                        object,
+                        path,
+                        overwrite = TRUE,
+                        driver = driver,
+                        options = options
+                    )
+                } else {
+                    stars::write_stars(
+                        object,
+                        path,
+                        overwrite = TRUE,
+                        driver = driver,
+                        options = options
+                    )
+                }
+
+            },
+            substitute = list(
+                ncdf = ncdf,
+                mdim = mdim,
+                proxy = proxy,
+                driver = driver,
+                options = options
+            )
         ),
         repository = repository,
         iteration = "list", #the only option that works
@@ -269,17 +261,7 @@ tar_stars_raw <- function(name,
         garbage_collection = garbage_collection,
         deployment = deployment,
         priority = priority,
-        resources = utils::modifyList(targets::tar_resources(
-            custom_format = targets::tar_resources_custom_format(
-                #these envvars are used in read and write functions of format
-                envvars = c("GEOTARGETS_GDAL_RASTER_DRIVER" = driver,
-                            "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" =
-                                paste0(options, collapse = ";"),
-                            "GEOTARGETS_GDAL_RASTER_MDIM" = mdim,
-                            "GEOTARGETS_PROXY" = proxy,
-                            "GEOTARGETS_USE_NCMETA" = ncdf)
-            )
-        ), resources),
+        resources = resources,
         storage = storage,
         retrieval = retrieval,
         cue = cue,

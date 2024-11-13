@@ -1,0 +1,230 @@
+---
+title: Benchmarking options for preserving metadata in `geotargets::tar_terra_rast()`
+author: Eric Scott
+---
+
+```{r}
+#for defining read and write functions
+library(terra)
+library(fs)
+library(zip)
+library(withr)
+
+#for benchmarking and profiling
+library(microbenchmark)
+library(ggplot2)
+library(profvis)
+```
+
+## The problem
+
+`terra` saves metadata in "sidecar" files but `targets` enforces a 'one target = one file' rule.
+There are two ways to get around this: 1) the target is a generic archive containing both the raster and the sidecar file, 1b) the target is a SOzip geospatial archive created by GDAL, or 2) the target is a `PackedSpatRaster` object pointing to the raster and sidecar file saved elsewhere.
+
+## Example raster
+
+```{r}
+f <- system.file("ex/elev.tif", package="terra")
+r <- rast(f)
+r <- c(r, r + 10, r/2)
+units(r) <- "m"
+names(r) <- c("elevation", "elevation+10", "elevation/2")
+r
+#higher res version for benchmarking
+r_highres <- disagg(r, 10)
+```
+
+```{r}
+#"pretend" _targets/ store
+target_store <- "_test/object"
+dir_create(target_store)
+```
+
+## Using an archive
+
+Getting the archive to not contain a bunch of junk paths is tricky (impossible?) with base R's `zip()` or `tar()` functions.
+Plus, they have potentially different behaviors on different operating systems.
+Fortunately, `zip::zip()` includes a helpful "cherry-pick" mode.
+
+```{r}
+write_to_zip <- function(object, path) {
+    #rename path to not be confused with fs::path() just to make more readable
+    out_path <- path
+    dir_create(path_dir(out_path))
+    #do stuff in a fresh local tempdir() that disappears when function is done
+    tmp <- withr::local_tempdir()
+    dir_create(tmp, fs::path_dir(out_path))
+    #write the raster (hard-coded options for demonstration)
+    writeRaster(object,
+                fs::path(tmp, out_path),
+                filetype = "GTiff",
+                overwrite = TRUE)
+    #figure out which files got written
+    raster_files <- dir_ls(path(tmp, path_dir(out_path)))
+    #package those into a zip file using `zip::zip()`
+    zip::zip(
+        path(tmp, fs::path_file(out_path)),
+        files = raster_files,
+        compression_level = 1,
+        mode = "cherry-pick",
+        root = fs::path_dir(raster_files)
+    )
+    #move the zip file to the out_path as expected output
+    file_move(path(tmp, fs::path_file(out_path)), out_path)
+}
+
+read_from_zip <- function(path) {
+    tmp <- local_tempdir()
+    #extract into tempdir
+    zip::unzip(zipfile = path, exdir = tmp)
+    #read in as rast
+    rast(fs::path(tmp, fs::path_file(path)))
+}
+```
+
+Testing:
+
+```{r}
+write_to_zip(r, path(target_store, "out1"))
+read_from_zip(path(target_store, "out1"))
+```
+
+A faster alternative *might* be to read/write the file using /vsizip/, but this seems to lose the metadata.
+Also, `overwrite = TRUE` doesn't seem to work (<https://github.com/rspatial/terra/issues/1629>).
+
+```{r}
+write_to_sozip <- function(object, path) {
+    path2 <- paste0("/vsizip/{", path, "}/", basename(path))
+    writeRaster(object,
+                path2,
+                filetype = "GTiff",
+                gdal = c("STREAMABLE_OUTPUT=YES", "COMPRESS=NONE"),
+                overwrite = TRUE)
+}
+read_vsizip <- function(path) {
+    rast(paste0("/vsizip/{", path, "}/", path_file(path)))
+}
+```
+
+```{r}
+write_to_sozip(object = r, path = path(target_store, "out2"))
+read_vsizip(path(target_store, "out2")) |> units()
+#even if unzipped, the metadata is missing
+read_from_zip(path(target_store, "out2")) |> units()
+#because overwite doesn't work:
+file_delete(path(target_store, "out2"))
+```
+
+`read_vsizip()` strips metadata even when used on a "manually" created zip archive as well
+
+```{r}
+read_vsizip(path(target_store, "out1")) |> units()
+```
+
+## Using cache
+
+This method uses `terra::wrapCache()` which saves files to a directory, but returns a `PackedSpatRaster` object that could be saved as a .rds (or other) file in the targets store.
+
+::: callout-important
+This method *probably* won't work with some distributed workers unless they have access to the `"_getoargets/"` cache!
+:::
+
+```{r}
+cache <- "_geotargets"
+dir_create(cache)
+```
+
+```{r}
+write_to_cache <- function(object, path) {
+    saveRDS(
+        terra::wrapCache(
+            object,
+            filename = fs::path(cache, path_file(path)),
+            filetype = "GTiff",
+            overwrite = TRUE),
+        file = path
+    )
+}
+
+read_from_cache <- function(path) {
+    terra::unwrap(readRDS(path))
+}
+```
+
+```{r}
+write_to_cache(r, path(target_store, "out3"))
+read_from_cache(path(target_store, "out3"))
+```
+
+## Benchmarking
+
+I'll compare the two (working) methods that produce a single file in the targets store vs the standard `terra` methods for write/read.
+
+```{r}
+benchmark_write <- microbenchmark(
+    writeRaster = writeRaster(r_highres,
+                              path(target_store, "test1"),
+                              filetype = "GTiff",
+                              overwrite = TRUE),
+    write_to_zip = write_to_zip(r_highres, path(target_store, "test2")),
+    write_to_cache = write_to_cache(r_highres, path(target_store, "test3")),
+    times = 300
+)
+
+
+benchmark_read <- microbenchmark(
+    rast = rast(path(target_store, "test1")),
+    read_from_zip = read_from_zip(path(target_store, "test2")),
+    read_from_cache = read_from_cache(path(target_store, "test3")),
+    times = 300
+)
+```
+
+```{r}
+benchmark_write
+benchmark_read
+```
+
+```{r}
+autoplot(benchmark_write)
+autoplot(benchmark_read)
+```
+
+For both the read and write functions the zip method is slowest and both the zip and cache methods are slower than the basic `terra` methods.
+
+## Summary
+
+Whichever method we go with should be *optional* because of the reduced performance.
+Users should be able to continue using the current "basic" `terra` read/write methods if they don't need to keep metadata or can store it in the layer names.
+
+### Archive (zip) method
+
+pros:
+
+-   No visible change in behavior to users—everything happens behind the scenes
+
+-   Should be compatible with distributed workers (not tested)
+
+cons:
+
+-   Adds 2-3 direct dependencies (`zip` , `withr`, and `fs` unless I can figure out how to do all the file stuff with base R)
+
+-   Slower than the cache option, although maybe someday it'll work with `/vsizip/`
+
+### Cache method
+
+pros:
+
+-   Simpler code
+
+-   Fewer package dependencies added
+
+-   Faster of the two methods
+
+cons:
+
+-   Users exposed to another cache they shouldn't touch manually
+
+-   Need to create/maintain helper functions to, for example, destroy the cache and invalidate related targets
+
+-   Probably won't work when distributed workers don't have access to this cache

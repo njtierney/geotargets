@@ -29,35 +29,23 @@ tar_terra_tiles(
 \arguments{
 \item{name}{Symbol, name of the target. A target
 name must be a valid name for a symbol in R, and it
-must not start with a dot. Subsequent targets
-can refer to this name symbolically to induce a dependency relationship:
-e.g. \code{tar_target(downstream_target, f(upstream_target))} is a
-target named \code{downstream_target} which depends on a target
-\code{upstream_target} and a function \code{f()}. In addition, a target's
-name determines its random number generator seed. In this way,
-each target runs with a reproducible seed so someone else
-running the same pipeline should get the same results,
-and no two targets in the same pipeline share the same seed.
-(Even dynamic branches have different names and thus different seeds.)
-You can recover the seed of a completed target
-with \code{tar_meta(your_target, seed)} and run \code{\link[targets:tar_seed_set]{tar_seed_set()}}
-on the result to locally recreate the target's initial RNG state.}
+must not start with a dot. See \code{\link[targets:tar_target]{targets::tar_target()}} for more information.}
 
-\item{raster}{a \code{SpatRaster} object to be split into tiles}
+\item{raster}{a \code{SpatRaster} object to be split into tiles.}
 
 \item{tile_fun}{a helper function that returns a list of numeric vectors such as \link{tile_grid} or \link{tile_blocksize} specified in one of the following ways:
 \itemize{
-\item A named function, e.g. \code{tile_blocksize} or \code{"tile_blocksize"}
-\item An anonymous function, e.g. \verb{\\(x) tile_grid(x, nrow = 2, ncol = 2)}
+\item A named function, e.g. \code{tile_blocksize} or \code{"tile_blocksize"}.
+\item An anonymous function, e.g. \verb{\\(x) tile_grid(x, nrow = 2, ncol = 2)}.
 }}
 
 \item{filetype}{character. File format expressed as GDAL driver names passed
-to \code{\link[terra:makeTiles]{terra::makeTiles()}}}
+to \code{\link[terra:makeTiles]{terra::makeTiles()}}.}
 
 \item{gdal}{character. GDAL driver specific datasource creation options
-passed to \code{\link[terra:makeTiles]{terra::makeTiles()}}}
+passed to \code{\link[terra:makeTiles]{terra::makeTiles()}}.}
 
-\item{...}{additional arguments not yet used}
+\item{...}{additional arguments not yet used.}
 
 \item{packages}{Character vector of packages to load right before
 the target runs or the output data is reloaded for
@@ -82,6 +70,8 @@ for details for instructions.
 See the cloud storage section of
 \url{https://books.ropensci.org/targets/data.html}
 for details for instructions.
+\item A character string from \code{\link[targets:tar_repository_cas]{tar_repository_cas()}} for content-addressable
+storage.
 }
 
 Note: if \code{repository} is not \code{"local"} and \code{format} is \code{"file"}
@@ -95,13 +85,25 @@ stops and throws an error. Options:
 \itemize{
 \item \code{"stop"}: the whole pipeline stops and throws an error.
 \item \code{"continue"}: the whole pipeline keeps going.
-\item \code{"abridge"}: any currently running targets keep running,
-but no new targets launch after that.
-(Visit \url{https://books.ropensci.org/targets/debugging.html}
-to learn how to debug targets using saved workspaces.)
 \item \code{"null"}: The errored target continues and returns \code{NULL}.
 The data hash is deliberately wrong so the target is not
 up to date for the next run of the pipeline.
+\item \code{"abridge"}: any currently running targets keep running,
+but no new targets launch after that.
+\item \code{"trim"}: all currently running targets stay running. A queued
+target is allowed to start if:
+\enumerate{
+\item It is not downstream of the error, and
+\item It is not a sibling branch from the same \code{\link[targets:tar_target]{tar_target()}} call
+(if the error happened in a dynamic branch).
+}
+
+The idea is to avoid starting any new work that the immediate error
+impacts. \code{error = "trim"} is just like \code{error = "abridge"},
+but it allows potentially healthy regions of the dependency graph
+to begin running.
+(Visit \url{https://books.ropensci.org/targets/debugging.html}
+to learn how to debug targets using saved workspaces.)
 }}
 
 \item{memory}{Character of length 1, memory strategy.
@@ -209,7 +211,7 @@ list of SpatRaster objects.
 \description{
 This target factory is useful when a raster is too large or too high
 resolution to work on in-memory. It can instead be split into tiles that can
-be iterated over, potentially using parallel workers.
+be iterated over using dynamic branching.
 }
 \note{
 The \code{iteration} argument is unavailable because it is hard-coded to
@@ -245,7 +247,7 @@ if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
 }
 }
 \seealso{
-\code{\link[=tile_grid]{tile_grid()}}, \code{\link[=tile_blocksize]{tile_blocksize()}}, \code{\link[=tar_terra_rast]{tar_terra_rast()}}
+\code{\link[=tile_n]{tile_n()}}, \code{\link[=tile_grid]{tile_grid()}}, \code{\link[=tile_blocksize]{tile_blocksize()}}, \code{\link[=tar_terra_rast]{tar_terra_rast()}}
 }
 \author{
 Eric Scott

@@ -5,13 +5,13 @@
 #'
 #' @param gdal_raster_driver character, length 1; set the driver used for raster
 #'   data in target store (default: `"GTiff"`). Options for driver names can be
-#'   found here: <https://gdal.org/drivers/raster/index.html>
+#'   found here: <https://gdal.org/drivers/raster/index.html>.
 #' @param gdal_raster_creation_options character; set the GDAL creation options
 #'   used when writing raster files to target store (default: `""`). You may
 #'   specify multiple values e.g. `c("COMPRESS=DEFLATE", "TFW=YES")`. Each GDAL
 #'   driver supports a unique set of creation options. For example, with the
 #'   default `"GTiff"` driver:
-#'   <https://gdal.org/drivers/raster/gtiff.html#creation-options>
+#'   <https://gdal.org/drivers/raster/gtiff.html#creation-options>.
 #' @param gdal_vector_driver character, length 1; set the file type used for
 #' vector data in target store (default: `"GeoJSON"`).
 #' @param gdal_vector_creation_options character; set the GDAL layer creation
@@ -21,6 +21,13 @@
 #'   a unique set of creation options. For example, with the default `"GeoJSON"`
 #'   driver:
 #'   <https://gdal.org/drivers/vector/geojson.html#layer-creation-options>
+#' @param terra_preserve_metadata character. When `"drop"` (default), any
+#'   auxiliary files that would be written by [terra::writeRaster()] containing
+#'   raster metadata such as units and datetimes are lost (note that this does
+#'   not include layer names set with `names() <-`).  When `"zip"`, these
+#'   metadata are retained by archiving all written files as a zip file upon
+#'   writing and unzipping them upon reading. This adds extra overhead and will
+#'   slow pipelines.
 #'
 #' @details
 #' These options can also be set using `options()`.  For example,
@@ -56,7 +63,8 @@ geotargets_option_set <- function(
         gdal_raster_driver = NULL,
         gdal_raster_creation_options = NULL,
         gdal_vector_driver = NULL,
-        gdal_vector_creation_options = NULL
+        gdal_vector_creation_options = NULL,
+        terra_preserve_metadata = NULL
 ) {
     # TODO do this programmatically with formals() or something?  `options()` also accepts a named list
     options(
@@ -67,7 +75,9 @@ geotargets_option_set <- function(
         "geotargets.gdal.vector.driver" = gdal_vector_driver %||%
             geotargets_option_get("gdal.vector.driver"),
         "geotargets.gdal.vector.creation.options" = gdal_vector_creation_options %||%
-            geotargets_option_get("gdal.vector.creation.options")
+            geotargets_option_get("gdal.vector.creation.options"),
+        "geotargets.terra.preserve.metadata" = terra_preserve_metadata %||%
+            geotargets_option_get("terra.preserve.metadata")
     )
 
 }
@@ -87,7 +97,8 @@ geotargets_option_get <- function(name) {
             "geotargets.gdal.raster.driver",
             "geotargets.gdal.raster.creation.options",
             "geotargets.gdal.vector.driver",
-            "geotargets.gdal.vector.creation.options"
+            "geotargets.gdal.vector.creation.options",
+            "geotargets.terra.preserve.metadata"
         ))
 
     env_name <- gsub("\\.", "_", toupper(option_name))

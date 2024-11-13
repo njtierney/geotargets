@@ -2,18 +2,20 @@
 #'
 #' This target factory is useful when a raster is too large or too high
 #' resolution to work on in-memory. It can instead be split into tiles that can
-#' be iterated over, potentially using parallel workers.
-#'
-#' @param raster a `SpatRaster` object to be split into tiles
+#' be iterated over using dynamic branching.
+#' @param name Symbol, name of the target. A target
+#'   name must be a valid name for a symbol in R, and it
+#'   must not start with a dot. See [targets::tar_target()] for more information.
+#' @param raster a `SpatRaster` object to be split into tiles.
 #' @param tile_fun a helper function that returns a list of numeric vectors such as [tile_grid] or [tile_blocksize] specified in one of the following ways:
-#'  - A named function, e.g. `tile_blocksize` or `"tile_blocksize"`
-#'  - An anonymous function, e.g. `\(x) tile_grid(x, nrow = 2, ncol = 2)`
+#'  - A named function, e.g. `tile_blocksize` or `"tile_blocksize"`.
+#'  - An anonymous function, e.g. `\(x) tile_grid(x, nrow = 2, ncol = 2)`.
 #' @param filetype character. File format expressed as GDAL driver names passed
-#'   to [terra::makeTiles()]
+#'   to [terra::makeTiles()].
 #' @param gdal character. GDAL driver specific datasource creation options
-#'   passed to [terra::makeTiles()]
+#'   passed to [terra::makeTiles()].
 #'
-#' @param ... additional arguments not yet used
+#' @param ... additional arguments not yet used.
 #' @inheritParams targets::tar_target
 #' @author Eric Scott
 #'
@@ -24,7 +26,7 @@
 #'   extents and a downstream pattern that maps over these extents to create a
 #'   list of SpatRaster objects.
 #'
-#' @seealso [tile_grid()], [tile_blocksize()], [tar_terra_rast()]
+#' @seealso [tile_n()], [tile_grid()], [tile_blocksize()], [tar_terra_rast()]
 #' @export
 #'
 #' @examples
@@ -168,16 +170,14 @@ tar_terra_tiles_raw <- function(
                 terra::writeRaster(
                     object,
                     path,
-                    filetype = Sys.getenv("GEOTARGETS_GDAL_RASTER_DRIVER"),
+                    filetype = filetype,
                     overwrite = TRUE,
-                    gdal = strsplit(
-                        Sys.getenv("GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
-                                   unset = ";"),
-                        ";")[[1]]
+                    gdal = gdal
                 )
             },
             marshal = function(object) terra::wrap(object),
-            unmarshal = function(object) terra::unwrap(object)
+            unmarshal = function(object) terra::unwrap(object),
+            substitute = list(filetype = filetype, gdal = gdal)
         ),
         repository = repository,
         iteration = "list", #only list works (for now at least)
@@ -186,18 +186,7 @@ tar_terra_tiles_raw <- function(
         garbage_collection = garbage_collection,
         deployment = deployment,
         priority = priority,
-        resources = utils::modifyList(
-            targets::tar_resources(
-                custom_format = targets::tar_resources_custom_format(
-                    #these envvars are used in write function of format
-                    envvars = c(
-                        "GEOTARGETS_GDAL_RASTER_DRIVER" = filetype,
-                        "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS" = (
-                            paste0(gdal, collapse = ";")
-                        )
-                    )
-                )
-            ), resources),
+        resources = resources,
         storage = storage,
         retrieval = retrieval,
         cue = cue,
@@ -214,8 +203,8 @@ tar_terra_tiles_raw <- function(
 #' which, rather than modifying the SpatRaster in place, returns a new
 #' SpatRaster leaving the original unchanged.
 #'
-#' @param raster a SpatRaster object
-#' @param window a SpatExtent object defining the area of interest
+#' @param raster a SpatRaster object.
+#' @param window a SpatExtent object defining the area of interest.
 #'
 #' @note While this may have general use, it was created primarily for use
 #'   within [tar_terra_tiles()].
@@ -235,8 +224,6 @@ set_window <- function(raster, window) {
     raster_out
 }
 
-
-
 #' Helper functions to create tiles
 #'
 #' Wrappers around [terra::getTileExtents()] that return a list of named numeric
@@ -245,14 +232,20 @@ set_window <- function(raster, window) {
 #' to the `tile_fun` argument of [tar_terra_tiles()].
 #'
 #' `tile_blocksize()` creates extents using the raster's native blocksize (see
-#' [terra::fileBlocksize()]), which should be more memory efficient. `tile_grid()`
-#' allows specification of a number of rows and columns to split the raster
-#' into.  E.g. nrow = 2 and ncol = 2 would create 4 tiles (because it specifies a 2x2 matrix, which has 4 elements).
+#' [terra::fileBlocksize()]), which should be more memory efficient. Create
+#' tiles with multiples of the raster's blocksize with `n_blocks_row` and
+#' `n_blocks_col`. We strongly suggest the user explore how many tiles are
+#' created by `tile_blocksize()` before creating a dynamically branched target
+#' using this helper. `tile_grid()` allows specification of a number of rows and
+#' columns to split the raster into.  E.g. nrow = 2 and ncol = 2 would create 4
+#' tiles (because it specifies a 2x2 matrix, which has 4 elements).
 #'
-#' @param raster a SpatRaster object
-#' @param ncol integer; number of columns to split the SpatRaster into
-#' @param nrow integer; number of rows to split the SpatRaster into
-#' @param n integer; total number of tiles to split the SpatRaster into
+#' @param raster a SpatRaster object.
+#' @param ncol integer; number of columns to split the SpatRaster into.
+#' @param nrow integer; number of rows to split the SpatRaster into.
+#' @param n integer; total number of tiles to split the SpatRaster into.
+#' @param n_blocks_row integer; multiple of blocksize to include in each tile vertically.
+#' @param n_blocks_col integer; multiple of blocksize to include in each tile horizontally.
 #'
 #' @author Eric Scott
 #' @return list of named numeric vectors with xmin, xmax, ymin, and ymax values
@@ -277,17 +270,26 @@ set_window <- function(raster, window) {
 #'     tar_terra_tiles(
 #'         name = rast_split,
 #'         raster = my_map,
-#'         tile_fun = tile_blocksize
+#'         tile_fun = tile_blocksize,
+#'         description = "Each tile is 1 block"
 #'     ),
+#'     tar_terra_tiles(
+#'         name = rast_split_2blocks,
+#'         raster = my_map,
+#'         tile_fun = \(x) tile_blocksize(x, n_blocks_row = 2, n_blocks_col = 1),
+#'         description = "Each tile is 2 blocks tall, 1 block wide"
+#'     )
 #'     tar_terra_tiles(
 #'         name = rast_split_grid,
 #'         raster = my_map,
-#'         tile_fun = \(x) tile_grid(x, ncol = 2, nrow = 2)
+#'         tile_fun = \(x) tile_grid(x, ncol = 2, nrow = 2),
+#'         description = "Split into 4 tiles in a 2x2 grid"
 #'     ),
 #'     tar_terra_tiles(
 #'         name = rast_split_n,
 #'         raster = my_map,
-#'         tile_fun = \(x) tile_n(x, n = 6)
+#'         tile_fun = \(x) tile_n(x, n = 6),
+#'         description = "Split into 6 tiles"
 #'     )
 #' )
 #' }
@@ -297,23 +299,27 @@ tile_grid <- function(raster, ncol, nrow) {
         ncol = ncol,
         nrow = nrow,
         crs = terra::crs(raster)
-        )
+    )
     tile_ext <- terra::getTileExtents(
         x = raster,
         template
-        )
+    )
     n_tiles <- seq_len(nrow(tile_ext))
     tile_list <- lapply(
         n_tiles,
         \(i) tile_ext[i,]
-        )
+    )
     tile_list
 }
 
 #' @export
 #' @rdname tile_helpers
-tile_blocksize <- function(raster) {
-    tile_ext <- terra::getTileExtents(raster, terra::fileBlocksize(raster)[1,])
+tile_blocksize <- function(raster, n_blocks_row = 1, n_blocks_col = 1) {
+    tile_ext <-
+        terra::getTileExtents(
+            raster,
+            terra::fileBlocksize(raster)[1,] * c(n_blocks_row, n_blocks_col)
+        )
     n_tiles <- seq_len(nrow(tile_ext))
     tile_list <- lapply(
         n_tiles,
