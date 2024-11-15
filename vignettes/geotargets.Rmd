@@ -345,7 +345,7 @@ list(
     tar_terra_sprc(
         raster_elevs,
         # two rasters, one unaltered, one scaled by factor of 2 and
-        # reprojected to interrupted good homolosine
+        # reprojected to interrupted Goode homolosine
         terra::sprc(list(
             elev_scale(r, 1),
             elev_scale(r, 2, "+proj=igh")
