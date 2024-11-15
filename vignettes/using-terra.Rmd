@@ -1,8 +1,8 @@
 ---
-title: "Using {terra} with {geotargets}"
+title: "Using `terra` with `geotargets`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Using {terra} with {geotargets}}
+  %\VignetteIndexEntry{Using `terra` with `geotargets`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -127,7 +127,10 @@ tar_read(r_agg)
 You may have noticed that the units for the `r` target above have gone missing.
 This is due to limitations of `terra` and `targets`---`terra` saves some metadata in "sidecar" aux.json files and `targets` enforces a strict one file per target rule.
 You can get around this by setting `preserve_metadata = "zip"` in `tar_terra_rast()` to save the output files, including the metadata, as a minimally compressed zip archive.
-You can also set this for all raster targets with `geotargets_option_set(terra_preserve_metadata = "zip")`
+You can also set this for all raster targets with `geotargets_option_set(terra_preserve_metadata = "zip")`. 
+
+Note: there are likely performance costs associated with this option.  
+As an alternative, you can encode information in the layer names by setting `names(r) <-` which are retained even with the default `preserve_metadata = "drop"`.
 
 ```{r}
 #| label: tar_script_rast_metadata
@@ -199,41 +202,74 @@ terra::units(tar_read(r))
 
 ## `tar_terra_vect()`: targets with terra vectors
 
-```{r}
-#| label: _targets-vect
-#| eval: false
-#| echo: true
-
-
-
-```
+For `terra` `SpatVector` objects, use `tar_terra_vect()` in the pipeline.  You can set vector specific options with `geotargets_option_set()` or with the `filetype` and `gdal` arguments to individual `tar_terra_vect()` calls.
 
 ```{r}
-#| label: tar-terra-vect
-#| eval: false
-tar_dir({ # tar_dir() runs code from a temporary directory.
-  tar_script({
+#| label: tar_script_vect
+#| eval: true
+#| echo: false
+
+targets::tar_script({
+    # contents of _targets.R:
+    library(targets)
     library(geotargets)
-    lux_area <- function(projection = "EPSG:4326") {
-      terra::project(
-        terra::vect(system.file("ex", "lux.shp",
-          package = "terra"
-        )),
-        projection
-      )
-    }
+    geotargets_option_set(gdal_vector_driver = "GeoJSON")
     list(
-      tar_terra_vect(
-        terra_vect_example,
-        lux_area()
-      )
+        tar_target(
+            vect_file,
+            system.file("ex", "lux.shp", package = "terra"),
+            format = "file"
+        ),
+        tar_terra_vect(
+            v,
+            terra::vect(vect_file)
+        ),
+        tar_terra_vect(
+            v_proj,
+            terra::project(v, "EPSG:2196")
+        )
     )
-  })
-  tar_make()
-  x <- tar_read(terra_rast_example)
-  x
 })
 ```
+
+
+
+```{r}
+#| label: _targets_vect
+#| eval: false
+#| echo: true
+# contents of _targets.R:
+library(targets)
+library(geotargets)
+geotargets_option_set(gdal_vector_driver = "GeoJSON")
+list(
+    tar_target(
+        vect_file,
+        system.file("ex", "lux.shp", package = "terra"),
+        format = "file"
+    ),
+    tar_terra_vect(
+        v,
+        terra::vect(vect_file)
+    ),
+    tar_terra_vect(
+        v_proj,
+        terra::project(v, "EPSG:2196")
+    )
+)
+
+```
+
+```{r}
+#| label: make_vect
+#| eval: true
+#| echo: true
+
+tar_make()
+tar_read(v)
+tar_read(v_proj)
+```
+
 
 ## `tar_terra_sprc()`: targets with terra raster collections
 
