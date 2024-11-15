@@ -21,7 +21,9 @@ library(terra)
 library(dplyr)
 ```
 
-## Why split into tiles?
+## Parallelizing over tiles
+
+Some raster operations can be 
 
 ## Tile helpers
 
@@ -38,7 +40,7 @@ tar_dir({
         library(targets)
         library(geotargets)
         library(terra)
-        
+        tar_option_set(controller = crew::crew_controller_local(workers = 2))
         list(
             tar_target(
                 raster_file,
@@ -46,22 +48,22 @@ tar_dir({
                 format = "file"
             ),
             tar_terra_rast(
-                raster,
+                r,
                 rast(raster_file)
             ),
             tar_terra_rast(
-                raster_big,
-                disagg(raster, fact = 3)
+                r_big,
+                disagg(r, fact = 3)
             ),
             tar_terra_tiles(
                 tiles_blocksize,
-                raster = raster_big,
+                raster = r_big,
                 tile_fun = tile_blocksize
             ),
             tar_terra_tiles(
                 tiles_n,
-                raster = raster_big,
-                tile_fun = \(x) tile_n(raster_big, n = 72)
+                raster = r_big,
+                tile_fun = \(x) tile_n(r_big, n = 72)
             ),
             tar_terra_rast(
                 sqrt_blocksize,
@@ -81,6 +83,6 @@ tar_dir({
     tar_meta() |>
         select(name, seconds) |> 
         filter(name %in% c("sqrt_blocksize", "bytes", "sqrt_n"))
-})
+}) 
 ```
 
