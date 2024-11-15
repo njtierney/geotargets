@@ -1,89 +1,113 @@
 #' Get or Set geotargets Options
 #'
-#' Get or set behavior for geospatial data target stores using geotargets-specific global options.
+#' Get or set behavior for geospatial data target stores using
+#' geotargets-specific global options.
 #'
-#' @param option_name Character. Option name. See Details.
+#' @param gdal_raster_driver character, length 1; set the driver used for raster
+#'   data in target store (default: `"GTiff"`). Options for driver names can be
+#'   found here: <https://gdal.org/drivers/raster/index.html>.
+#' @param gdal_raster_creation_options character; set the GDAL creation options
+#'   used when writing raster files to target store (default: `""`). You may
+#'   specify multiple values e.g. `c("COMPRESS=DEFLATE", "TFW=YES")`. Each GDAL
+#'   driver supports a unique set of creation options. For example, with the
+#'   default `"GTiff"` driver:
+#'   <https://gdal.org/drivers/raster/gtiff.html#creation-options>.
+#' @param gdal_vector_driver character, length 1; set the file type used for
+#' vector data in target store (default: `"GeoJSON"`).
+#' @param gdal_vector_creation_options character; set the GDAL layer creation
+#'   options used when writing vector files to target store (default:
+#'   `"ENCODING=UTF-8"`). You may specify multiple values e.g.
+#'   `c("WRITE_BBOX=YES", "COORDINATE_PRECISION=10")`. Each GDAL driver supports
+#'   a unique set of creation options. For example, with the default `"GeoJSON"`
+#'   driver:
+#'   <https://gdal.org/drivers/vector/geojson.html#layer-creation-options>
+#' @param terra_preserve_metadata character. When `"drop"` (default), any
+#'   auxiliary files that would be written by [terra::writeRaster()] containing
+#'   raster metadata such as units and datetimes are lost (note that this does
+#'   not include layer names set with `names() <-`).  When `"zip"`, these
+#'   metadata are retained by archiving all written files as a zip file upon
+#'   writing and unzipping them upon reading. This adds extra overhead and will
+#'   slow pipelines.
 #'
 #' @details
+#' These options can also be set using `options()`.  For example,
+#' `geotargets_options_set(gdal_raster_driver = "GTiff")` is equivalent to
+#' `options("geotargets.gdal.raster.driver" = "GTiff")`.
 #'
-#' ## Available Options
-#'
-#'  - `"geotargets.gdal.raster.driver"` - character. Length 1. Set the driver used for raster data in target store (default: `"GTiff"`). Options for driver names can be found here: <https://gdal.org/drivers/raster/index.html>
-#'
-#'  - `"geotargets.gdal.raster.creation_options"` - character. Set the GDAL creation options used when writing raster files to target store (default: `""`). You may specify multiple values e.g. `c("COMPRESS=DEFLATE", "TFW=YES")`. Each GDAL driver supports a unique set of creation options. For example, with the default `"GTiff"` driver: <https://gdal.org/drivers/raster/gtiff.html#creation-options>
-#'
-#'  - `"geotargets.gdal.vector.driver"` - character. Length 1. Set the file type used for vector data in target store (default: `"GeoJSON"`).
-#'
-#'  - `"geotargets.gdal.vector.creation_options"` - character. Set the GDAL layer creation options used when writing vector files to target store (default: `"ENCODING=UTF-8"`). You may specify multiple values e.g. `c("WRITE_BBOX=YES", "COORDINATE_PRECISION=10")`. Each GDAL driver supports a unique set of creation options. For example, with the default `"GeoJSON"` driver: <https://gdal.org/drivers/vector/geojson.html#layer-creation-options>
-#'
-#'  Each option can be overridden with a system environment variable. Options include:
-#'
-#'   - `GEOTARGETS_GDAL_RASTER_DRIVER`
-#'   - `GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS`
-#'   - `GEOTARGETS_GDAL_VECTOR_DRIVER`
-#'   - `GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS`
-#'
-#'  When specifying options that support multiple values using a system environment variable, the separate options should be delimited with a semicolon (";"). For example: `"COMPRESS=DEFLATE;TFW=YES"`.
+#' @return Specific options, such as "gdal.raster.driver". See "Details" for
+#'   more information.
 #'
 #' @rdname geotargets-options
 #' @export
-geotargets_option_get <- function(option_name) {
-
-    option_name <- geotargets_repair_option_name(option_name)
-    option_value <- geotargets_env()[[option_name]]
-
-    get_option <- function(option_name, option_value, name){
-        getOption(option_name, default = option_value %||% name)
-    }
-
-    get_geotargets_gdal_raster_creation_options <- function(option_name, option_value) {
-        gdal_creation_options <- Sys.getenv(
-            x = "GEOTARGETS_GDAL_RASTER_CREATION_OPTIONS",
-            unset = get_option(option_name, option_value, ";")
-        )
-        the_option <- strsplit(gdal_creation_options, ";")[[1]]
-        the_option
-    }
-
-    get_geotargets_gdal_raster_driver <- function(option_name, option_value) {
-        Sys.getenv(
-            x = "GEOTARGETS_GDAL_RASTER_DRIVER",
-            unset = get_option(option_name, option_value, "GTiff")
-        )
-    }
-
-    get_geotargets_gdal_vector_creation_options <- function(option_name, option_value) {
-        gdal_creation_options <- Sys.getenv(
-            x = "GEOTARGETS_GDAL_VECTOR_CREATION_OPTIONS",
-            unset = get_option(option_name, option_value, "ENCODING=UTF-8")
-        )
-        the_options <- strsplit(gdal_creation_options, ";")[[1]]
-        the_options
-    }
-
-    get_geotargets_gdal_vector_driver <- function(option_name, option_value) {
-        Sys.getenv(
-            x = "GEOTARGETS_GDAL_VECTOR_DRIVER",
-            unset = get_option(option_name, option_value, "GeoJSON")
-        )
-    }
-
-    switch(option_name,
-           "geotargets.gdal.raster.creation_options" =
-               get_geotargets_gdal_raster_creation_options(option_name, option_value),
-           "geotargets.gdal.raster.driver" =
-               get_geotargets_gdal_raster_driver(option_name, option_value),
-           "geotargets.gdal.vector.creation_options" =
-               get_geotargets_gdal_vector_creation_options(option_name, option_value),
-           "geotargets.gdal.vector.driver" =
-               get_geotargets_gdal_vector_driver(option_name, option_value)
+#' @examples
+#' if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
+#'  targets::tar_dir({ # tar_dir() runs code from a temporary directory.
+#'    library(geotargets)
+#'   op <- getOption("geotargets.gdal.raster.driver")
+#'   withr::defer(options("geotargets.gdal.raster.driver" = op))
+#'   geotargets_option_set(gdal_raster_driver = "COG")
+#'    targets::tar_script({
+#'      list(
+#'        geotargets::tar_terra_rast(
+#'          terra_rast_example,
+#'          system.file("ex/elev.tif", package = "terra") |> terra::rast()
+#'        )
+#'      )
+#'    })
+#'    targets::tar_make()
+#'    x <- targets::tar_read(terra_rast_example)
+#'  })
+#'}
+#'
+geotargets_option_set <- function(
+        gdal_raster_driver = NULL,
+        gdal_raster_creation_options = NULL,
+        gdal_vector_driver = NULL,
+        gdal_vector_creation_options = NULL,
+        terra_preserve_metadata = NULL
+) {
+    # TODO do this programmatically with formals() or something?  `options()` also accepts a named list
+    options(
+        "geotargets.gdal.raster.driver" = gdal_raster_driver %||%
+            geotargets_option_get("gdal.raster.driver"),
+        "geotargets.gdal.raster.creation.options" = gdal_raster_creation_options %||%
+            geotargets_option_get("gdal.raster.creation.options"),
+        "geotargets.gdal.vector.driver" = gdal_vector_driver %||%
+            geotargets_option_get("gdal.vector.driver"),
+        "geotargets.gdal.vector.creation.options" = gdal_vector_creation_options %||%
+            geotargets_option_get("gdal.vector.creation.options"),
+        "geotargets.terra.preserve.metadata" = terra_preserve_metadata %||%
+            geotargets_option_get("terra.preserve.metadata")
     )
+
 }
 
-#' @param option_value Value to assign to option `x`.
+#' @param name character; option name to get.
+#'
 #' @rdname geotargets-options
+#' @examples
+#' geotargets_option_get("gdal.raster.driver")
+#' geotargets_option_get("gdal.raster.creation.options")
 #' @export
-geotargets_option_set <- function(option_name, option_value) {
-    option_name <- geotargets_repair_option_name(option_name)
-    geotargets.env[[option_name]] <- option_value
+geotargets_option_get <- function(name) {
+    option_name <- geotargets_repair_option_name(name)
+    # check if `name` is one of the possible options
+    option_name <-
+        rlang::arg_match0(option_name, c(
+            "geotargets.gdal.raster.driver",
+            "geotargets.gdal.raster.creation.options",
+            "geotargets.gdal.vector.driver",
+            "geotargets.gdal.vector.creation.options",
+            "geotargets.terra.preserve.metadata"
+        ))
+
+    env_name <- gsub("\\.", "_", toupper(option_name))
+    opt <- getOption(option_name, default = Sys.getenv(env_name))
+
+    #replace empty string from Sys.getenv default with NULL
+    if (length(opt) == 1 && opt == "") {
+        opt <- NULL
+    }
+    #return
+    opt
 }

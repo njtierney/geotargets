@@ -8,14 +8,13 @@ tar_terra_vect(
   name,
   command,
   pattern = NULL,
-  filetype = NULL,
-  gdal = NULL,
+  filetype = geotargets_option_get("gdal.vector.driver"),
+  gdal = geotargets_option_get("gdal.vector.creation.options"),
   ...,
   packages = targets::tar_option_get("packages"),
   tidy_eval = targets::tar_option_get("tidy_eval"),
   library = targets::tar_option_get("library"),
   repository = targets::tar_option_get("repository"),
-  iteration = targets::tar_option_get("iteration"),
   error = targets::tar_option_get("error"),
   memory = targets::tar_option_get("memory"),
   garbage_collection = targets::tar_option_get("garbage_collection"),
@@ -24,41 +23,27 @@ tar_terra_vect(
   resources = targets::tar_option_get("resources"),
   storage = targets::tar_option_get("storage"),
   retrieval = targets::tar_option_get("retrieval"),
-  cue = targets::tar_option_get("cue")
+  cue = targets::tar_option_get("cue"),
+  description = targets::tar_option_get("description")
 )
 }
 \arguments{
 \item{name}{Symbol, name of the target. A target
 name must be a valid name for a symbol in R, and it
-must not start with a dot. Subsequent targets
-can refer to this name symbolically to induce a dependency relationship:
-e.g. \code{tar_target(downstream_target, f(upstream_target))} is a
-target named \code{downstream_target} which depends on a target
-\code{upstream_target} and a function \code{f()}. In addition, a target's
-name determines its random number generator seed. In this way,
-each target runs with a reproducible seed so someone else
-running the same pipeline should get the same results,
-and no two targets in the same pipeline share the same seed.
-(Even dynamic branches have different names and thus different seeds.)
-You can recover the seed of a completed target
-with \code{tar_meta(your_target, seed)} and run \code{\link[targets:tar_seed_set]{tar_seed_set()}}
-on the result to locally recreate the target's initial RNG state.}
+must not start with a dot. See \code{\link[targets:tar_target]{targets::tar_target()}} for more information.}
 
 \item{command}{R code to run the target.}
 
-\item{pattern}{Language to define branching for a target.
-For example, in a pipeline with numeric vector targets \code{x} and \code{y},
-\code{tar_target(z, x + y, pattern = map(x, y))} implicitly defines
-branches of \code{z} that each compute \code{x[1] + y[1]}, \code{x[2] + y[2]},
-and so on. See the user manual for details.}
+\item{pattern}{Code to define a dynamic branching pattern for a target. See
+\code{\link[targets:tar_target]{targets::tar_target()}} for more information.}
 
 \item{filetype}{character. File format expressed as GDAL driver names passed
-to \code{\link[terra:writeVector]{terra::writeVector()}}. See 'Note' for more details}
+to \code{\link[terra:writeVector]{terra::writeVector()}}. See 'Note' for more details.}
 
 \item{gdal}{character. GDAL driver specific datasource creation options
 passed to \code{\link[terra:writeVector]{terra::writeVector()}}.}
 
-\item{...}{Additional arguments not yet used}
+\item{...}{Additional arguments not yet used.}
 
 \item{packages}{Character vector of packages to load right before
 the target runs or the output data is reloaded for
@@ -88,6 +73,8 @@ for details for instructions.
 See the cloud storage section of
 \url{https://books.ropensci.org/targets/data.html}
 for details for instructions.
+\item A character string from \code{\link[targets:tar_repository_cas]{tar_repository_cas()}} for content-addressable
+storage.
 }
 
 Note: if \code{repository} is not \code{"local"} and \code{format} is \code{"file"}
@@ -96,37 +83,30 @@ That output file is uploaded to the cloud and tracked for changes
 where it exists in the cloud. The local file is deleted after
 the target runs.}
 
-\item{iteration}{Character of length 1, name of the iteration mode
-of the target. Choices:
-\itemize{
-\item \code{"vector"}: branching happens with \code{vctrs::vec_slice()} and
-aggregation happens with \code{vctrs::vec_c()}.
-\item \code{"list"}, branching happens with \verb{[[]]} and aggregation happens with
-\code{list()}.
-\item \code{"group"}: \code{dplyr::group_by()}-like functionality to branch over
-subsets of a non-dynamic data frame.
-For \code{iteration = "group"}, the target must not by dynamic
-(the \code{pattern} argument of \code{\link[targets:tar_target]{tar_target()}} must be left \code{NULL}).
-The target's return value must be a data
-frame with a special \code{tar_group} column of consecutive integers
-from 1 through the number of groups. Each integer designates a group,
-and a branch is created for each collection of rows in a group.
-See the \code{\link[targets:tar_group]{tar_group()}} function to see how you can
-create the special \code{tar_group} column with \code{dplyr::group_by()}.
-}}
-
 \item{error}{Character of length 1, what to do if the target
 stops and throws an error. Options:
 \itemize{
 \item \code{"stop"}: the whole pipeline stops and throws an error.
 \item \code{"continue"}: the whole pipeline keeps going.
-\item \code{"abridge"}: any currently running targets keep running,
-but no new targets launch after that.
-(Visit \url{https://books.ropensci.org/targets/debugging.html}
-to learn how to debug targets using saved workspaces.)
 \item \code{"null"}: The errored target continues and returns \code{NULL}.
 The data hash is deliberately wrong so the target is not
 up to date for the next run of the pipeline.
+\item \code{"abridge"}: any currently running targets keep running,
+but no new targets launch after that.
+\item \code{"trim"}: all currently running targets stay running. A queued
+target is allowed to start if:
+\enumerate{
+\item It is not downstream of the error, and
+\item It is not a sibling branch from the same \code{\link[targets:tar_target]{tar_target()}} call
+(if the error happened in a dynamic branch).
+}
+
+The idea is to avoid starting any new work that the immediate error
+impacts. \code{error = "trim"} is just like \code{error = "abridge"},
+but it allows potentially healthy regions of the dependency graph
+to begin running.
+(Visit \url{https://books.ropensci.org/targets/debugging.html}
+to learn how to debug targets using saved workspaces.)
 }}
 
 \item{memory}{Character of length 1, memory strategy.
@@ -216,11 +196,35 @@ explicitly from another language.
 
 \item{cue}{An optional object from \code{tar_cue()} to customize the
 rules that decide whether the target is up to date.}
+
+\item{description}{Character of length 1, a custom free-form human-readable
+text description of the target. Descriptions appear as target labels
+in functions like \code{\link[targets:tar_manifest]{tar_manifest()}} and \code{\link[targets:tar_visnetwork]{tar_visnetwork()}},
+and they let you select subsets of targets for the \code{names} argument of
+functions like \code{\link[targets:tar_make]{tar_make()}}. For example,
+\code{tar_manifest(names = tar_described_as(starts_with("survival model")))}
+lists all the targets whose descriptions start with the character
+string \code{"survival model"}.}
+}
+\value{
+target class "tar_stem" for use in a target pipeline
 }
 \description{
 Provides a target format for \link[terra:SpatVector-class]{terra::SpatVector} objects.
 }
+\details{
+\link[terra:SpatVector-class]{terra::SpatVector} objects do not contain vector data directly—they
+contain a C++ pointer to memory where the data is stored.  As a result, these
+objects are not portable between R sessions without special handling, which
+causes problems when including them in \code{targets} pipelines with
+\code{tar_target()}. \code{tar_terra_rast()} handles this issue by writing and reading
+the target as a geospatial file (specified by \code{filetype}) rather than saving
+the \code{SpatVector} object itself.
+}
 \note{
+The \code{iteration} argument is unavailable because it is hard-coded to
+\code{"list"}, the only option that works currently.
+
 Although you may pass any supported GDAL vector driver to the
 \code{filetype} argument, not all formats are guaranteed to work with
 \code{geotargets}.  At the moment, we have tested \code{GeoJSON} and \verb{ESRI Shapefile}
