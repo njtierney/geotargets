@@ -28,12 +28,13 @@ library(geotargets)
 library(geotargets)
 ```
 
-`geotargets` extends targets to work with geospatial dataformats, such as rasters and vectors (e.g., shapefiles).
-In particular, `geotargets` aims to support use of `terra`objects in `targets` pipelines.
+The `geotargets` package extends `targets` to work with geospatial data formats, such as rasters and vectors (e.g., shape files).
+In particular, `geotargets` aims to support use of the `terra` package, which tend to cause problems if used in targets created with `tar_target()` .
+If you are new to `targets`, you should start by looking at the [targets manual](https://books.ropensci.org/targets/) to get a handle on the basics.
 
-The design of `geotargets` is to specify target factorieslike so: `tar_<pkg>_<type>`.
+The design of `geotargets` is to specify target factories like so: `tar_<pkg>_<type>`.
 
-In this vignette we will demonstrate the use of the `terra` R package, and we will demonstrate how to build raster (`rast`), vector (`vect`), raster collections (`sprc`), and raster datasets (`sds`):
+In this vignette we will demonstrate the use of the `terra` R package, and we will demonstrate how to build raster (`rast`), vector (`vect`), raster collection (`sprc`), and raster dataset (`sds`) targets with:
 
 -   `tar_terra_rast()`
 -   `tar_terra_vect()`
@@ -75,7 +76,6 @@ targets::tar_script({
 })
 ```
 
-
 ```{r}
 #| label: _targets-rast
 #| eval: false
@@ -106,7 +106,7 @@ list(
 )
 ```
 
-Above is a basic example showing the use of `tar_terra_rast()` in a targets pipeline. 
+Above is a basic example showing the use of `tar_terra_rast()` in a targets pipeline.
 The command for `tar_terra_rast()` can be any function that returns a `SpatRaster` object.
 In this example, we’ve set the output to a cloud optimized geotiff ("COG"), but any GDAL driver that works with `terra::writeRaster()` should also work here.
 You can also set this option on a target-by-target basis with the `filetype` argument to `tar_terra_rast()`.
@@ -128,9 +128,9 @@ tar_read(r_agg)
 You may have noticed that the units for the `r` target above have gone missing.
 This is due to limitations of `terra` and `targets`---`terra` saves some metadata in "sidecar" aux.json files and `targets` enforces a strict one file per target rule.
 You can get around this by setting `preserve_metadata = "zip"` in `tar_terra_rast()` to save the output files, including the metadata, as a minimally compressed zip archive.
-You can also set this for all raster targets with `geotargets_option_set(terra_preserve_metadata = "zip")`. 
+You can also set this for all raster targets with `geotargets_option_set(terra_preserve_metadata = "zip")`.
 
-Note: there are likely performance costs associated with this option.  
+Note: there are likely performance costs associated with this option.\
 As an alternative, you can encode information in the layer names by setting `names(r) <-` which are retained even with the default `preserve_metadata = "drop"`.
 
 ```{r}
@@ -190,7 +190,6 @@ list(
 )
 ```
 
-
 ```{r}
 #| label: make_rast_metadata
 #| eval: true
@@ -200,10 +199,10 @@ tar_make()
 terra::units(tar_read(r))
 ```
 
+## `tar_terra_vect()`: targets with `terra` vectors
 
-## `tar_terra_vect()`: targets with terra vectors
-
-For `terra` `SpatVector` objects, use `tar_terra_vect()` in the pipeline.  You can set vector specific options with `geotargets_option_set()` or with the `filetype` and `gdal` arguments to individual `tar_terra_vect()` calls.
+For `terra` `SpatVector` objects, use `tar_terra_vect()` in the pipeline.
+You can set vector specific options with `geotargets_option_set()` or with the `filetype` and `gdal` arguments to individual `tar_terra_vect()` calls.
 
 ```{r}
 #| label: tar_script_vect
@@ -232,8 +231,6 @@ targets::tar_script({
     )
 })
 ```
-
-
 
 ```{r}
 #| label: _targets_vect
@@ -271,10 +268,10 @@ tar_read(v)
 tar_read(v_proj)
 ```
 
+## `tar_terra_sprc()`: targets with `terra` raster collections
 
-## `tar_terra_sprc()`: targets with terra raster collections
-
-Targets that produce a `SpatRasterCollection` can be created with `tar_terra_sprc()`.  The various rasters in the collection are saved as subdatasets to adhere to `targets` one file per target rule.
+Targets that produce a `SpatRasterCollection` can be created with `tar_terra_sprc()`.
+The various rasters in the collection are saved as subdatasets to adhere to `targets` one file per target rule.
 
 ```{r}
 #| label: tar_script_sprc
@@ -363,7 +360,7 @@ tar_make()
 tar_read(raster_elevs)
 ```
 
-## `tar_terra_sds()`: targets with terra raster datasets
+## `tar_terra_sds()`: targets with `terra` raster datasets
 
 A `terra` `SpatRasterDataset` is very similar to a `SpatRasterCollection` except that all sub-datasets must have the same projection and extent
 
@@ -429,4 +426,3 @@ list(
 tar_make()
 tar_read(raster_dataset)
 ```
-
