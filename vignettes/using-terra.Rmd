@@ -33,11 +33,12 @@ In particular, `geotargets` aims to support use of `terra`objects in `targets` p
 
 The design of `geotargets` is to specify target factorieslike so: `tar_<pkg>_<type>`.
 
-In this vignette we will demonstrate the use of the `terra` R package, and we will demonstrate how to build raster (`rast`), vector (`vect`), and raster collections (`sprc`):
+In this vignette we will demonstrate the use of the `terra` R package, and we will demonstrate how to build raster (`rast`), vector (`vect`), raster collections (`sprc`), and raster datasets (`sds`):
 
 -   `tar_terra_rast()`
 -   `tar_terra_vect()`
 -   `tar_terra_sprc()`
+-   `tar_terra_sds()`
 
 ## `tar_terra_rast()`: targets with `terra` rasters
 
@@ -273,31 +274,159 @@ tar_read(v_proj)
 
 ## `tar_terra_sprc()`: targets with terra raster collections
 
+Targets that produce a `SpatRasterCollection` can be created with `tar_terra_sprc()`.  The various rasters in the collection are saved as subdatasets to adhere to `targets` one file per target rule.
+
 ```{r}
-#| label: tar-terra-sprc
-#| eval: false
-targets::tar_dir({ # tar_dir() runs code from a temporary directory.
-  library(geotargets)
-  targets::tar_script({
-    elev_scale <- function(z = 1, projection = "EPSG:4326") {
+#| label: tar_script_sprc
+#| eval: true
+#| echo: false
+
+targets::tar_script({
+    # contents of _targets.R:
+    library(targets)
+    library(geotargets)
+    elev_scale <- function(raster, z = 1, projection = "EPSG:4326") {
       terra::project(
-        terra::rast(system.file("ex", "elev.tif", package = "terra")) * z,
+        raster * z,
         projection
       )
     }
+    tar_option_set(packages = "terra")
+    geotargets_option_set(gdal_raster_driver = "GTiff")
     list(
+        tar_target(
+            elev_file,
+            system.file("ex", "elev.tif", package = "terra"),
+            format = "file"
+        ),
+        tar_target(
+            r,
+            rast(elev_file)
+        ),
       tar_terra_sprc(
         raster_elevs,
         # two rasters, one unaltered, one scaled by factor of 2 and
         # reprojected to interrupted good homolosine
-        command = terra::sprc(list(
-          elev_scale(1),
-          elev_scale(2, "+proj=igh")
+        terra::sprc(list(
+            elev_scale(r, 1),
+            elev_scale(r, 2, "+proj=igh")
         ))
       )
     )
-  })
-  targets::tar_make()
-  x <- targets::tar_read(raster_elevs)
 })
 ```
+
+```{r}
+#| label: _targets_sprc
+#| eval: false
+#| echo: true
+
+# contents of _targets.R:
+library(targets)
+library(geotargets)
+elev_scale <- function(raster, z = 1, projection = "EPSG:4326") {
+    terra::project(
+        raster * z,
+        projection
+    )
+}
+tar_option_set(packages = "terra")
+geotargets_option_set(gdal_raster_driver = "GTiff")
+list(
+    tar_target(
+        elev_file,
+        system.file("ex", "elev.tif", package = "terra"),
+        format = "file"
+    ),
+    tar_target(
+        r,
+        rast(elev_file)
+    ),
+    tar_terra_sprc(
+        raster_elevs,
+        # two rasters, one unaltered, one scaled by factor of 2 and
+        # reprojected to interrupted good homolosine
+        terra::sprc(list(
+            elev_scale(r, 1),
+            elev_scale(r, 2, "+proj=igh")
+        ))
+    )
+)
+```
+
+```{r}
+#| label: make_sprc
+#| eval: true
+#| echo: true
+
+tar_make()
+tar_read(raster_elevs)
+```
+
+## `tar_terra_sds()`: targets with terra raster datasets
+
+A `terra` `SpatRasterDataset` is very similar to a `SpatRasterCollection` except that all sub-datasets must have the same projection and extent
+
+```{r}
+#| label: tar_script_sds
+#| eval: true
+#| echo: false
+
+targets::tar_script({
+    # contents of _targets.R:
+    library(targets)
+    library(geotargets)
+    tar_option_set(packages = "terra")
+    list(
+        tar_target(
+            logo_file,
+            system.file("ex/logo.tif", package="terra"),
+            format = "file"
+        ),
+        tar_terra_sds(
+            raster_dataset,
+            {
+                x <- sds(rast(logo_file), rast(logo_file)/2)
+                names(x) <- c("first", "second")
+                x
+            }
+        )
+    )
+})
+```
+
+```{r}
+#| label: _targets_sds
+#| eval: false
+#| echo: true
+
+# contents of _targets.R:
+library(targets)
+library(geotargets)
+tar_option_set(packages = "terra")
+list(
+    tar_target(
+        logo_file,
+        system.file("ex/logo.tif", package="terra"),
+        format = "file"
+    ),
+    tar_terra_sds(
+        raster_dataset,
+        {
+            x <- sds(rast(logo_file), rast(logo_file)/2)
+            names(x) <- c("first", "second")
+            x
+        }
+    )
+)
+```
+
+```{r}
+#| label: make_sds
+#| echo: true
+#| eval: true
+
+tar_make()
+tar_read(raster_dataset)
+```
+
