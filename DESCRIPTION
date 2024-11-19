@@ -39,6 +39,8 @@ Imports:
     withr (>= 3.0.0),
     zip
 Suggests: 
+    knitr,
+    rmarkdown,
     crew (>= 0.9.2),
     ncmeta,
     sf,
@@ -47,3 +49,4 @@ Suggests:
 Config/testthat/edition: 3
 URL: https://github.com/njtierney/geotargets, https://njtierney.github.io/geotargets/
 BugReports: https://github.com/njtierney/geotargets/issues
+VignetteBuilder: knitr

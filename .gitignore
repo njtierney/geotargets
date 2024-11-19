@@ -13,3 +13,6 @@ _targets.Rmd
 _targets_r
 _targets.yaml
 docs
+inst/doc
+/doc/
+/Meta/
