@@ -29,6 +29,12 @@
 #'   are retained by archiving all written files as a zip file upon writing and
 #'   unzipping them upon reading. This adds extra overhead and will slow
 #'   pipelines.
+#' @param force_memory logical. When `TRUE`, `SpatRaster` targets are guaranteed
+#'   to point to an in-memory source when loaded with `tar_read()` or
+#'   `tar_load()`. This may be necessary if using cloud storage with `targets`
+#'   since files are only downloaded temporarily when targets are loaded.
+#'   Defaults to `FALSE` which allows `SpatRaster` targets to point to files in
+#'   a local object store.
 #' @param ... Additional arguments not yet used
 #'
 #' @inheritParams targets::tar_target
@@ -62,6 +68,7 @@ tar_terra_rast <- function(name,
                            filetype = geotargets_option_get("gdal.raster.driver"),
                            gdal = geotargets_option_get("gdal.raster.creation.options"),
                            preserve_metadata = geotargets_option_get("terra.preserve.metadata"),
+                           force_memory = FALSE,
                            ...,
                            tidy_eval = targets::tar_option_get("tidy_eval"),
                            packages = targets::tar_option_get("packages"),
@@ -116,8 +123,15 @@ tar_terra_rast <- function(name,
         packages = packages,
         library = library,
         format = targets::tar_format(
-            read = tar_rast_read(preserve_metadata = preserve_metadata),
-            write = tar_rast_write(filetype = filetype, gdal = gdal, preserve_metadata = preserve_metadata),
+            read = tar_rast_read(
+                preserve_metadata = preserve_metadata,
+                force_memory = force_memory
+            ),
+            write = tar_rast_write(
+                filetype = filetype,
+                gdal = gdal,
+                preserve_metadata = preserve_metadata
+            ),
             marshal = function(object) terra::wrap(object),
             unmarshal = function(object) terra::unwrap(object),
             substitute = list(filetype = filetype, gdal = gdal, preserve_metadata = preserve_metadata)
@@ -137,15 +151,15 @@ tar_terra_rast <- function(name,
     )
 }
 
-tar_rast_read <- function(preserve_metadata) {
+tar_rast_read <- function(preserve_metadata, force_memory) {
     switch(
         preserve_metadata,
         zip = function(path) {
             tmp <- withr::local_tempdir()
             zip::unzip(zipfile = path, exdir = tmp)
-            terra::rast(file.path(tmp, basename(path)))
+            terra::rast(file.path(tmp, basename(path))) + 0
         },
-        drop = function(path) terra::rast(path)
+        drop = function(path) terra::rast(path) + 0
     )
 }
 
