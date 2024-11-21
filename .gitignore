@@ -14,3 +14,5 @@ _targets_r
 _targets.yaml
 docs
 inst/doc
+/doc/
+/Meta/

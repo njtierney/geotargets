@@ -1,0 +1,428 @@
+---
+title: "Using `terra` with `geotargets`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using `terra` with `geotargets`}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+# With the root.dir option below,
+# this vignette runs the R code in a temporary directory
+# so new files are written to temporary storage
+# and not the user's file space.
+knitr::opts_knit$set(root.dir = fs::dir_create(tempfile()))
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+if (identical(Sys.getenv("NOT_CRAN", unset = "false"), "false")) {
+  knitr::opts_chunk$set(eval = FALSE)
+}
+library(targets)
+library(geotargets)
+```
+
+```{r setup}
+library(geotargets)
+```
+
+The `geotargets` package extends `targets` to work with geospatial data formats, such as rasters and vectors (e.g., shape files).
+In particular, `geotargets` aims to support use of the `terra` package, which tend to cause problems if used in targets created with `tar_target()` .
+If you are new to `targets`, you should start by looking at the [targets manual](https://books.ropensci.org/targets/) to get a handle on the basics.
+
+The design of `geotargets` is to specify target factories like so: `tar_<pkg>_<type>`.
+
+In this vignette we will demonstrate the use of the `terra` R package, and we will demonstrate how to build raster (`rast`), vector (`vect`), raster collection (`sprc`), and raster dataset (`sds`) targets with:
+
+-   `tar_terra_rast()`
+-   `tar_terra_vect()`
+-   `tar_terra_sprc()`
+-   `tar_terra_sds()`
+
+## `tar_terra_rast()`: targets with `terra` rasters
+
+```{r}
+#| label: tar_script_rast
+#| eval: true
+#| echo: false
+
+targets::tar_script({
+    # contents of _targets.R:
+    library(targets)
+    library(geotargets)
+    tar_option_set(packages = "terra")
+    geotargets_option_set(gdal_raster_driver = "COG")
+    list(
+        tar_target(
+            tif_file,
+            system.file("ex/elev.tif", package = "terra"),
+            format = "file"
+        ),
+        tar_terra_rast(
+            r,
+            {
+                rast <- rast(tif_file)
+                units(rast) <- "m"
+                rast
+            }
+        ),
+        tar_terra_rast(
+            r_agg,
+            aggregate(r, 2)
+        )
+    )
+})
+```
+
+```{r}
+#| label: _targets-rast
+#| eval: false
+#| echo: true
+# contents of _targets.R:
+library(targets)
+library(geotargets)
+tar_option_set(packages = "terra")
+geotargets_option_set(gdal_raster_driver = "COG")
+list(
+    tar_target(
+        tif_file,
+        system.file("ex/elev.tif", package = "terra"),
+        format = "file"
+    ),
+    tar_terra_rast(
+        r,
+        {
+            rast <- rast(tif_file)
+            units(rast) <- "m"
+            rast
+        }
+    ),
+    tar_terra_rast(
+        r_agg,
+        aggregate(r, 2)
+    )
+)
+```
+
+Above is a basic example showing the use of `tar_terra_rast()` in a targets pipeline.
+The command for `tar_terra_rast()` can be any function that returns a `SpatRaster` object.
+In this example, we’ve set the output to a cloud optimized geotiff ("COG"), but any GDAL driver that works with `terra::writeRaster()` should also work here.
+You can also set this option on a target-by-target basis with the `filetype` argument to `tar_terra_rast()`.
+
+Running the pipeline:
+
+```{r}
+#| label: make-rast
+#| eval: true
+#| echo: true
+
+tar_make()
+tar_read(r)
+tar_read(r_agg)
+```
+
+### Raster metadata
+
+You may have noticed that the units for the `r` target above have gone missing.
+This is due to limitations of `terra` and `targets`---`terra` saves some metadata in "sidecar" aux.json files and `targets` enforces a strict one file per target rule.
+You can get around this by setting `preserve_metadata = "zip"` in `tar_terra_rast()` to save the output files, including the metadata, as a minimally compressed zip archive.
+You can also set this for all raster targets with `geotargets_option_set(terra_preserve_metadata = "zip")`.
+
+Note: there are likely performance costs associated with this option.\
+As an alternative, you can encode information in the layer names by setting `names(r) <-` which are retained even with the default `preserve_metadata = "drop"`.
+
+```{r}
+#| label: tar_script_rast_metadata
+#| eval: true
+#| echo: false
+targets::tar_script({
+    # contents of _targets.R:
+    library(targets)
+    library(geotargets)
+    tar_option_set(packages = "terra")
+    geotargets_option_set(gdal_raster_driver = "COG")
+    list(
+        tar_target(
+            tif_file,
+            system.file("ex/elev.tif", package = "terra"),
+            format = "file"
+        ),
+        tar_terra_rast(
+            r,
+            {
+                rast <- rast(tif_file)
+                units(rast) <- "m"
+                rast
+            },
+            preserve_metadata = "zip"
+        )
+    )
+})
+
+```
+
+```{r}
+#| label: _targets_rast_metadata
+#| eval: false
+#| echo: true
+# contents of _targets.R:
+library(targets)
+library(geotargets)
+tar_option_set(packages = "terra")
+geotargets_option_set(gdal_raster_driver = "COG")
+list(
+    tar_target(
+        tif_file,
+        system.file("ex/elev.tif", package = "terra"),
+        format = "file"
+    ),
+    tar_terra_rast(
+        r,
+        {
+            rast <- rast(tif_file)
+            units(rast) <- "m"
+            rast
+        },
+        preserve_metadata = "zip"
+    )
+)
+```
+
+```{r}
+#| label: make_rast_metadata
+#| eval: true
+#| echo: true
+
+tar_make()
+terra::units(tar_read(r))
+```
+
+## `tar_terra_vect()`: targets with `terra` vectors
+
+For `terra` `SpatVector` objects, use `tar_terra_vect()` in the pipeline.
+You can set vector specific options with `geotargets_option_set()` or with the `filetype` and `gdal` arguments to individual `tar_terra_vect()` calls.
+
+```{r}
+#| label: tar_script_vect
+#| eval: true
+#| echo: false
+
+targets::tar_script({
+    # contents of _targets.R:
+    library(targets)
+    library(geotargets)
+    geotargets_option_set(gdal_vector_driver = "GeoJSON")
+    list(
+        tar_target(
+            vect_file,
+            system.file("ex", "lux.shp", package = "terra"),
+            format = "file"
+        ),
+        tar_terra_vect(
+            v,
+            terra::vect(vect_file)
+        ),
+        tar_terra_vect(
+            v_proj,
+            terra::project(v, "EPSG:2196")
+        )
+    )
+})
+```
+
+```{r}
+#| label: _targets_vect
+#| eval: false
+#| echo: true
+# contents of _targets.R:
+library(targets)
+library(geotargets)
+geotargets_option_set(gdal_vector_driver = "GeoJSON")
+list(
+    tar_target(
+        vect_file,
+        system.file("ex", "lux.shp", package = "terra"),
+        format = "file"
+    ),
+    tar_terra_vect(
+        v,
+        terra::vect(vect_file)
+    ),
+    tar_terra_vect(
+        v_proj,
+        terra::project(v, "EPSG:2196")
+    )
+)
+
+```
+
+```{r}
+#| label: make_vect
+#| eval: true
+#| echo: true
+
+tar_make()
+tar_read(v)
+tar_read(v_proj)
+```
+
+## `tar_terra_sprc()`: targets with `terra` raster collections
+
+Targets that produce a `SpatRasterCollection` can be created with `tar_terra_sprc()`.
+The various rasters in the collection are saved as subdatasets to adhere to `targets` one file per target rule.
+
+```{r}
+#| label: tar_script_sprc
+#| eval: true
+#| echo: false
+
+targets::tar_script({
+    # contents of _targets.R:
+    library(targets)
+    library(geotargets)
+    elev_scale <- function(raster, z = 1, projection = "EPSG:4326") {
+      terra::project(
+        raster * z,
+        projection
+      )
+    }
+    tar_option_set(packages = "terra")
+    geotargets_option_set(gdal_raster_driver = "GTiff")
+    list(
+        tar_target(
+            elev_file,
+            system.file("ex", "elev.tif", package = "terra"),
+            format = "file"
+        ),
+        tar_target(
+            r,
+            rast(elev_file)
+        ),
+      tar_terra_sprc(
+        raster_elevs,
+        # two rasters, one unaltered, one scaled by factor of 2 and
+        # reprojected to interrupted good homolosine
+        terra::sprc(list(
+            elev_scale(r, 1),
+            elev_scale(r, 2, "+proj=igh")
+        ))
+      )
+    )
+})
+```
+
+```{r}
+#| label: _targets_sprc
+#| eval: false
+#| echo: true
+
+# contents of _targets.R:
+library(targets)
+library(geotargets)
+elev_scale <- function(raster, z = 1, projection = "EPSG:4326") {
+    terra::project(
+        raster * z,
+        projection
+    )
+}
+tar_option_set(packages = "terra")
+geotargets_option_set(gdal_raster_driver = "GTiff")
+list(
+    tar_target(
+        elev_file,
+        system.file("ex", "elev.tif", package = "terra"),
+        format = "file"
+    ),
+    tar_target(
+        r,
+        rast(elev_file)
+    ),
+    tar_terra_sprc(
+        raster_elevs,
+        # two rasters, one unaltered, one scaled by factor of 2 and
+        # reprojected to interrupted Goode homolosine
+        terra::sprc(list(
+            elev_scale(r, 1),
+            elev_scale(r, 2, "+proj=igh")
+        ))
+    )
+)
+```
+
+```{r}
+#| label: make_sprc
+#| eval: true
+#| echo: true
+
+tar_make()
+tar_read(raster_elevs)
+```
+
+## `tar_terra_sds()`: targets with `terra` raster datasets
+
+A `terra` `SpatRasterDataset` is very similar to a `SpatRasterCollection` except that all sub-datasets must have the same projection and extent
+
+```{r}
+#| label: tar_script_sds
+#| eval: true
+#| echo: false
+
+targets::tar_script({
+    # contents of _targets.R:
+    library(targets)
+    library(geotargets)
+    tar_option_set(packages = "terra")
+    list(
+        tar_target(
+            logo_file,
+            system.file("ex/logo.tif", package="terra"),
+            format = "file"
+        ),
+        tar_terra_sds(
+            raster_dataset,
+            {
+                x <- sds(rast(logo_file), rast(logo_file)/2)
+                names(x) <- c("first", "second")
+                x
+            }
+        )
+    )
+})
+```
+
+```{r}
+#| label: _targets_sds
+#| eval: false
+#| echo: true
+
+# contents of _targets.R:
+library(targets)
+library(geotargets)
+tar_option_set(packages = "terra")
+list(
+    tar_target(
+        logo_file,
+        system.file("ex/logo.tif", package="terra"),
+        format = "file"
+    ),
+    tar_terra_sds(
+        raster_dataset,
+        {
+            x <- sds(rast(logo_file), rast(logo_file)/2)
+            names(x) <- c("first", "second")
+            x
+        }
+    )
+)
+```
+
+```{r}
+#| label: make_sds
+#| echo: true
+#| eval: true
+
+tar_make()
+tar_read(raster_dataset)
+```
