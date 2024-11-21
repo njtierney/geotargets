@@ -7,7 +7,9 @@
 #'   name must be a valid name for a symbol in R, and it
 #'   must not start with a dot. See [targets::tar_target()] for more information.
 #' @param raster a `SpatRaster` object to be split into tiles.
-#' @param tile_fun a helper function that returns a list of numeric vectors such as [tile_grid] or [tile_blocksize] specified in one of the following ways:
+#' @param tile_fun a helper function that returns a list of numeric vectors such
+#'   as [tile_grid()], [tile_n()] or [tile_blocksize] specified in one of the
+#'   following ways:
 #'  - A named function, e.g. `tile_blocksize` or `"tile_blocksize"`.
 #'  - An anonymous function, e.g. `\(x) tile_grid(x, nrow = 2, ncol = 2)`.
 #' @param filetype character. File format expressed as GDAL driver names passed
@@ -21,6 +23,11 @@
 #'
 #' @note The `iteration` argument is unavailable because it is hard-coded to
 #'   `"list"`, the only option that works currently.
+#'
+#'   When using the [tile_blocksize()] helper function, you may need to set
+#'   `memory = "transient"` on the upstream target provided to the `raster`
+#'   argument of `tar_terra_tiles()`.  More details are in the help file for
+#'   [tile_blocksize()].
 #'
 #' @return a list of two targets: an upstream target that creates a list of
 #'   extents and a downstream pattern that maps over these extents to create a
@@ -231,21 +238,31 @@ set_window <- function(raster, window) {
 #' While these may have general use, they are intended primarily for supplying
 #' to the `tile_fun` argument of [tar_terra_tiles()].
 #'
-#' `tile_blocksize()` creates extents using the raster's native blocksize (see
+#' `tile_blocksize()` creates extents using the raster's native block size (see
 #' [terra::fileBlocksize()]), which should be more memory efficient. Create
 #' tiles with multiples of the raster's blocksize with `n_blocks_row` and
 #' `n_blocks_col`. We strongly suggest the user explore how many tiles are
 #' created by `tile_blocksize()` before creating a dynamically branched target
-#' using this helper. `tile_grid()` allows specification of a number of rows and
+#' using this helper. Note that block size is a property of *files* and does not
+#' apply to in-memory `SpatRaster`s. Therefore, if you want to use this helper
+#' in [tar_terra_tiles()] you may need to ensure the upstream target provided to
+#' the `raster` argument is not in memory by setting `memory = "transient"`.
+#'
+#' `tile_grid()` allows specification of a number of rows and
 #' columns to split the raster into.  E.g. nrow = 2 and ncol = 2 would create 4
 #' tiles (because it specifies a 2x2 matrix, which has 4 elements).
+#'
+#' `tile_n()` creates (about) `n` tiles and prints the number of rows, columns,
+#' and total tiles created.
 #'
 #' @param raster a SpatRaster object.
 #' @param ncol integer; number of columns to split the SpatRaster into.
 #' @param nrow integer; number of rows to split the SpatRaster into.
 #' @param n integer; total number of tiles to split the SpatRaster into.
-#' @param n_blocks_row integer; multiple of blocksize to include in each tile vertically.
-#' @param n_blocks_col integer; multiple of blocksize to include in each tile horizontally.
+#' @param n_blocks_row integer; multiple of blocksize to include in each tile
+#'   vertically.
+#' @param n_blocks_col integer; multiple of blocksize to include in each tile
+#'   horizontally.
 #'
 #' @author Eric Scott
 #' @return list of named numeric vectors with xmin, xmax, ymin, and ymax values
