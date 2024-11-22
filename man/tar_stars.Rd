@@ -57,24 +57,32 @@ tar_stars_proxy(
 )
 }
 \arguments{
-\item{name}{Symbol, name of the target. A target
-name must be a valid name for a symbol in R, and it
-must not start with a dot. See \code{\link[targets:tar_target]{targets::tar_target()}} for more information.}
+\item{name}{Symbol, name of the target. A target name must be a valid name for
+a symbol in R, and it must not start with a dot. See \code{\link[targets:tar_target]{targets::tar_target()}}
+for more information.}
 
 \item{command}{R code to run the target.}
 
 \item{pattern}{Code to define a dynamic branching pattern for a target. See
 \code{\link[targets:tar_target]{targets::tar_target()}} for more information.}
 
-\item{proxy}{logical. Passed to \code{\link[stars:read_stars]{stars::read_stars()}}. If \code{TRUE} the target will be read as an object of class \code{stars_proxy}. Otherwise, the object is class \code{stars}.}
+\item{proxy}{logical. Passed to \code{\link[stars:read_stars]{stars::read_stars()}}. If \code{TRUE} the target
+will be read as an object of class \code{stars_proxy}. Otherwise, the object is
+class \code{stars}.}
 
-\item{mdim}{logical. Use the \href{https://gdal.org/user/multidim_raster_data_model.html}{Multidimensional Raster Data Model} via \code{\link[stars:mdim]{stars::write_mdim()}}? Default: \code{FALSE}. Only supported for some drivers, e.g. \code{"netCDF"} or \code{"Zarr"}.}
+\item{mdim}{logical. Use the \href{https://gdal.org/user/multidim_raster_data_model.html}{Multidimensional Raster Data Model} via
+\code{\link[stars:mdim]{stars::write_mdim()}}? Default: \code{FALSE}. Only supported for some drivers,
+e.g. \code{"netCDF"} or \code{"Zarr"}.}
 
-\item{ncdf}{logical. Use the NetCDF library directly to read data via \code{\link[stars:read_ncdf]{stars::read_ncdf()}}? Default: \code{FALSE}. Only supported for \code{driver="netCDF"}.}
+\item{ncdf}{logical. Use the NetCDF library directly to read data via
+\code{\link[stars:read_ncdf]{stars::read_ncdf()}}? Default: \code{FALSE}. Only supported for
+\code{driver="netCDF"}.}
 
-\item{driver}{character. File format expressed as GDAL driver names passed to \code{\link[stars:write_stars]{stars::write_stars()}}. See \code{\link[sf:st_drivers]{sf::st_drivers()}}.}
+\item{driver}{character. File format expressed as GDAL driver names passed to
+\code{\link[stars:write_stars]{stars::write_stars()}}. See \code{\link[sf:st_drivers]{sf::st_drivers()}}.}
 
-\item{options}{character. GDAL driver specific datasource creation options passed to \code{\link[stars:write_stars]{stars::write_stars()}}.}
+\item{options}{character. GDAL driver specific datasource creation options
+passed to \code{\link[stars:write_stars]{stars::write_stars()}}.}
 
 \item{...}{Additional arguments not yet used.}
 
@@ -244,7 +252,13 @@ lists all the targets whose descriptions start with the character
 string \code{"survival model"}.}
 }
 \description{
-Provides a target format for stars objects.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
+Provides a target format for \code{stars} objects. Note that most or all \code{stars}
+objects work with ordinary \code{tar_target()} and do not necessarily \emph{need}
+\code{geotargets} target factories the way \code{terra} objects do.  Currently
+\code{tar_stars()} has the same limitations as \code{\link[stars:write_stars]{stars::write_stars()}}, so use with
+caution.
 }
 \note{
 The \code{iteration} argument is unavailable because it is hard-coded to
