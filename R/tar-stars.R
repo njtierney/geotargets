@@ -62,7 +62,9 @@ tar_stars <- function(name,
                       description = targets::tar_option_get("description")) {
 
     check_pkg_installed("stars")
-    if (ncdf) check_pkg_installed("ncmeta")
+    if (ncdf) {
+        check_pkg_installed("ncmeta")
+    }
 
     name <- targets::tar_deparse_language(substitute(name))
 
@@ -131,7 +133,9 @@ tar_stars_proxy <- function(name,
                             description = targets::tar_option_get("description")) {
 
     check_pkg_installed("stars")
-    if (ncdf) check_pkg_installed("ncmeta")
+    if (ncdf) {
+        check_pkg_installed("ncmeta")
+    }
 
     name <- targets::tar_deparse_language(substitute(name))
 
