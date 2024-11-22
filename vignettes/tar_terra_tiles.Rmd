@@ -15,16 +15,15 @@ vignette: >
 knitr::opts_knit$set(root.dir = fs::dir_create(tempfile()))
 knitr::opts_chunk$set(
   collapse = TRUE,
+  eval = TRUE,
   comment = "#>",
   fig.align = "center",
   fig.height = 5,
   fig.width = 5
 )
-if (identical(Sys.getenv("NOT_CRAN", unset = "false"), "false")) {
+if (!identical(Sys.getenv("NOT_CRAN", unset = "false"), "false")) {
   knitr::opts_chunk$set(eval = FALSE)
 }
-library(targets)
-library(geotargets)
 Sys.setenv(TAR_ASK="false")
 ```
 
@@ -80,7 +79,7 @@ lines(r_ext, col = "hotpink", lty = 2)
 points(r_ext, col = "hotpink", pch = 16)
 ```
 
-Some geo-computational operations can be done independently of one another - we want to take advantage of that, and we can facilitate this by breaking the raster into smaller pieces, by creating new extents that describe new subsets of the raster.
+Some geo-computational operations can be done independently of one another—we want to take advantage of that, and we can facilitate this by breaking the raster into smaller pieces, by creating new extents that describe new subsets of the raster.
 
 We can use this extent information downstream in the analysis to describe how to break up a raster.
 This is similar to how we might want to chunk up a data frame into groups to distribute to different CPU cores.
@@ -265,10 +264,10 @@ See the [targets documentation on memory](https://docs.ropensci.org/targets/refe
 The process that happens from here can be thought of as `split-apply-combine`.
 
 -   **Split** the raster into pieces using the `tar_terra_tiles()` target factory
-    -   This returns the **extent** using one of the tile functions described above (`tile_n()`, `tile_grid()`, or `tile_blocksize()`), supplying this to `tile_fun`.
--   **Apply** A function to the rasters
+    -   This returns tiles whose **extents** are created by one of the tile functions described above (`tile_n()`, `tile_grid()`, or `tile_blocksize()`), supplying this to `tile_fun`.
+-   **Apply** a function to the rasters.
     -   This can be any function that would work on a raster, in the case below we use the `app` function from `terra`, which applies some function to the cells of a raster.
-    -   To do this we use `tar_terra_rast()` and then supply the `pattern = map(tiles)`, where `tiles` is the way we have **split** the raster up. You can think of `pattern = map(tiles)` as saying: "Do the task for each of the tiles we have specified and return them as a list"
+    -   To do this we use `tar_terra_rast()` and then supply the `pattern = map(tiles)`, where `tiles` is the name of the target created with `tar_terra_tiles()`. You can think of `pattern = map(tiles)` as saying: "Do the task for each of the tiles we have specified and return them as a list"
 -   **Combine** the list of rasters together.
     -   In this case we use `tar_terra_rast()` and use `merge()` on the tiles.
 
