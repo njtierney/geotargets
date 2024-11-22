@@ -37,13 +37,13 @@ library(dplyr)
 
 Computationally intensive raster operations that work in pixel-wise manner may be handled well with [dynamic branching](https://books.ropensci.org/targets/dynamic.html#about-dynamic-branching) over tiled subsets of the raster.
 `tar_terra_tiles()` is a target factory that enables creating these dynamic branches so downstream targets can iterate over them.
-This is useful when, for example, loading an entire raster into memory and doing computations on it results in out of memory errors.
+This is useful when, for example, loading an entire raster into memory and doing computations on it results in out of memory errors. 
 
-## Tile helpers
+In order to use `tar_terra_tiles()`, we need to break a raster into smaller pieces. We can do that by providing **extent**s used by the raster. The concept of extent is important, so let's unpack that a bit more.
 
-To break a raster into smaller pieces that we can distribute computing on, we need to get new **extents** that describe the four points of smaller parts of the area.
+## What is an extent?
 
-The extent of a raster, `r`, is printed in the summary:
+The **extent** describes the four points that cover the area of a raster. The extent of a raster, `r`, is printed in the summary:
 
 ```{r}
 #example SpatRaster
@@ -55,28 +55,45 @@ r
 But we can get the extent with `ext` (**ext**ent):
 
 ```{r}
-ext(r)
+r_ext <- ext(r)
+r_ext
 ```
 
 Which maps onto the four corners of the raster here:
 
 ```{r}
-plot(r)
+# some plot helpers
+rect_extent <- function(x, ...) {
+  rect(x[1], x[3], x[2], x[4], ...)
+}
+plot_extents <- function(x, ...) {
+  invisible(lapply(x, rect_extent, border = "hotpink", lwd = 2))
+}
 ```
 
-What we want is to break this raster into pieces. We can create new extents that describe new subsets of the raster. We can use this extent information downstream in the analysis to describe how to break up a raster. This is similar to how we might want to chunk up a data frame into groups to distribute to different CPU cores.
+```{r}
+extend(r, 5) |> plot()
+lines(r_ext, col = "hotpink", lty = 2)
+points(r_ext, col = "hotpink", pch = 16)
+```
+
+Some geo-computational operations can be done independently of one another - we want to take advantage of that, and we can facilitate this by breaking the raster into smaller pieces, by creating new extents that describe new subsets of the raster. 
+
+We can use this extent information downstream in the analysis to describe how to break up a raster. This is similar to how we might want to chunk up a data frame into groups to distribute to different CPU cores. To help with this, we've got some helper functions.
+
+## Helper functions to create multiple extents of a raster
 
 `geotargets` provides three helper functions that take a `SpatRaster` and output the extents for tiles:
 
-- `tiles_n()`,
+- `tile_n()`,
 - `tile_grid()`, and
 - `tile_blocksize()`
 
-We will demonstrate these now:
+We will demonstrate these now.
 
-### `tiles_n()`
+### `tile_n()`
 
-We can use `tiles_n()` is the simplest, which produces *about* `n` tiles in a grid.
+We can use `tile_n()`, which is the simplest of the three. It produces *about* `n` tiles in a grid.
 
 ```{r}
 r_tile_4 <- tile_n(r, 4)
@@ -84,19 +101,10 @@ r_tile_4
 ```
 
 ```{r}
-rect_extent <- function(x, ...) {
-  rect(x[1], x[3], x[2], x[4], ...)
-}
-rect_extents <- function(x, ...) {
-  lapply(x, rect_extent)
-}
-```
-
-```{r}
 plot(r)
-rect_extents(r_tile_4)
+plot_extents(r_tile_4)
 plot(r)
-tile_n(r, 6) |> rect_extents()
+tile_n(r, 6) |> plot_extents()
 ```
 
 ### `tile_grid()`
@@ -107,10 +115,10 @@ For more control, use `tile_grid()`, which allows specification of the number of
 r_grid_3x1 <- tile_grid(r, ncol = 3, nrow = 1)
 r_grid_3x1
 plot(r)
-rects_extents(r_grid_3x1)
+plot_extents(r_grid_3x1)
 
 plot(r)
-tile_grid(r, ncol = 2, nrow = 3) |> rect_extents()
+tile_grid(r, ncol = 2, nrow = 3) |> plot_extents()
 ```
 
 ### `tile_blocksize()`
@@ -137,7 +145,7 @@ Which is the same as specifying  blocksize for row and column at unit 1:
 r_block_size_1x1 <- tile_blocksize(r, n_blocks_row = 1, n_blocks_col = 1)
 r_block_size_1x1
 plot(r)
-rect_extents(r_block_size_1x1)
+plot_extents(r_block_size_1x1)
 ```
 
 Here the block size is the same size for the first two blocks, and then a much more narrow block. This is different to the two other tile methods.
@@ -150,7 +158,7 @@ So we could instead have the blocksize extent be written out to 2 blocks in a ro
 r_block_size_2x1 <- tile_blocksize(r, n_blocks_row = 2, n_blocks_col = 1)
 r_block_size_2x1
 plot(r)
-rect_extents(r_block_size_2x1)
+plot_extents(r_block_size_2x1)
 ```
 
 This only works when the `SpatRaster` points to a file—in-memory rasters have no inherent block size.
