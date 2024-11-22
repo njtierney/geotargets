@@ -19,9 +19,11 @@ tile_n(raster, n)
 
 \item{nrow}{integer; number of rows to split the SpatRaster into.}
 
-\item{n_blocks_row}{integer; multiple of blocksize to include in each tile vertically.}
+\item{n_blocks_row}{integer; multiple of blocksize to include in each tile
+vertically.}
 
-\item{n_blocks_col}{integer; multiple of blocksize to include in each tile horizontally.}
+\item{n_blocks_col}{integer; multiple of blocksize to include in each tile
+horizontally.}
 
 \item{n}{integer; total number of tiles to split the SpatRaster into.}
 }
@@ -36,14 +38,22 @@ While these may have general use, they are intended primarily for supplying
 to the \code{tile_fun} argument of \code{\link[=tar_terra_tiles]{tar_terra_tiles()}}.
 }
 \details{
-\code{tile_blocksize()} creates extents using the raster's native blocksize (see
+\code{tile_blocksize()} creates extents using the raster's native block size (see
 \code{\link[terra:readwrite]{terra::fileBlocksize()}}), which should be more memory efficient. Create
 tiles with multiples of the raster's blocksize with \code{n_blocks_row} and
 \code{n_blocks_col}. We strongly suggest the user explore how many tiles are
 created by \code{tile_blocksize()} before creating a dynamically branched target
-using this helper. \code{tile_grid()} allows specification of a number of rows and
+using this helper. Note that block size is a property of \emph{files} and does not
+apply to in-memory \code{SpatRaster}s. Therefore, if you want to use this helper
+in \code{\link[=tar_terra_tiles]{tar_terra_tiles()}} you may need to ensure the upstream target provided to
+the \code{raster} argument is not in memory by setting \code{memory = "transient"}.
+
+\code{tile_grid()} allows specification of a number of rows and
 columns to split the raster into.  E.g. nrow = 2 and ncol = 2 would create 4
 tiles (because it specifies a 2x2 matrix, which has 4 elements).
+
+\code{tile_n()} creates (about) \code{n} tiles and prints the number of rows, columns,
+and total tiles created.
 }
 \examples{
 f <- system.file("ex/elev.tif", package="terra")
