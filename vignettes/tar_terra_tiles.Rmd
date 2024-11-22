@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
   fig.height = 5,
   fig.width = 5
 )
-if (!identical(Sys.getenv("NOT_CRAN", unset = "false"), "false")) {
+if (identical(Sys.getenv("NOT_CRAN", unset = "false"), "false")) {
   knitr::opts_chunk$set(eval = FALSE)
 }
 Sys.setenv(TAR_ASK="false")
