@@ -1,17 +1,31 @@
 ---
-title: "Using dynamic branching to paralellize over raster tiles"
+title: "Dynamic branching with raster tiles"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Using dynamic branching to paralellize over raster tiles}
+  %\VignetteIndexEntry{Dynamic branching with raster tiles}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
+# With the root.dir option below,
+# this vignette runs the R code in a temporary directory
+# so new files are written to temporary storage
+# and not the user's file space.
+knitr::opts_knit$set(root.dir = fs::dir_create(tempfile()))
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.align = "center",
+  fig.height = 5,
+  fig.width = 5
 )
+if (identical(Sys.getenv("NOT_CRAN", unset = "false"), "false")) {
+  knitr::opts_chunk$set(eval = FALSE)
+}
+library(targets)
+library(geotargets)
+Sys.setenv(TAR_ASK="false")
 ```
 
 ```{r setup}
@@ -21,68 +35,249 @@ library(terra)
 library(dplyr)
 ```
 
-## Parallelizing over tiles
-
-Some raster operations can be 
+Computationally intensive raster operations that work in pixel-wise manner may be handled well with [dynamic branching](https://books.ropensci.org/targets/dynamic.html#about-dynamic-branching) over tiled subsets of the raster.
+`tar_terra_tiles()` is a target factory that enables creating these dynamic branches so that downstream targets can iterate over them.
+This is useful when, for example, loading an entire raster into memory and doing computations on it results in out of memory errors.
 
 ## Tile helpers
 
-## Blocksize, what is it and why use it
+`geotargets` provides three helper functions that take a `SpatRaster` and output extents for tiles.
+
+```{r}
+#example SpatRaster
+f <- system.file("ex/elev.tif", package="terra")
+r <- rast(f)
+```
+
+`tiles_n()` is the simplest, which produces *about* `n` tiles in a grid.
+
+```{r}
+tile_n(r, 4)
+```
+
+For more control, use `tile_grid()` which allows specification of the number of rows and columns to split the raster into.
+
+```{r}
+tile_grid(r, ncol = 3, nrow = 1)
+```
+
+The third included helper is `tile_blocksize()` which tiles by file block size.
+Block size is a property of raster files and is the number of pixels (in the x and y direction) that is read into memory at a time.
+Tiling by multiples of block size may therefore be more efficient because only one block should need to be loaded to create each tile target.
+
+```{r}
+tile_blocksize(r, n_blocks_row = 1, n_blocks_col = 2)
+```
+
+This only works when the `SpatRaster` points to a file—in-memory rasters have no inherent block size.
+
+```{r error=TRUE}
+sources(r)
+#force into memory
+r2 <- r + 0
+sources(r2)
+#this now errors
+tile_blocksize(r2)
+```
 
 ## Example targets pipeline
 
-Here's an example `targets` pipeline using `tar_terra_tiles()` demonstrating the improved efficiency from using tiles that are multiples of the native file blocksize over using the same number of arbitrary shaped tiles.
+When developing a `targets` pipeline using `tar_terra_tiles()` with `tile_blocksize()`, it's a good idea to figure out how many tiles `tile_blocksize()` will create before implementing `tar_terra_tiles()`.
+We'll start by making a bigger raster to experiment with using `terra::disagg()` and making multiple layers.
 
 ```{r}
-tar_dir({
-    tar_script({
-        ## contents of _targets.R ##############################################
-        library(targets)
-        library(geotargets)
-        library(terra)
-        tar_option_set(controller = crew::crew_controller_local(workers = 2))
-        list(
-            tar_target(
-                raster_file,
-                system.file("ex/elev.tif", package="terra"),
-                format = "file"
-            ),
-            tar_terra_rast(
-                r,
-                rast(raster_file)
-            ),
-            tar_terra_rast(
-                r_big,
-                disagg(r, fact = 3)
-            ),
-            tar_terra_tiles(
-                tiles_blocksize,
-                raster = r_big,
-                tile_fun = tile_blocksize
-            ),
-            tar_terra_tiles(
-                tiles_n,
-                raster = r_big,
-                tile_fun = \(x) tile_n(r_big, n = 72)
-            ),
-            tar_terra_rast(
-                sqrt_blocksize,
-                sqrt(tiles_blocksize),
-                pattern = map(tiles_blocksize)
-            ),
-            tar_terra_rast(
-                sqrt_n,
-                sqrt(tiles_n),
-                pattern = map(tiles_n)
-            )
+#| label: tar_script
+#| echo: false
+#| eval: true
+
+targets::tar_script({
+    # contents of _targets.R
+    library(targets)
+    library(geotargets)
+    library(terra)
+    geotargets_option_set(gdal_raster_driver = "COG")
+    list(
+        tar_target(
+            raster_file,
+            system.file("ex/elev.tif", package="terra"),
+            format = "file"
+        ),
+        tar_terra_rast(
+            r,
+            disagg(rast(raster_file), fact = 10)
+        ),
+        tar_terra_rast(
+            r_big,
+            c(r, r + 100, r * 10, r / 2),
+            memory = "transient"
         )
-    })
-    ############################################################################
-    
-    tar_make()
-    tar_meta() |>
-        select(name, seconds) |> 
-        filter(name %in% c("sqrt_blocksize", "bytes", "sqrt_n"))
-}) 
+    )
+})
+
 ```
 
+```{r}
+#| label: _targets
+#| eval: false
+#| echo: true
+# contents of _targets.R
+library(targets)
+library(geotargets)
+library(terra)
+geotargets_option_set(gdal_raster_driver = "COG")
+list(
+    tar_target(
+        raster_file,
+        system.file("ex/elev.tif", package="terra"),
+        format = "file"
+    ),
+    tar_terra_rast(
+        r,
+        disagg(rast(raster_file), fact = 10)
+    ),
+    tar_terra_rast(
+        r_big,
+        c(r, r + 100, r * 10, r / 2),
+        memory = "transient"
+    )
+)
+```
+
+```{r}
+#| label: tar_make
+#| eval: true
+#| echo: true
+
+tar_make()
+tar_load(r_big)
+tile_blocksize(r_big)
+```
+
+Four tiles is reasonable, so we'll go with that.
+Note that we have to ensure the `r_big` target is not in-memory for `tar_terra_tiles()`, so we set `memory = "transient"`.
+To merge tiles back together into a single `SpatRaster` we can use
+
+```{r}
+#| label: tar_script2
+#| eval: true
+#| echo: false
+targets::tar_script({
+    # contents of _targets.R
+    library(targets)
+    library(geotargets)
+    library(terra)
+    geotargets_option_set(gdal_raster_driver = "COG")
+    tar_option_set(memory = "transient")
+    list(
+        tar_target(
+            raster_file,
+            system.file("ex/elev.tif", package="terra"),
+            format = "file"
+        ),
+        tar_terra_rast(
+            r,
+            disagg(rast(raster_file), fact = 10)
+        ),
+        tar_terra_rast(
+            r_big,
+            c(r, r + 100, r * 10, r / 2),
+            memory = "transient"
+        ),
+        tar_terra_tiles(
+            tiles,
+            raster = r_big,
+            tile_fun = tile_blocksize,
+            description = "split raster into tiles"
+        ),
+        tar_terra_rast(
+            tiles_mean,
+            app(tiles, \(x) mean(x, na.rm = TRUE)),
+            pattern = map(tiles),
+            description = "some computationaly intensive task performed on each tile"
+        ),
+        tar_terra_rast(
+            merged_mean,
+            merge(sprc(tiles_mean)),
+            description = "merge tiles into a single SpatRaster"
+        )
+    )
+})
+
+```
+
+```{r}
+#| label: _targets2
+#| eval: false
+#| echo: true
+# contents of _targets.R
+library(targets)
+library(geotargets)
+library(terra)
+geotargets_option_set(gdal_raster_driver = "COG")
+tar_option_set(memory = "transient")
+list(
+    tar_target(
+        raster_file,
+        system.file("ex/elev.tif", package="terra"),
+        format = "file"
+    ),
+    tar_terra_rast(
+        r,
+        disagg(rast(raster_file), fact = 10)
+    ),
+    tar_terra_rast(
+        r_big,
+        c(r, r + 100, r * 10, r / 2),
+        memory = "transient"
+    ),
+    tar_terra_tiles(
+        tiles,
+        raster = r_big,
+        tile_fun = tile_blocksize,
+        description = "split raster into tiles"
+    ),
+    tar_terra_rast(
+        tiles_mean,
+        app(tiles, \(x) mean(x, na.rm = TRUE)),
+        pattern = map(tiles),
+        description = "some computationaly intensive task performed on each tile"
+    ),
+    tar_terra_rast(
+        merged_mean,
+        merge(sprc(tiles_mean)),
+        description = "merge tiles into a single SpatRaster"
+    )
+)
+```
+
+```{r}
+#| label: tar_make2
+#| eval: true
+#| echo: true
+
+tar_make()
+```
+
+We can see from `tar_make()` output above and the plots below that `tiles` and `tiles_mean` are both patterns with four branches each.
+
+```{r}
+#| label: tiled-plot
+#| eval: true
+#| echo: true
+library(terra)
+tar_load(tiles_mean)
+op <- par(mfrow = c(2,2))
+for (i in seq_along(tiles_mean)) {
+    plot(tiles_mean[[i]])
+}
+par(op)
+```
+
+And combined, they make the full plot again.
+
+```{r}
+#| label: merged-plot
+#| eval: true
+#| echo: true
+plot(tar_read(merged_mean))
+```
