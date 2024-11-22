@@ -72,11 +72,13 @@ to the <code>tile_fun</code> argument of <code><a href="tar_terra_tiles.html">ta
 
 
 <dt id="arg-n-blocks-row">n_blocks_row<a class="anchor" aria-label="anchor" href="#arg-n-blocks-row"></a></dt>
-<dd><p>integer; multiple of blocksize to include in each tile vertically.</p></dd>
+<dd><p>integer; multiple of blocksize to include in each tile
+vertically.</p></dd>
 
 
 <dt id="arg-n-blocks-col">n_blocks_col<a class="anchor" aria-label="anchor" href="#arg-n-blocks-col"></a></dt>
-<dd><p>integer; multiple of blocksize to include in each tile horizontally.</p></dd>
+<dd><p>integer; multiple of blocksize to include in each tile
+horizontally.</p></dd>
 
 
 <dt id="arg-n">n<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
@@ -90,14 +92,20 @@ that can be coerced to SpatExtent objects with <code><a href="https://rspatial.g
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p><code>tile_blocksize()</code> creates extents using the raster's native blocksize (see
+    <p><code>tile_blocksize()</code> creates extents using the raster's native block size (see
 <code><a href="https://rspatial.github.io/terra/reference/readwrite.html" class="external-link">terra::fileBlocksize()</a></code>), which should be more memory efficient. Create
 tiles with multiples of the raster's blocksize with <code>n_blocks_row</code> and
 <code>n_blocks_col</code>. We strongly suggest the user explore how many tiles are
 created by <code>tile_blocksize()</code> before creating a dynamically branched target
-using this helper. <code>tile_grid()</code> allows specification of a number of rows and
+using this helper. Note that block size is a property of <em>files</em> and does not
+apply to in-memory <code>SpatRaster</code>s. Therefore, if you want to use this helper
+in <code><a href="tar_terra_tiles.html">tar_terra_tiles()</a></code> you may need to ensure the upstream target provided to
+the <code>raster</code> argument is not in memory by setting <code>memory = "transient"</code>.</p>
+<p><code>tile_grid()</code> allows specification of a number of rows and
 columns to split the raster into.  E.g. nrow = 2 and ncol = 2 would create 4
 tiles (because it specifies a 2x2 matrix, which has 4 elements).</p>
+<p><code>tile_n()</code> creates (about) <code>n</code> tiles and prints the number of rows, columns,
+and total tiles created.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
