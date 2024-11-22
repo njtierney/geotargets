@@ -62,6 +62,9 @@ tar_stars <- function(name,
                       description = targets::tar_option_get("description")) {
 
     check_pkg_installed("stars")
+    if (ncdf) {
+        check_pkg_installed("ncmeta")
+    }
 
     name <- targets::tar_deparse_language(substitute(name))
 
@@ -130,6 +133,9 @@ tar_stars_proxy <- function(name,
                             description = targets::tar_option_get("description")) {
 
     check_pkg_installed("stars")
+    if (ncdf) {
+        check_pkg_installed("ncmeta")
+    }
 
     name <- targets::tar_deparse_language(substitute(name))
 
@@ -218,7 +224,6 @@ tar_stars_raw <- function(name,
         format = targets::tar_format(
             read = function(path) {
                 if (ncdf) {
-                    geotargets:::check_pkg_installed("ncmeta")
                     stars::read_ncdf(path, proxy = proxy)
                 } else if (isTRUE(mdim)) {
                     stars::read_mdim(path, proxy = proxy)
