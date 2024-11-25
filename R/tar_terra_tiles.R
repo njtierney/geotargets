@@ -369,7 +369,7 @@ tile_n <- function(raster, n) {
         # ncol <- 1
     }
 
-    cli::cli_inform("creating {nrow} * {ncol} = {nrow*ncol} tile extents")
+    cli::cli_inform("creating {nrow} * {ncol} = {nrow*ncol} tile extents\n")
     template <- terra::rast(
         x = terra::ext(raster),
         ncol = ncol,

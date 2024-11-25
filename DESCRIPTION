@@ -40,10 +40,10 @@ Imports:
     zip,
     lifecycle
 Suggests: 
-    knitr,
-    rmarkdown,
     crew (>= 0.9.2),
+    knitr,
     ncmeta,
+    rmarkdown,
     sf,
     stars,
     testthat (>= 3.0.0),
