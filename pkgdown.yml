@@ -3,7 +3,8 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   geotargets: geotargets.html
-last_built: 2024-11-25T16:29Z
+  tar_terra_tiles: tar_terra_tiles.html
+last_built: 2024-11-25T16:58Z
 urls:
   reference: https://njtierney.github.io/geotargets/reference
   article: https://njtierney.github.io/geotargets/articles
