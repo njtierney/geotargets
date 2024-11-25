@@ -37,7 +37,8 @@ Imports:
     cli (>= 3.6.2),
     terra (>= 1.7.71),
     withr (>= 3.0.0),
-    zip
+    zip,
+    lifecycle
 Suggests: 
     knitr,
     rmarkdown,
