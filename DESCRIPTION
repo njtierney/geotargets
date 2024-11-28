@@ -47,7 +47,8 @@ Suggests:
     sf,
     stars,
     testthat (>= 3.0.0),
-    fs
+    fs,
+    gdalraster
 Config/testthat/edition: 3
 URL: https://github.com/njtierney/geotargets, https://njtierney.github.io/geotargets/
 BugReports: https://github.com/njtierney/geotargets/issues
