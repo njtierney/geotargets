@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# geotargets <a href="https://njtierney.github.io/geotargets/"><img src="man/figures/logo.svg" alt="geotargets website" align="right" height="139"/></a>
+# geotargets <a href="http://geotargets.njtierney.com/"><img src="man/figures/logo.png" alt="geotargets website" align="right" height="139"/></a>
 
 <!-- badges: start -->
 
@@ -102,7 +102,7 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
 })
 #> ▶ dispatched target terra_rast_example
 #> ● completed target terra_rast_example [0.006 seconds, 7.992 kilobytes]
-#> ▶ ended pipeline [0.061 seconds]
+#> ▶ ended pipeline [0.06 seconds]
 #> class       : SpatRaster 
 #> dimensions  : 90, 95, 1  (nrow, ncol, nlyr)
 #> resolution  : 0.008333333, 0.008333333  (x, y)
@@ -140,7 +140,7 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target terra_vect_example
-#> ● completed target terra_vect_example [0.014 seconds, 117.622 kilobytes]
+#> ● completed target terra_vect_example [0.015 seconds, 117.622 kilobytes]
 #> ▶ ended pipeline [0.052 seconds]
 #>  class       : SpatVector 
 #>  geometry    : polygons 
@@ -188,8 +188,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target raster_elevs
-#> ● completed target raster_elevs [0.055 seconds, 36.423 kilobytes]
-#> ▶ ended pipeline [0.11 seconds]
+#> ● completed target raster_elevs [0.133 seconds, 36.423 kilobytes]
+#> ▶ ended pipeline [0.267 seconds]
 #> class       : SpatRasterCollection 
 #> length      : 2 
 #> nrow        : 90, 115 
@@ -220,8 +220,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target test_stars
-#> ● completed target test_stars [0.011 seconds, 49.9 kilobytes]
-#> ▶ ended pipeline [0.052 seconds]
+#> ● completed target test_stars [0.023 seconds, 49.9 kilobytes]
+#> ▶ ended pipeline [0.072 seconds]
 #> stars object with 2 dimensions and 1 attribute
 #> attribute(s):
 #>             Min. 1st Qu. Median     Mean 3rd Qu. Max.

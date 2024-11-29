@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# geotargets <a href="https://njtierney.github.io/geotargets/"><img src="man/figures/logo.svg" alt="geotargets website" align="right" height="139"/></a> 
+# geotargets <a href="http://geotargets.njtierney.com/"><img src="man/figures/logo.png" alt="geotargets website" align="right" height="139"/></a> 
 
 <!-- badges: start -->
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
