@@ -44,10 +44,17 @@ get_gdal_available_driver_list <- function(driver_type) {
   drv
 }
 
-semicolon_split <- function(env_vars) {
-  strsplit(env_vars, ";")[[1]]
-}
-
-semicolon_paste <- function(vec) {
-  paste0(vec, collapse = ";")
+check_user_resources <- function(resources,
+                                 call = rlang::caller_env()){
+    if ("custom_format" %in% names(resources)) {
+        cli::cli_abort(
+            message = c(
+                "{.val custom_format} cannot be supplied to targets created \\
+                with {.fn tar_terra_rast}",
+                "We see in {.code names(resources)}:",
+                "{.val {names(resources)}}"
+                ),
+            call = call
+        )
+    }
 }

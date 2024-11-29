@@ -223,7 +223,7 @@ if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
     library(geotargets)
     targets::tar_script({
       elev_scale <- function(z = 1) {
-          terra::rast(system.file("ex", "elev.tif", package = "terra")) * z
+        terra::rast(system.file("ex", "elev.tif", package = "terra")) * z
       }
       list(
         tar_terra_sds(
