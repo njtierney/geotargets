@@ -11,6 +11,9 @@ set_window(raster, window)
 
 \item{window}{a SpatExtent object defining the area of interest.}
 }
+\value{
+SpatRaster
+}
 \description{
 Create a new SpatRaster object as specified by a window (area of interest)
 over the original SpatRaster. This is a wrapper around \code{\link[terra:window]{terra::window()}}

@@ -29,7 +29,7 @@
 #'  [stars::read_ncdf()]? Default: `FALSE`. Only supported for
 #'  `driver="netCDF"`.
 #'@param ... Additional arguments not yet used.
-#'
+#' @returns target class "tar_stem" for use in a target pipeline
 #'@inheritParams targets::tar_target
 #'
 #'@note The `iteration` argument is unavailable because it is hard-coded to

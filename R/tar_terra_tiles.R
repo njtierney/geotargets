@@ -215,6 +215,7 @@ tar_terra_tiles_raw <- function(
 #'
 #' @note While this may have general use, it was created primarily for use
 #'   within [tar_terra_tiles()].
+#' @return SpatRaster
 #' @author Eric Scott
 #' @export
 #' @examples

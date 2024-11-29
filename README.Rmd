@@ -13,13 +13,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-# geotargets <a href="https://njtierney.github.io/geotargets/"><img src="man/figures/logo.svg" alt="geotargets website" align="right" height="139"/></a> 
+# geotargets <a href="http://geotargets.njtierney.com/"><img src="man/figures/logo.png" alt="geotargets website" align="right" height="139"/></a> 
 
 <!-- badges: start -->
-[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![R Targetopia](https://img.shields.io/badge/R_Targetopia-member-blue?style=flat&labelColor=gray)](https://wlandau.github.io/targetopia/)
 [![R-CMD-check](https://github.com/njtierney/geotargets/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/njtierney/geotargets/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/njtierney/geotargets/branch/master/graph/badge.svg)](https://app.codecov.io/gh/njtierney/geotargets?branch=master)
+[![pkgcheck](https://github.com/njtierney/geotargets/workflows/pkgcheck/badge.svg)](https://github.com/njtierney/geotargets/actions?query=workflow%3Apkgcheck)
 <!-- badges: end -->
 
 `geotargets` extends [`targets`](https://github.com/ropensci/targets) to work with geospatial data formats, such as rasters and vectors (e.g., shapefiles). Currently we support raster and vector formats for the [`terra`](https://github.com/rspatial/terra) package

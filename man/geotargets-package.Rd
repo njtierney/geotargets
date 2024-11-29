@@ -14,7 +14,7 @@ Provides extensions for various geospatial file formats, such as shapefiles and 
 Useful links:
 \itemize{
   \item \url{https://github.com/njtierney/geotargets}
-  \item \url{https://njtierney.github.io/geotargets/}
+  \item \url{http://geotargets.njtierney.com}
   \item Report bugs at \url{https://github.com/njtierney/geotargets/issues}
 }
 
