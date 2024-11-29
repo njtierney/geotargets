@@ -42,20 +42,20 @@
 #' @export
 #' @examples
 #' if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
-#'  targets::tar_dir({ # tar_dir() runs code from a temporary directory.
-#'    library(geotargets)
-#'    targets::tar_script({
-#'      list(
-#'        geotargets::tar_terra_rast(
-#'          terra_rast_example,
-#'          system.file("ex/elev.tif", package = "terra") |> terra::rast()
-#'        )
-#'      )
-#'    })
-#'    targets::tar_make()
-#'    x <- targets::tar_read(terra_rast_example)
-#'  })
-#'}
+#'   targets::tar_dir({ # tar_dir() runs code from a temporary directory.
+#'     library(geotargets)
+#'     targets::tar_script({
+#'       list(
+#'         geotargets::tar_terra_rast(
+#'           terra_rast_example,
+#'           system.file("ex/elev.tif", package = "terra") |> terra::rast()
+#'         )
+#'       )
+#'     })
+#'     targets::tar_make()
+#'     x <- targets::tar_read(terra_rast_example)
+#'   })
+#' }
 tar_terra_rast <- function(name,
                            command,
                            pattern = NULL,
@@ -77,113 +77,110 @@ tar_terra_rast <- function(name,
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue"),
                            description = targets::tar_option_get("description")) {
+  filetype <- filetype %||% "GTiff"
 
-    filetype <- filetype %||% "GTiff"
+  # check that filetype option is available
+  drv <- get_gdal_available_driver_list("raster")
+  filetype <- rlang::arg_match0(filetype, drv$name)
 
-    #check that filetype option is available
-    drv <- get_gdal_available_driver_list("raster")
-    filetype <- rlang::arg_match0(filetype, drv$name)
+  # currently only "drop" and "zip" are valid options
+  preserve_metadata <- preserve_metadata %||% "drop"
+  preserve_metadata <- rlang::arg_match0(preserve_metadata, c("drop", "zip"))
 
-    #currently only "drop" and "zip" are valid options
-    preserve_metadata <- preserve_metadata %||% "drop"
-    preserve_metadata <- rlang::arg_match0(preserve_metadata, c("drop", "zip"))
+  # ensure that user-passed `resources` doesn't include `custom_format`
+  if ("custom_format" %in% names(resources)) {
+    cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_rast}")
+  }
 
-    #ensure that user-passed `resources` doesn't include `custom_format`
-    if ("custom_format" %in% names(resources)) {
-        cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_rast}")
-    }
+  name <- targets::tar_deparse_language(substitute(name))
 
-    name <- targets::tar_deparse_language(substitute(name))
+  envir <- targets::tar_option_get("envir")
 
-    envir <- targets::tar_option_get("envir")
+  command <- targets::tar_tidy_eval(
+    expr = as.expression(substitute(command)),
+    envir = envir,
+    tidy_eval = tidy_eval
+  )
 
-    command <- targets::tar_tidy_eval(
-        expr = as.expression(substitute(command)),
-        envir = envir,
-        tidy_eval = tidy_eval
-    )
+  pattern <- targets::tar_tidy_eval(
+    expr = as.expression(substitute(pattern)),
+    envir = envir,
+    tidy_eval = tidy_eval
+  )
 
-    pattern <- targets::tar_tidy_eval(
-        expr = as.expression(substitute(pattern)),
-        envir = envir,
-        tidy_eval = tidy_eval
-    )
-
-    targets::tar_target_raw(
-        name = name,
-        command = command,
-        pattern = pattern,
-        packages = packages,
-        library = library,
-        format = targets::tar_format(
-            read = tar_rast_read(preserve_metadata = preserve_metadata),
-            write = tar_rast_write(filetype = filetype, gdal = gdal, preserve_metadata = preserve_metadata),
-            marshal = function(object) terra::wrap(object),
-            unmarshal = function(object) terra::unwrap(object),
-            substitute = list(filetype = filetype, gdal = gdal, preserve_metadata = preserve_metadata)
-        ),
-        repository = repository,
-        iteration = "list", #only "list" works right now
-        error = error,
-        memory = memory,
-        garbage_collection = garbage_collection,
-        deployment = deployment,
-        priority = priority,
-        resources = resources,
-        storage = storage,
-        retrieval = retrieval,
-        cue = cue,
-        description = description
-    )
+  targets::tar_target_raw(
+    name = name,
+    command = command,
+    pattern = pattern,
+    packages = packages,
+    library = library,
+    format = targets::tar_format(
+      read = tar_rast_read(preserve_metadata = preserve_metadata),
+      write = tar_rast_write(filetype = filetype, gdal = gdal, preserve_metadata = preserve_metadata),
+      marshal = function(object) terra::wrap(object),
+      unmarshal = function(object) terra::unwrap(object),
+      substitute = list(filetype = filetype, gdal = gdal, preserve_metadata = preserve_metadata)
+    ),
+    repository = repository,
+    iteration = "list", # only "list" works right now
+    error = error,
+    memory = memory,
+    garbage_collection = garbage_collection,
+    deployment = deployment,
+    priority = priority,
+    resources = resources,
+    storage = storage,
+    retrieval = retrieval,
+    cue = cue,
+    description = description
+  )
 }
 
 tar_rast_read <- function(preserve_metadata) {
-    switch(
-        preserve_metadata,
-        zip = function(path) {
-            tmp <- withr::local_tempdir()
-            zip::unzip(zipfile = path, exdir = tmp)
-            terra::rast(file.path(tmp, basename(path)))
-        },
-        drop = function(path) terra::rast(path)
-    )
+  switch(preserve_metadata,
+    zip = function(path) {
+      tmp <- withr::local_tempdir()
+      zip::unzip(zipfile = path, exdir = tmp)
+      terra::rast(file.path(tmp, basename(path)))
+    },
+    drop = function(path) terra::rast(path)
+  )
 }
 
 tar_rast_write <- function(filetype, gdal, preserve_metadata) {
-    switch(
-        preserve_metadata,
-        zip = function(object, path) {
-            #write the raster in a fresh local tempdir() that disappears when function is done
-            tmp <- withr::local_tempdir()
-            dir.create(file.path(tmp, dirname(path)), recursive = TRUE)
-            terra::writeRaster(
-                object,
-                file.path(tmp, path),
-                filetype = filetype,
-                overwrite = TRUE,
-                gdal = gdal
-            )
-            #package files into a zip file using `zip::zip()`
-            raster_files <- list.files(file.path(tmp, dirname(path)), full.names = TRUE)
-            zip::zip(
-                file.path(tmp, basename(path)),
-                files = raster_files,
-                compression_level = 1,
-                mode = "cherry-pick",
-                root = dirname(raster_files)[1]
-            )
-            #move the zip file to the expected place
-            file.copy(file.path(tmp, basename(path)), path)
-            unlink(file.path(tmp, basename(path)))
-        },
-        drop = function(object, path) {
-            terra::writeRaster(
-                object,
-                path,
-                filetype = filetype,
-                overwrite = TRUE,
-                gdal = gdal
-            )
-        }
-    )
+  switch(preserve_metadata,
+    zip = function(object, path) {
+      # write the raster in a fresh local tempdir() that disappears when function is done
+      tmp <- withr::local_tempdir()
+      dir.create(file.path(tmp, dirname(path)), recursive = TRUE)
+      terra::writeRaster(
+        object,
+        file.path(tmp, path),
+        filetype = filetype,
+        overwrite = TRUE,
+        gdal = gdal
+      )
+      # package files into a zip file using `zip::zip()`
+      raster_files <- list.files(file.path(tmp, dirname(path)), full.names = TRUE)
+      zip::zip(
+        file.path(tmp, basename(path)),
+        files = raster_files,
+        compression_level = 1,
+        mode = "cherry-pick",
+        root = dirname(raster_files)[1]
+      )
+      # move the zip file to the expected place
+      file.copy(file.path(tmp, basename(path)), path)
+      unlink(file.path(tmp, basename(path)))
+    },
+    drop = function(object, path) {
+      terra::writeRaster(
+        object,
+        path,
+        filetype = filetype,
+        overwrite = TRUE,
+        gdal = gdal
+      )
+    }
+  )
 }

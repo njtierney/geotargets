@@ -77,78 +77,78 @@ tar_terra_vect <- function(name,
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue"),
                            description = targets::tar_option_get("description")) {
-    filetype <- filetype %||% "GeoJSON"
-    gdal <- gdal %||% "ENCODING=UTF-8"
+  filetype <- filetype %||% "GeoJSON"
+  gdal <- gdal %||% "ENCODING=UTF-8"
 
-    #Check that filetype is available
-    drv <- get_gdal_available_driver_list("vector")
-    filetype <- rlang::arg_match0(filetype, drv$name)
+  # Check that filetype is available
+  drv <- get_gdal_available_driver_list("vector")
+  filetype <- rlang::arg_match0(filetype, drv$name)
 
-    if (filetype == "ESRI Shapefile") {
-        check_gdal_shz(min_version = "3.1")
-    }
+  if (filetype == "ESRI Shapefile") {
+    check_gdal_shz(min_version = "3.1")
+  }
 
-    #ensure that user-passed `resources` doesn't include `custom_format`
-    if ("custom_format" %in% names(resources)) {
-        cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_vect}")
-    }
+  # ensure that user-passed `resources` doesn't include `custom_format`
+  if ("custom_format" %in% names(resources)) {
+    cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_vect}")
+  }
 
-    name <- targets::tar_deparse_language(substitute(name))
+  name <- targets::tar_deparse_language(substitute(name))
 
-    envir <- targets::tar_option_get("envir")
+  envir <- targets::tar_option_get("envir")
 
-    command <- targets::tar_tidy_eval(
-        expr = as.expression(substitute(command)),
-        envir = envir,
-        tidy_eval = tidy_eval
-    )
-    pattern <- targets::tar_tidy_eval(
-        expr = as.expression(substitute(pattern)),
-        envir = envir,
-        tidy_eval = tidy_eval
-    )
+  command <- targets::tar_tidy_eval(
+    expr = as.expression(substitute(command)),
+    envir = envir,
+    tidy_eval = tidy_eval
+  )
+  pattern <- targets::tar_tidy_eval(
+    expr = as.expression(substitute(pattern)),
+    envir = envir,
+    tidy_eval = tidy_eval
+  )
 
-    targets::tar_target_raw(
-        name = name,
-        command = command,
-        pattern = pattern,
-        packages = packages,
-        library = library,
-        format = targets::tar_format(
-            read = function(path) {
-                if (filetype == "ESRI Shapefile") {
-                    terra::vect(paste0("/vsizip/{", path, "}"))
-                } else {
-                    terra::vect(path)
-                }
-            },
-            write = function(object, path) {
-                terra::writeVector(
-                    object,
-                    filename = ifelse(filetype == "ESRI Shapefile", paste0(path, ".shz"), path),
-                    filetype = filetype,
-                    overwrite = TRUE,
-                    options = gdal
-                )
-                if (filetype == "ESRI Shapefile") {
-                    file.rename(paste0(path, ".shz"), path)
-                }
-            },
-            marshal = function(object) terra::wrap(object),
-            unmarshal = function(object) terra::unwrap(object),
-            substitute = list(filetype = filetype, gdal = gdal)
-        ),
-        repository = repository,
-        iteration = "list",  #only "list" works for now
-        error = error,
-        memory = memory,
-        garbage_collection = garbage_collection,
-        deployment = deployment,
-        priority = priority,
-        resources =  resources,
-        storage = storage,
-        retrieval = retrieval,
-        cue = cue,
-        description = description
-    )
+  targets::tar_target_raw(
+    name = name,
+    command = command,
+    pattern = pattern,
+    packages = packages,
+    library = library,
+    format = targets::tar_format(
+      read = function(path) {
+        if (filetype == "ESRI Shapefile") {
+          terra::vect(paste0("/vsizip/{", path, "}"))
+        } else {
+          terra::vect(path)
+        }
+      },
+      write = function(object, path) {
+        terra::writeVector(
+          object,
+          filename = ifelse(filetype == "ESRI Shapefile", paste0(path, ".shz"), path),
+          filetype = filetype,
+          overwrite = TRUE,
+          options = gdal
+        )
+        if (filetype == "ESRI Shapefile") {
+          file.rename(paste0(path, ".shz"), path)
+        }
+      },
+      marshal = function(object) terra::wrap(object),
+      unmarshal = function(object) terra::unwrap(object),
+      substitute = list(filetype = filetype, gdal = gdal)
+    ),
+    repository = repository,
+    iteration = "list", # only "list" works for now
+    error = error,
+    memory = memory,
+    garbage_collection = garbage_collection,
+    deployment = deployment,
+    priority = priority,
+    resources = resources,
+    storage = storage,
+    retrieval = retrieval,
+    cue = cue,
+    description = description
+  )
 }

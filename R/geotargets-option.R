@@ -41,45 +41,42 @@
 #' @export
 #' @examples
 #' if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
-#'  targets::tar_dir({ # tar_dir() runs code from a temporary directory.
-#'    library(geotargets)
-#'   op <- getOption("geotargets.gdal.raster.driver")
-#'   withr::defer(options("geotargets.gdal.raster.driver" = op))
-#'   geotargets_option_set(gdal_raster_driver = "COG")
-#'    targets::tar_script({
-#'      list(
-#'        geotargets::tar_terra_rast(
-#'          terra_rast_example,
-#'          system.file("ex/elev.tif", package = "terra") |> terra::rast()
-#'        )
-#'      )
-#'    })
-#'    targets::tar_make()
-#'    x <- targets::tar_read(terra_rast_example)
-#'  })
-#'}
+#'   targets::tar_dir({ # tar_dir() runs code from a temporary directory.
+#'     library(geotargets)
+#'     op <- getOption("geotargets.gdal.raster.driver")
+#'     withr::defer(options("geotargets.gdal.raster.driver" = op))
+#'     geotargets_option_set(gdal_raster_driver = "COG")
+#'     targets::tar_script({
+#'       list(
+#'         geotargets::tar_terra_rast(
+#'           terra_rast_example,
+#'           system.file("ex/elev.tif", package = "terra") |> terra::rast()
+#'         )
+#'       )
+#'     })
+#'     targets::tar_make()
+#'     x <- targets::tar_read(terra_rast_example)
+#'   })
+#' }
 #'
-geotargets_option_set <- function(
-        gdal_raster_driver = NULL,
-        gdal_raster_creation_options = NULL,
-        gdal_vector_driver = NULL,
-        gdal_vector_creation_options = NULL,
-        terra_preserve_metadata = NULL
-) {
-    # TODO do this programmatically with formals() or something?  `options()` also accepts a named list
-    options(
-        "geotargets.gdal.raster.driver" = gdal_raster_driver %||%
-            geotargets_option_get("gdal.raster.driver"),
-        "geotargets.gdal.raster.creation.options" = gdal_raster_creation_options %||%
-            geotargets_option_get("gdal.raster.creation.options"),
-        "geotargets.gdal.vector.driver" = gdal_vector_driver %||%
-            geotargets_option_get("gdal.vector.driver"),
-        "geotargets.gdal.vector.creation.options" = gdal_vector_creation_options %||%
-            geotargets_option_get("gdal.vector.creation.options"),
-        "geotargets.terra.preserve.metadata" = terra_preserve_metadata %||%
-            geotargets_option_get("terra.preserve.metadata")
-    )
-
+geotargets_option_set <- function(gdal_raster_driver = NULL,
+                                  gdal_raster_creation_options = NULL,
+                                  gdal_vector_driver = NULL,
+                                  gdal_vector_creation_options = NULL,
+                                  terra_preserve_metadata = NULL) {
+  # TODO do this programmatically with formals() or something?  `options()` also accepts a named list
+  options(
+    "geotargets.gdal.raster.driver" = gdal_raster_driver %||%
+      geotargets_option_get("gdal.raster.driver"),
+    "geotargets.gdal.raster.creation.options" = gdal_raster_creation_options %||%
+      geotargets_option_get("gdal.raster.creation.options"),
+    "geotargets.gdal.vector.driver" = gdal_vector_driver %||%
+      geotargets_option_get("gdal.vector.driver"),
+    "geotargets.gdal.vector.creation.options" = gdal_vector_creation_options %||%
+      geotargets_option_get("gdal.vector.creation.options"),
+    "geotargets.terra.preserve.metadata" = terra_preserve_metadata %||%
+      geotargets_option_get("terra.preserve.metadata")
+  )
 }
 
 #' @param name character; option name to get.
@@ -90,24 +87,24 @@ geotargets_option_set <- function(
 #' geotargets_option_get("gdal.raster.creation.options")
 #' @export
 geotargets_option_get <- function(name) {
-    option_name <- geotargets_repair_option_name(name)
-    # check if `name` is one of the possible options
-    option_name <-
-        rlang::arg_match0(option_name, c(
-            "geotargets.gdal.raster.driver",
-            "geotargets.gdal.raster.creation.options",
-            "geotargets.gdal.vector.driver",
-            "geotargets.gdal.vector.creation.options",
-            "geotargets.terra.preserve.metadata"
-        ))
+  option_name <- geotargets_repair_option_name(name)
+  # check if `name` is one of the possible options
+  option_name <-
+    rlang::arg_match0(option_name, c(
+      "geotargets.gdal.raster.driver",
+      "geotargets.gdal.raster.creation.options",
+      "geotargets.gdal.vector.driver",
+      "geotargets.gdal.vector.creation.options",
+      "geotargets.terra.preserve.metadata"
+    ))
 
-    env_name <- gsub("\\.", "_", toupper(option_name))
-    opt <- getOption(option_name, default = Sys.getenv(env_name))
+  env_name <- gsub("\\.", "_", toupper(option_name))
+  opt <- getOption(option_name, default = Sys.getenv(env_name))
 
-    #replace empty string from Sys.getenv default with NULL
-    if (length(opt) == 1 && opt == "") {
-        opt <- NULL
-    }
-    #return
-    opt
+  # replace empty string from Sys.getenv default with NULL
+  if (length(opt) == 1 && opt == "") {
+    opt <- NULL
+  }
+  # return
+  opt
 }

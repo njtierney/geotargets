@@ -72,55 +72,55 @@ tar_terra_sprc <- function(name,
                            retrieval = targets::tar_option_get("retrieval"),
                            cue = targets::tar_option_get("cue"),
                            description = targets::tar_option_get("description")) {
-    #ensure that user-passed `resources` doesn't include `custom_format`
-    if ("custom_format" %in% names(resources)) {
-        cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_sprc}")
-    }
+  # ensure that user-passed `resources` doesn't include `custom_format`
+  if ("custom_format" %in% names(resources)) {
+    cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_sprc}")
+  }
 
-    gdal <- gdal %||% character(0)
-    filetype <- filetype %||% "GTiff"
+  gdal <- gdal %||% character(0)
+  filetype <- filetype %||% "GTiff"
 
-    # check that filetype option is available
-    drv <- get_gdal_available_driver_list("raster")
-    filetype <- rlang::arg_match0(filetype, drv$name)
+  # check that filetype option is available
+  drv <- get_gdal_available_driver_list("raster")
+  filetype <- rlang::arg_match0(filetype, drv$name)
 
-    name <- targets::tar_deparse_language(substitute(name))
+  name <- targets::tar_deparse_language(substitute(name))
 
-    envir <- targets::tar_option_get("envir")
+  envir <- targets::tar_option_get("envir")
 
-    command <- targets::tar_tidy_eval(
-        expr = as.expression(substitute(command)),
-        envir = envir,
-        tidy_eval = tidy_eval
-    )
+  command <- targets::tar_tidy_eval(
+    expr = as.expression(substitute(command)),
+    envir = envir,
+    tidy_eval = tidy_eval
+  )
 
-    pattern <- targets::tar_tidy_eval(
-        expr = as.expression(substitute(pattern)),
-        envir = envir,
-        tidy_eval = tidy_eval
-    )
+  pattern <- targets::tar_tidy_eval(
+    expr = as.expression(substitute(pattern)),
+    envir = envir,
+    tidy_eval = tidy_eval
+  )
 
-    tar_terra_collection_raw(
-        name = name,
-        command = command,
-        pattern = pattern,
-        type = "sprc",
-        filetype = filetype,
-        gdal = gdal,
-        packages = packages,
-        library = library,
-        repository = repository,
-        error = error,
-        memory = memory,
-        garbage_collection = garbage_collection,
-        deployment = deployment,
-        priority = priority,
-        resources = resources,
-        storage = storage,
-        retrieval = retrieval,
-        cue = cue,
-        description = description
-    )
+  tar_terra_collection_raw(
+    name = name,
+    command = command,
+    pattern = pattern,
+    type = "sprc",
+    filetype = filetype,
+    gdal = gdal,
+    packages = packages,
+    library = library,
+    repository = repository,
+    error = error,
+    memory = memory,
+    garbage_collection = garbage_collection,
+    deployment = deployment,
+    priority = priority,
+    resources = resources,
+    storage = storage,
+    retrieval = retrieval,
+    cue = cue,
+    description = description
+  )
 }
 
 
@@ -158,7 +158,7 @@ tar_terra_sprc <- function(name,
 #'     library(geotargets)
 #'     targets::tar_script({
 #'       elev_scale <- function(z = 1) {
-#'           terra::rast(system.file("ex", "elev.tif", package = "terra")) * z
+#'         terra::rast(system.file("ex", "elev.tif", package = "terra")) * z
 #'       }
 #'       list(
 #'         tar_terra_sds(
@@ -195,137 +195,134 @@ tar_terra_sds <- function(name,
                           retrieval = targets::tar_option_get("retrieval"),
                           cue = targets::tar_option_get("cue"),
                           description = targets::tar_option_get("description")) {
-    #ensure that user-passed `resources` doesn't include `custom_format`
-    if ("custom_format" %in% names(resources)) {
-        cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_sprc}")
-    }
+  # ensure that user-passed `resources` doesn't include `custom_format`
+  if ("custom_format" %in% names(resources)) {
+    cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_sprc}")
+  }
 
-    gdal <- gdal %||% character(0)
-    filetype <- filetype %||% "GTiff"
+  gdal <- gdal %||% character(0)
+  filetype <- filetype %||% "GTiff"
 
-    # check that filetype option is available
-    drv <- get_gdal_available_driver_list("raster")
-    filetype <- rlang::arg_match0(filetype, drv$name)
+  # check that filetype option is available
+  drv <- get_gdal_available_driver_list("raster")
+  filetype <- rlang::arg_match0(filetype, drv$name)
 
-    name <- targets::tar_deparse_language(substitute(name))
+  name <- targets::tar_deparse_language(substitute(name))
 
-    envir <- targets::tar_option_get("envir")
+  envir <- targets::tar_option_get("envir")
 
-    command <- targets::tar_tidy_eval(
-        expr = as.expression(substitute(command)),
-        envir = envir,
-        tidy_eval = tidy_eval
-    )
+  command <- targets::tar_tidy_eval(
+    expr = as.expression(substitute(command)),
+    envir = envir,
+    tidy_eval = tidy_eval
+  )
 
-    pattern <- targets::tar_tidy_eval(
-        expr = as.expression(substitute(pattern)),
-        envir = envir,
-        tidy_eval = tidy_eval
-    )
+  pattern <- targets::tar_tidy_eval(
+    expr = as.expression(substitute(pattern)),
+    envir = envir,
+    tidy_eval = tidy_eval
+  )
 
-    tar_terra_collection_raw(
-        name = name,
-        command = command,
-        type = "sds",
-        filetype = filetype,
-        pattern = pattern,
-        gdal = gdal,
-        packages = packages,
-        library = library,
-        repository = repository,
-        error = error,
-        memory = memory,
-        garbage_collection = garbage_collection,
-        deployment = deployment,
-        priority = priority,
-        resources = resources,
-        storage = storage,
-        retrieval = retrieval,
-        cue = cue,
-        description = description
-    )
+  tar_terra_collection_raw(
+    name = name,
+    command = command,
+    type = "sds",
+    filetype = filetype,
+    pattern = pattern,
+    gdal = gdal,
+    packages = packages,
+    library = library,
+    repository = repository,
+    error = error,
+    memory = memory,
+    garbage_collection = garbage_collection,
+    deployment = deployment,
+    priority = priority,
+    resources = resources,
+    storage = storage,
+    retrieval = retrieval,
+    cue = cue,
+    description = description
+  )
 }
 
 
 
 
 #' @noRd
-tar_terra_collection_raw <- function(
-        name,
-        command,
-        type = type,
-        filetype = geotargets_option_get("gdal.raster.driver"),
-        gdal = geotargets_option_get("gdal.raster.creation.options"),
-        pattern = NULL,
-        packages = targets::tar_option_get("packages"),
-        library = targets::tar_option_get("library"),
-        repository = targets::tar_option_get("repository"),
-        error = targets::tar_option_get("error"),
-        memory = targets::tar_option_get("memory"),
-        garbage_collection = targets::tar_option_get("garbage_collection"),
-        deployment = targets::tar_option_get("deployment"),
-        priority = targets::tar_option_get("priority"),
-        resources = targets::tar_option_get("resources"),
-        storage = targets::tar_option_get("storage"),
-        retrieval = targets::tar_option_get("retrieval"),
-        cue = targets::tar_option_get("cue"),
-        description = targets::tar_option_get("description")
-) {
-
-    targets::tar_target_raw(
-        name = name,
-        command = command,
-        pattern = pattern,
-        packages = packages,
-        library = library,
-        format = targets::tar_format(
-            read = switch(type,
-                          "sprc" = function(path) terra::sprc(path),
-                          "sds" = function(path) terra::sds(path)
-            ),
-            write = function(object, path) {
-                for (i in seq(object)) {
-                    if (i > 1) {
-                        opt <- "APPEND_SUBDATASET=YES"
-                    } else {
-                        opt <- ""
-                    }
-                    withCallingHandlers(
-                        warning = function(cnd) {
-                            # The warning message "[rast] skipped sub-datasets..."
-                            # is printed because the return value of writeRaster()
-                            # is rast(<output>).  In this context it is not
-                            # informative since the read function is sprc(), not
-                            # rast()
-                            if (grepl("\\[rast\\] skipped sub-datasets", cnd$message)) {
-                                rlang::cnd_muffle(cnd)
-                            }
-                        },
-                        terra::writeRaster(
-                            x = object[i],
-                            filename = path,
-                            filetype = filetype,
-                            overwrite = (i == 1),
-                            gdal = c(opt, gdal)
-                        )
-                    )
-                }
+tar_terra_collection_raw <- function(name,
+                                     command,
+                                     type = type,
+                                     filetype = geotargets_option_get("gdal.raster.driver"),
+                                     gdal = geotargets_option_get("gdal.raster.creation.options"),
+                                     pattern = NULL,
+                                     packages = targets::tar_option_get("packages"),
+                                     library = targets::tar_option_get("library"),
+                                     repository = targets::tar_option_get("repository"),
+                                     error = targets::tar_option_get("error"),
+                                     memory = targets::tar_option_get("memory"),
+                                     garbage_collection = targets::tar_option_get("garbage_collection"),
+                                     deployment = targets::tar_option_get("deployment"),
+                                     priority = targets::tar_option_get("priority"),
+                                     resources = targets::tar_option_get("resources"),
+                                     storage = targets::tar_option_get("storage"),
+                                     retrieval = targets::tar_option_get("retrieval"),
+                                     cue = targets::tar_option_get("cue"),
+                                     description = targets::tar_option_get("description")) {
+  targets::tar_target_raw(
+    name = name,
+    command = command,
+    pattern = pattern,
+    packages = packages,
+    library = library,
+    format = targets::tar_format(
+      read = switch(type,
+        "sprc" = function(path) terra::sprc(path),
+        "sds" = function(path) terra::sds(path)
+      ),
+      write = function(object, path) {
+        for (i in seq(object)) {
+          if (i > 1) {
+            opt <- "APPEND_SUBDATASET=YES"
+          } else {
+            opt <- ""
+          }
+          withCallingHandlers(
+            warning = function(cnd) {
+              # The warning message "[rast] skipped sub-datasets..."
+              # is printed because the return value of writeRaster()
+              # is rast(<output>).  In this context it is not
+              # informative since the read function is sprc(), not
+              # rast()
+              if (grepl("\\[rast\\] skipped sub-datasets", cnd$message)) {
+                rlang::cnd_muffle(cnd)
+              }
             },
-            marshal = function(object) terra::wrap(object),
-            unmarshal = function(object) terra::unwrap(object),
-            substitute = list(type = type, gdal = gdal, filetype = filetype)
-        ),
-        repository = repository,
-        iteration = "list",
-        error = error,
-        memory = memory,
-        garbage_collection = garbage_collection,
-        deployment = deployment,
-        priority = priority,
-        resources = resources,
-        storage = storage,
-        retrieval = retrieval,
-        cue = cue,
-        description = description
-    )
+            terra::writeRaster(
+              x = object[i],
+              filename = path,
+              filetype = filetype,
+              overwrite = (i == 1),
+              gdal = c(opt, gdal)
+            )
+          )
+        }
+      },
+      marshal = function(object) terra::wrap(object),
+      unmarshal = function(object) terra::unwrap(object),
+      substitute = list(type = type, gdal = gdal, filetype = filetype)
+    ),
+    repository = repository,
+    iteration = "list",
+    error = error,
+    memory = memory,
+    garbage_collection = garbage_collection,
+    deployment = deployment,
+    priority = priority,
+    resources = resources,
+    storage = storage,
+    retrieval = retrieval,
+    cue = cue,
+    description = description
+  )
 }

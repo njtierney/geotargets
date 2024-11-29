@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 if (identical(Sys.getenv("NOT_CRAN", unset = "false"), "false")) {
   knitr::opts_chunk$set(eval = FALSE)
 }
-Sys.setenv(TAR_ASK="false")
+Sys.setenv(TAR_ASK = "false")
 ```
 
 ```{r setup}
@@ -47,8 +47,8 @@ The **extent** describes the four points that cover the area of a raster.
 The extent of a raster, `r`, is printed in the summary:
 
 ```{r}
-#example SpatRaster
-f <- system.file("ex/elev.tif", package="terra")
+# example SpatRaster
+f <- system.file("ex/elev.tif", package = "terra")
 r <- rast(f)
 r
 ```
@@ -174,10 +174,10 @@ This only works when the `SpatRaster` points to a file—in-memory rasters have 
 
 ```{r error=TRUE}
 sources(r)
-#force into memory
+# force into memory
 r2 <- r + 0
 sources(r2)
-#this now errors
+# this now errors
 tile_blocksize(r2)
 ```
 
@@ -192,30 +192,29 @@ We'll start by making a bigger raster to experiment with using `terra::disagg()`
 #| eval: true
 
 targets::tar_script({
-    # contents of _targets.R
-    library(targets)
-    library(geotargets)
-    library(terra)
-    geotargets_option_set(gdal_raster_driver = "COG")
-    list(
-        tar_target(
-            raster_file,
-            system.file("ex/elev.tif", package="terra"),
-            format = "file"
-        ),
-        tar_terra_rast(
-            r,
-            disagg(rast(raster_file), fact = 10)
-        ),
-        # add more layers
-        tar_terra_rast(
-            r_big,
-            c(r, r + 100, r * 10, r / 2),
-            memory = "transient"
-        )
+  # contents of _targets.R
+  library(targets)
+  library(geotargets)
+  library(terra)
+  geotargets_option_set(gdal_raster_driver = "COG")
+  list(
+    tar_target(
+      raster_file,
+      system.file("ex/elev.tif", package = "terra"),
+      format = "file"
+    ),
+    tar_terra_rast(
+      r,
+      disagg(rast(raster_file), fact = 10)
+    ),
+    # add more layers
+    tar_terra_rast(
+      r_big,
+      c(r, r + 100, r * 10, r / 2),
+      memory = "transient"
     )
+  )
 })
-
 ```
 
 ```{r}
@@ -228,21 +227,21 @@ library(geotargets)
 library(terra)
 geotargets_option_set(gdal_raster_driver = "COG")
 list(
-    tar_target(
-        raster_file,
-        system.file("ex/elev.tif", package="terra"),
-        format = "file"
-    ),
-    tar_terra_rast(
-        r,
-        disagg(rast(raster_file), fact = 10)
-    ),
-    # add more layers
-    tar_terra_rast(
-        r_big,
-        c(r, r + 100, r * 10, r / 2),
-        memory = "transient"
-    )
+  tar_target(
+    raster_file,
+    system.file("ex/elev.tif", package = "terra"),
+    format = "file"
+  ),
+  tar_terra_rast(
+    r,
+    disagg(rast(raster_file), fact = 10)
+  ),
+  # add more layers
+  tar_terra_rast(
+    r_big,
+    c(r, r + 100, r * 10, r / 2),
+    memory = "transient"
+  )
 )
 ```
 
@@ -275,47 +274,46 @@ The process that happens from here can be thought of as `split-apply-combine`.
 #| eval: true
 #| echo: false
 targets::tar_script({
-    # contents of _targets.R
-    library(targets)
-    library(geotargets)
-    library(terra)
-    geotargets_option_set(gdal_raster_driver = "COG")
-    tar_option_set(memory = "transient")
-    list(
-        tar_target(
-            raster_file,
-            system.file("ex/elev.tif", package="terra"),
-            format = "file"
-        ),
-        tar_terra_rast(
-            r,
-            disagg(rast(raster_file), fact = 10)
-        ),
-        tar_terra_rast(
-            r_big,
-            c(r, r + 100, r * 10, r / 2),
-            memory = "transient"
-        ),
-        tar_terra_tiles(
-            tiles,
-            raster = r_big,
-            tile_fun = tile_blocksize,
-            description = "split raster into tiles"
-        ),
-        tar_terra_rast(
-            tiles_mean,
-            app(tiles, \(x) mean(x, na.rm = TRUE)),
-            pattern = map(tiles),
-            description = "some computationaly intensive task performed on each tile"
-        ),
-        tar_terra_rast(
-            merged_mean,
-            merge(sprc(tiles_mean)),
-            description = "merge tiles into a single SpatRaster"
-        )
+  # contents of _targets.R
+  library(targets)
+  library(geotargets)
+  library(terra)
+  geotargets_option_set(gdal_raster_driver = "COG")
+  tar_option_set(memory = "transient")
+  list(
+    tar_target(
+      raster_file,
+      system.file("ex/elev.tif", package = "terra"),
+      format = "file"
+    ),
+    tar_terra_rast(
+      r,
+      disagg(rast(raster_file), fact = 10)
+    ),
+    tar_terra_rast(
+      r_big,
+      c(r, r + 100, r * 10, r / 2),
+      memory = "transient"
+    ),
+    tar_terra_tiles(
+      tiles,
+      raster = r_big,
+      tile_fun = tile_blocksize,
+      description = "split raster into tiles"
+    ),
+    tar_terra_rast(
+      tiles_mean,
+      app(tiles, \(x) mean(x, na.rm = TRUE)),
+      pattern = map(tiles),
+      description = "some computationaly intensive task performed on each tile"
+    ),
+    tar_terra_rast(
+      merged_mean,
+      merge(sprc(tiles_mean)),
+      description = "merge tiles into a single SpatRaster"
     )
+  )
 })
-
 ```
 
 ```{r}
@@ -329,37 +327,37 @@ library(terra)
 geotargets_option_set(gdal_raster_driver = "COG")
 tar_option_set(memory = "transient")
 list(
-    tar_target(
-        raster_file,
-        system.file("ex/elev.tif", package="terra"),
-        format = "file"
-    ),
-    tar_terra_rast(
-        r,
-        disagg(rast(raster_file), fact = 10)
-    ),
-    tar_terra_rast(
-        r_big,
-        c(r, r + 100, r * 10, r / 2),
-        memory = "transient"
-    ),
-    tar_terra_tiles(
-        tiles,
-        raster = r_big,
-        tile_fun = tile_blocksize,
-        description = "split raster into tiles"
-    ),
-    tar_terra_rast(
-        tiles_mean,
-        app(tiles, \(x) mean(x, na.rm = TRUE)),
-        pattern = map(tiles),
-        description = "some computationaly intensive task performed on each tile"
-    ),
-    tar_terra_rast(
-        merged_mean,
-        merge(sprc(tiles_mean)),
-        description = "merge tiles into a single SpatRaster"
-    )
+  tar_target(
+    raster_file,
+    system.file("ex/elev.tif", package = "terra"),
+    format = "file"
+  ),
+  tar_terra_rast(
+    r,
+    disagg(rast(raster_file), fact = 10)
+  ),
+  tar_terra_rast(
+    r_big,
+    c(r, r + 100, r * 10, r / 2),
+    memory = "transient"
+  ),
+  tar_terra_tiles(
+    tiles,
+    raster = r_big,
+    tile_fun = tile_blocksize,
+    description = "split raster into tiles"
+  ),
+  tar_terra_rast(
+    tiles_mean,
+    app(tiles, \(x) mean(x, na.rm = TRUE)),
+    pattern = map(tiles),
+    description = "some computationaly intensive task performed on each tile"
+  ),
+  tar_terra_rast(
+    merged_mean,
+    merge(sprc(tiles_mean)),
+    description = "merge tiles into a single SpatRaster"
+  )
 )
 ```
 
@@ -379,9 +377,9 @@ We can see from `tar_make()` output above and the plots below that `tiles` and `
 #| echo: true
 library(terra)
 tar_load(tiles_mean)
-op <- par(mfrow = c(2,2))
+op <- par(mfrow = c(2, 2))
 for (i in seq_along(tiles_mean)) {
-    plot(tiles_mean[[i]])
+  plot(tiles_mean[[i]])
 }
 par(op)
 ```

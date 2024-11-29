@@ -76,11 +76,11 @@ library(targets)
 tar_dir({ # tar_dir() runs code from a temporary directory.
   tar_script({
     library(geotargets)
-    
+
     get_elev <- function() {
-        terra::rast(system.file("ex", "elev.tif", package = "terra"))
+      terra::rast(system.file("ex", "elev.tif", package = "terra"))
     }
-    
+
     list(
       tar_terra_rast(
         terra_rast_example,
@@ -88,7 +88,7 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
       )
     )
   })
-  
+
   tar_make()
   x <- tar_read(terra_rast_example)
   x
@@ -103,13 +103,16 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
 tar_dir({ # tar_dir() runs code from a temporary directory.
   tar_script({
     library(geotargets)
-    
+
     lux_area <- function(projection = "EPSG:4326") {
-      terra::project(terra::vect(system.file("ex", "lux.shp",
-                                             package = "terra")),
-                     projection)
+      terra::project(
+        terra::vect(system.file("ex", "lux.shp",
+          package = "terra"
+        )),
+        projection
+      )
     }
-    
+
     list(
       tar_terra_vect(
         terra_vect_example,
@@ -117,7 +120,7 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
       )
     )
   })
-  
+
   tar_make()
   x <- tar_read(terra_vect_example)
   x
@@ -131,16 +134,15 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
 #| label: tar-terra-sprc
 tar_dir({ # tar_dir() runs code from a temporary directory.
   tar_script({
-    
     library(geotargets)
-    
+
     elev_scale <- function(z = 1, projection = "EPSG:4326") {
       terra::project(
         terra::rast(system.file("ex", "elev.tif", package = "terra")) * z,
         projection
       )
     }
-    
+
     list(
       tar_terra_sprc(
         raster_elevs,
@@ -153,7 +155,7 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
       )
     )
   })
-  
+
   tar_make()
   x <- tar_read(raster_elevs)
   x
@@ -169,7 +171,7 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
 tar_dir({ # tar_dir() runs code from a temporary directory.
   tar_script({
     library(geotargets)
-    
+
     list(
       tar_stars(
         test_stars,
@@ -177,7 +179,7 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
       )
     )
   })
-  
+
   tar_make()
   x <- tar_read(test_stars)
   x
