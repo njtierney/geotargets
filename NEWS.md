@@ -1,3 +1,5 @@
+# geotargets (development version)
+
 # geotargets 0.2.0 (29 November 2024)
 
 * Created `tar_stars()` and `tar_stars_proxy()` that create `stars` and `stars_proxy` objects, respectively.
