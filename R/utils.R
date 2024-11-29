@@ -50,7 +50,9 @@ check_user_resources <- function(resources,
         cli::cli_abort(
             message = c(
                 "{.val custom_format} cannot be supplied to targets created \\
-                with {.fn tar_terra_rast}"
+                with {.fn tar_terra_rast}",
+                "We see in {.code names(resources)}:",
+                "{.val {names(resources)}}"
                 ),
             call = call
         )
