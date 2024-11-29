@@ -99,23 +99,23 @@ rasters<a class="anchor" aria-label="anchor" href="#tar_terra_rast-targets-with-
 <span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_set.html" class="external-link">tar_option_set</a></span><span class="op">(</span>packages <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/geotargets-options.html">geotargets_option_set</a></span><span class="op">(</span>gdal_raster_driver <span class="op">=</span> <span class="st">"COG"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target</a></span><span class="op">(</span></span>
-<span>        <span class="va">tif_file</span>,</span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"ex/elev.tif"</span>, package <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span>,</span>
-<span>        format <span class="op">=</span> <span class="st">"file"</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="../reference/tar_terra_rast.html">tar_terra_rast</a></span><span class="op">(</span></span>
-<span>        <span class="va">r</span>,</span>
-<span>        <span class="op">{</span></span>
-<span>            <span class="va">rast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="va">tif_file</span><span class="op">)</span></span>
-<span>            <span class="fu"><a href="https://rspatial.github.io/terra/reference/units.html" class="external-link">units</a></span><span class="op">(</span><span class="va">rast</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"m"</span></span>
-<span>            <span class="va">rast</span></span>
-<span>        <span class="op">}</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="../reference/tar_terra_rast.html">tar_terra_rast</a></span><span class="op">(</span></span>
-<span>        <span class="va">r_agg</span>,</span>
-<span>        <span class="fu"><a href="https://rspatial.github.io/terra/reference/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="va">r</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">tif_file</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"ex/elev.tif"</span>, package <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span>,</span>
+<span>    format <span class="op">=</span> <span class="st">"file"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/tar_terra_rast.html">tar_terra_rast</a></span><span class="op">(</span></span>
+<span>    <span class="va">r</span>,</span>
+<span>    <span class="op">{</span></span>
+<span>      <span class="va">rast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="va">tif_file</span><span class="op">)</span></span>
+<span>      <span class="fu"><a href="https://rspatial.github.io/terra/reference/units.html" class="external-link">units</a></span><span class="op">(</span><span class="va">rast</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"m"</span></span>
+<span>      <span class="va">rast</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/tar_terra_rast.html">tar_terra_rast</a></span><span class="op">(</span></span>
+<span>    <span class="va">r_agg</span>,</span>
+<span>    <span class="fu"><a href="https://rspatial.github.io/terra/reference/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="va">r</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Above is a basic example showing the use of
 <code><a href="../reference/tar_terra_rast.html">tar_terra_rast()</a></code> in a targets pipeline. The command for
@@ -129,7 +129,7 @@ set this option on a target-by-target basis with the
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html" class="external-link">tar_make</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">▶ dispatched target tif_file</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target tif_file [0.009 seconds, 7.994 kilobytes]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target tif_file [0.01 seconds, 7.994 kilobytes]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ▶ dispatched target r</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target r [0.01 seconds, 10.433 kilobytes]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ▶ dispatched target r_agg</span></span></span>
@@ -181,26 +181,26 @@ default <code>preserve_metadata = "drop"</code>.</p>
 <span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_set.html" class="external-link">tar_option_set</a></span><span class="op">(</span>packages <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/geotargets-options.html">geotargets_option_set</a></span><span class="op">(</span>gdal_raster_driver <span class="op">=</span> <span class="st">"COG"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target</a></span><span class="op">(</span></span>
-<span>        <span class="va">tif_file</span>,</span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"ex/elev.tif"</span>, package <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span>,</span>
-<span>        format <span class="op">=</span> <span class="st">"file"</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="../reference/tar_terra_rast.html">tar_terra_rast</a></span><span class="op">(</span></span>
-<span>        <span class="va">r</span>,</span>
-<span>        <span class="op">{</span></span>
-<span>            <span class="va">rast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="va">tif_file</span><span class="op">)</span></span>
-<span>            <span class="fu"><a href="https://rspatial.github.io/terra/reference/units.html" class="external-link">units</a></span><span class="op">(</span><span class="va">rast</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"m"</span></span>
-<span>            <span class="va">rast</span></span>
-<span>        <span class="op">}</span>,</span>
-<span>        preserve_metadata <span class="op">=</span> <span class="st">"zip"</span></span>
-<span>    <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">tif_file</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"ex/elev.tif"</span>, package <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span>,</span>
+<span>    format <span class="op">=</span> <span class="st">"file"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/tar_terra_rast.html">tar_terra_rast</a></span><span class="op">(</span></span>
+<span>    <span class="va">r</span>,</span>
+<span>    <span class="op">{</span></span>
+<span>      <span class="va">rast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="va">tif_file</span><span class="op">)</span></span>
+<span>      <span class="fu"><a href="https://rspatial.github.io/terra/reference/units.html" class="external-link">units</a></span><span class="op">(</span><span class="va">rast</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"m"</span></span>
+<span>      <span class="va">rast</span></span>
+<span>    <span class="op">}</span>,</span>
+<span>    preserve_metadata <span class="op">=</span> <span class="st">"zip"</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html" class="external-link">tar_make</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✔ skipped target tif_file</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ▶ dispatched target r</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target r [0.01 seconds, 10.252 kilobytes]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target r [0.012 seconds, 10.252 kilobytes]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ▶ ended pipeline [0.12 seconds]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; </span></span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/units.html" class="external-link">units</a></span><span class="op">(</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_read.html" class="external-link">tar_read</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">)</span></span>
@@ -223,19 +223,19 @@ specific options with <code><a href="../reference/geotargets-options.html">geota
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/njtierney/geotargets" class="external-link">geotargets</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/geotargets-options.html">geotargets_option_set</a></span><span class="op">(</span>gdal_vector_driver <span class="op">=</span> <span class="st">"GeoJSON"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target</a></span><span class="op">(</span></span>
-<span>        <span class="va">vect_file</span>,</span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"ex"</span>, <span class="st">"lux.shp"</span>, package <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span>,</span>
-<span>        format <span class="op">=</span> <span class="st">"file"</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="../reference/tar_terra_vect.html">tar_terra_vect</a></span><span class="op">(</span></span>
-<span>        <span class="va">v</span>,</span>
-<span>        <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="va">vect_file</span><span class="op">)</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="../reference/tar_terra_vect.html">tar_terra_vect</a></span><span class="op">(</span></span>
-<span>        <span class="va">v_proj</span>,</span>
-<span>        <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/project.html" class="external-link">project</a></span><span class="op">(</span><span class="va">v</span>, <span class="st">"EPSG:2196"</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">vect_file</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"ex"</span>, <span class="st">"lux.shp"</span>, package <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span>,</span>
+<span>    format <span class="op">=</span> <span class="st">"file"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/tar_terra_vect.html">tar_terra_vect</a></span><span class="op">(</span></span>
+<span>    <span class="va">v</span>,</span>
+<span>    <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="va">vect_file</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/tar_terra_vect.html">tar_terra_vect</a></span><span class="op">(</span></span>
+<span>    <span class="va">v_proj</span>,</span>
+<span>    <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/project.html" class="external-link">project</a></span><span class="op">(</span><span class="va">v</span>, <span class="st">"EPSG:2196"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html" class="external-link">tar_make</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -286,42 +286,42 @@ one file per target rule.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/targets/" class="external-link">targets</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/njtierney/geotargets" class="external-link">geotargets</a></span><span class="op">)</span></span>
 <span><span class="va">elev_scale</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">raster</span>, <span class="va">z</span> <span class="op">=</span> <span class="fl">1</span>, <span class="va">projection</span> <span class="op">=</span> <span class="st">"EPSG:4326"</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/project.html" class="external-link">project</a></span><span class="op">(</span></span>
-<span>        <span class="va">raster</span> <span class="op">*</span> <span class="va">z</span>,</span>
-<span>        <span class="va">projection</span></span>
-<span>    <span class="op">)</span></span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/project.html" class="external-link">project</a></span><span class="op">(</span></span>
+<span>    <span class="va">raster</span> <span class="op">*</span> <span class="va">z</span>,</span>
+<span>    <span class="va">projection</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_set.html" class="external-link">tar_option_set</a></span><span class="op">(</span>packages <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/geotargets-options.html">geotargets_option_set</a></span><span class="op">(</span>gdal_raster_driver <span class="op">=</span> <span class="st">"GTiff"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target</a></span><span class="op">(</span></span>
-<span>        <span class="va">elev_file</span>,</span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"ex"</span>, <span class="st">"elev.tif"</span>, package <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span>,</span>
-<span>        format <span class="op">=</span> <span class="st">"file"</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target</a></span><span class="op">(</span></span>
-<span>        <span class="va">r</span>,</span>
-<span>        <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="va">elev_file</span><span class="op">)</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="../reference/tar_terra_sprc.html">tar_terra_sprc</a></span><span class="op">(</span></span>
-<span>        <span class="va">raster_elevs</span>,</span>
-<span>        <span class="co"># two rasters, one unaltered, one scaled by factor of 2 and</span></span>
-<span>        <span class="co"># reprojected to interrupted Goode homolosine</span></span>
-<span>        <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/sprc.html" class="external-link">sprc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>            <span class="fu">elev_scale</span><span class="op">(</span><span class="va">r</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>            <span class="fu">elev_scale</span><span class="op">(</span><span class="va">r</span>, <span class="fl">2</span>, <span class="st">"+proj=igh"</span><span class="op">)</span></span>
-<span>        <span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">elev_file</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"ex"</span>, <span class="st">"elev.tif"</span>, package <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span>,</span>
+<span>    format <span class="op">=</span> <span class="st">"file"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">r</span>,</span>
+<span>    <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="va">elev_file</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/tar_terra_sprc.html">tar_terra_sprc</a></span><span class="op">(</span></span>
+<span>    <span class="va">raster_elevs</span>,</span>
+<span>    <span class="co"># two rasters, one unaltered, one scaled by factor of 2 and</span></span>
+<span>    <span class="co"># reprojected to interrupted Goode homolosine</span></span>
+<span>    <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/sprc.html" class="external-link">sprc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>      <span class="fu">elev_scale</span><span class="op">(</span><span class="va">r</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>      <span class="fu">elev_scale</span><span class="op">(</span><span class="va">r</span>, <span class="fl">2</span>, <span class="st">"+proj=igh"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html" class="external-link">tar_make</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">▶ dispatched target elev_file</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target elev_file [0.009 seconds, 7.994 kilobytes]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target elev_file [0.008 seconds, 7.994 kilobytes]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ▶ dispatched target r</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target r [0.01 seconds, 959.578 kilobytes]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target r [0.011 seconds, 959.578 kilobytes]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ▶ dispatched target raster_elevs</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target raster_elevs [0.048 seconds, 36.423 kilobytes]</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ▶ ended pipeline [1.108 seconds]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ▶ ended pipeline [1.103 seconds]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; </span></span></span>
 <span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_read.html" class="external-link">tar_read</a></span><span class="op">(</span><span class="va">raster_elevs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; class       : SpatRasterCollection </span></span>
@@ -347,27 +347,27 @@ have the same projection and extent</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/njtierney/geotargets" class="external-link">geotargets</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_set.html" class="external-link">tar_option_set</a></span><span class="op">(</span>packages <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target</a></span><span class="op">(</span></span>
-<span>        <span class="va">logo_file</span>,</span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"ex/logo.tif"</span>, package<span class="op">=</span><span class="st">"terra"</span><span class="op">)</span>,</span>
-<span>        format <span class="op">=</span> <span class="st">"file"</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="../reference/tar_terra_sds.html">tar_terra_sds</a></span><span class="op">(</span></span>
-<span>        <span class="va">raster_dataset</span>,</span>
-<span>        <span class="op">{</span></span>
-<span>            <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/sds.html" class="external-link">sds</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="va">logo_file</span><span class="op">)</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="va">logo_file</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span></span>
-<span>            <span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"first"</span>, <span class="st">"second"</span><span class="op">)</span></span>
-<span>            <span class="va">x</span></span>
-<span>        <span class="op">}</span></span>
-<span>    <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">logo_file</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"ex/logo.tif"</span>, package <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span>,</span>
+<span>    format <span class="op">=</span> <span class="st">"file"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/tar_terra_sds.html">tar_terra_sds</a></span><span class="op">(</span></span>
+<span>    <span class="va">raster_dataset</span>,</span>
+<span>    <span class="op">{</span></span>
+<span>      <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/sds.html" class="external-link">sds</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="va">logo_file</span><span class="op">)</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="va">logo_file</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span></span>
+<span>      <span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"first"</span>, <span class="st">"second"</span><span class="op">)</span></span>
+<span>      <span class="va">x</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html" class="external-link">tar_make</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">▶ dispatched target logo_file</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target logo_file [0.01 seconds, 22.458 kilobytes]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target logo_file [0.008 seconds, 22.458 kilobytes]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ▶ dispatched target raster_dataset</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target raster_dataset [0.03 seconds, 53.667 kilobytes]</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ▶ ended pipeline [0.139 seconds]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ▶ ended pipeline [0.133 seconds]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; </span></span></span>
 <span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_read.html" class="external-link">tar_read</a></span><span class="op">(</span><span class="va">raster_dataset</span><span class="op">)</span></span>
 <span><span class="co">#&gt; class       : SpatRasterDataset </span></span>
