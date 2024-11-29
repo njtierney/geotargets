@@ -149,9 +149,7 @@ stops and throws an error. Options:</p><ul><li><p><code>"stop"</code>: the whole
 <li><p><code>"continue"</code>: the whole pipeline keeps going.</p></li>
 <li><p><code>"null"</code>: The errored target continues and returns <code>NULL</code>.
 The data hash is deliberately wrong so the target is not
-up to date for the next run of the pipeline. In addition,
-as of version 1.8.0.9011, a value of <code>NULL</code> is given
-to upstream dependencies with <code>error = "null"</code> if loading fails.</p></li>
+up to date for the next run of the pipeline.</p></li>
 <li><p><code>"abridge"</code>: any currently running targets keep running,
 but no new targets launch after that.</p></li>
 <li><p><code>"trim"</code>: all currently running targets stay running. A queued
@@ -168,22 +166,19 @@ to learn how to debug targets using saved workspaces.)</p></li>
 
 
 <dt id="arg-memory">memory<a class="anchor" aria-label="anchor" href="#arg-memory"></a></dt>
-<dd><p>Character of length 1, memory strategy. Possible values:</p><ul><li><p><code>"auto"</code>: new in <code>targets</code> version 1.8.0.9011, <code>memory = "auto"</code>
-is equivalent to <code>memory = "transient"</code> for dynamic branching
-(a non-null <code>pattern</code> argument) and <code>memory = "persistent"</code>
-for targets that do not use dynamic branching.</p></li>
-<li><p><code>"persistent"</code>: the target stays in memory
+<dd><p>Character of length 1, memory strategy.
+If <code>"persistent"</code>, the target stays in memory
 until the end of the pipeline (unless <code>storage</code> is <code>"worker"</code>,
 in which case <code>targets</code> unloads the value from memory
 right after storing it in order to avoid sending
-copious data over a network).</p></li>
-<li><p><code>"transient"</code>: the target gets unloaded
+copious data over a network).
+If <code>"transient"</code>, the target gets unloaded
 after every new target completes.
 Either way, the target gets automatically loaded into memory
-whenever another target needs the value.</p></li>
-</ul><p>For cloud-based dynamic files
+whenever another target needs the value.
+For cloud-based dynamic files
 (e.g. <code>format = "file"</code> with <code>repository = "aws"</code>),
-the <code>memory</code> option applies to the
+this memory strategy applies to the
 temporary local copy of the file:
 <code>"persistent"</code> means it remains until the end of the pipeline
 and is then deleted,
@@ -193,17 +188,8 @@ and the latter conserves local storage.</p></dd>
 
 
 <dt id="arg-garbage-collection">garbage_collection<a class="anchor" aria-label="anchor" href="#arg-garbage-collection"></a></dt>
-<dd><p>Logical: <code>TRUE</code> to run <code><a href="https://rdrr.io/r/base/gc.html" class="external-link">base::gc()</a></code>
-just before the target runs,
-<code>FALSE</code> to omit garbage collection.
-In the case of high-performance computing,
-<code><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc()</a></code> runs both locally and on the parallel worker.
-All this garbage collection is skipped if the actual target
-is skipped in the pipeline.
-Non-logical values of <code>garbage_collection</code> are converted to <code>TRUE</code> or
-<code>FALSE</code> using <code><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE()</a></code>. In other words, non-logical values are
-converted <code>FALSE</code>. For example, <code>garbage_collection = 2</code>
-is equivalent to <code>garbage_collection = FALSE</code>.</p></dd>
+<dd><p>Logical, whether to run <code><a href="https://rdrr.io/r/base/gc.html" class="external-link">base::gc()</a></code>
+just before the target runs.</p></dd>
 
 
 <dt id="arg-deployment">deployment<a class="anchor" aria-label="anchor" href="#arg-deployment"></a></dt>
@@ -232,31 +218,43 @@ See <code><a href="https://docs.ropensci.org/targets/reference/tar_resources.htm
 
 
 <dt id="arg-storage">storage<a class="anchor" aria-label="anchor" href="#arg-storage"></a></dt>
-<dd><p>Character string to control when the output of the target
-is saved to storage. Only relevant when using <code>targets</code>
-with parallel workers (<a href="https://books.ropensci.org/targets/crew.html" class="external-link">https://books.ropensci.org/targets/crew.html</a>).
+<dd><p>Character of length 1, only relevant to
+<code><a href="https://docs.ropensci.org/targets/reference/tar_make_clustermq.html" class="external-link">tar_make_clustermq()</a></code> and <code><a href="https://docs.ropensci.org/targets/reference/tar_make_future.html" class="external-link">tar_make_future()</a></code>.
 Must be one of the following values:</p><ul><li><p><code>"main"</code>: the target's return value is sent back to the
 host machine and saved/uploaded locally.</p></li>
 <li><p><code>"worker"</code>: the worker saves/uploads the value.</p></li>
-<li><p><code>"none"</code>: <code>targets</code> makes no attempt to save the result
-of the target to storage in the location where <code>targets</code>
-expects it to be. Saving to storage is the responsibility
-of the user. Use with caution.</p></li>
+<li><p><code>"none"</code>: almost never recommended. It is only for
+niche situations, e.g. the data needs to be loaded
+explicitly from another language. If you do use it,
+then the return value of the target is totally ignored
+when the target ends, but
+each downstream target still attempts to load the data file
+(except when <code>retrieval = "none"</code>).</p>
+<p>If you select <code>storage = "none"</code>, then
+the return value of the target's command is ignored,
+and the data is not saved automatically.
+As with dynamic files (<code>format = "file"</code>) it is the
+responsibility of the user to write to
+the data store from inside the target.</p>
+<p>The distinguishing feature of <code>storage = "none"</code>
+(as opposed to <code>format = "file"</code>)
+is that in the general case,
+downstream targets will automatically try to load the data
+from the data store as a dependency. As a corollary, <code>storage = "none"</code>
+is completely unnecessary if <code>format</code> is <code>"file"</code>.</p></li>
 </ul></dd>
 
 
 <dt id="arg-retrieval">retrieval<a class="anchor" aria-label="anchor" href="#arg-retrieval"></a></dt>
-<dd><p>Character string to control when the current target
-loads its dependencies into memory before running.
-(Here, a "dependency" is another target upstream that the current one
-depends on.) Only relevant when using <code>targets</code>
-with parallel workers (<a href="https://books.ropensci.org/targets/crew.html" class="external-link">https://books.ropensci.org/targets/crew.html</a>).
+<dd><p>Character of length 1, only relevant to
+<code><a href="https://docs.ropensci.org/targets/reference/tar_make_clustermq.html" class="external-link">tar_make_clustermq()</a></code> and <code><a href="https://docs.ropensci.org/targets/reference/tar_make_future.html" class="external-link">tar_make_future()</a></code>.
 Must be one of the following values:</p><ul><li><p><code>"main"</code>: the target's dependencies are loaded on the host machine
 and sent to the worker before the target runs.</p></li>
-<li><p><code>"worker"</code>: the worker loads the target's dependencies.</p></li>
-<li><p><code>"none"</code>: <code>targets</code> makes no attempt to load its
-dependencies. With <code>retrieval = "none"</code>, loading dependencies
-is the responsibility of the user. Use with caution.</p></li>
+<li><p><code>"worker"</code>: the worker loads the targets dependencies.</p></li>
+<li><p><code>"none"</code>: the dependencies are not loaded at all.
+This choice is almost never recommended. It is only for
+niche situations, e.g. the data needs to be loaded
+explicitly from another language.</p></li>
 </ul></dd>
 
 
