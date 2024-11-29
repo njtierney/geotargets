@@ -173,7 +173,8 @@ tar_rast_write <- function(filetype, gdal, preserve_metadata) {
                 root = dirname(raster_files)[1]
             )
             #move the zip file to the expected place
-            file.rename(file.path(tmp, basename(path)), path)
+            file.copy(file.path(tmp, basename(path)), path)
+            unlink(file.path(tmp, basename(path)))
         },
         drop = function(object, path) {
             terra::writeRaster(
