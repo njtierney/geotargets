@@ -31,7 +31,6 @@ Sys.setenv(TAR_ASK="false")
 library(geotargets)
 library(targets)
 library(terra)
-library(dplyr)
 ```
 
 Computationally intensive raster operations that work in pixel-wise manner may be handled well with [dynamic branching](https://books.ropensci.org/targets/dynamic.html#about-dynamic-branching) over tiled subsets of the raster.
