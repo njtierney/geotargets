@@ -38,7 +38,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="geotargets-development-version">geotargets (development version)<a class="anchor" aria-label="anchor" href="#geotargets-development-version"></a></h2>
-</div>
+<ul><li>bugfix by <a href="https://github.com/brownag" class="external-link">@brownag</a> that fixes use of <code><a href="https://rdrr.io/r/base/files.html" class="external-link">file.rename()</a></code> in <code>tar_terra_rast(..., preserve_metadata = "zip")</code>, which does not work when the temporary directory is on a different partition. (<a href="https://github.com/njtierney/geotargets/issues/121" class="external-link">#121</a>, PR <a href="https://github.com/njtierney/geotargets/issues/122" class="external-link">#122</a>).</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="geotargets-020-29-november-2024">geotargets 0.2.0 (29 November 2024)<a class="anchor" aria-label="anchor" href="#geotargets-020-29-november-2024"></a></h2>
 <ul><li>Created <code><a href="../reference/tar_stars.html">tar_stars()</a></code> and <code><a href="../reference/tar_stars.html">tar_stars_proxy()</a></code> that create <code>stars</code> and <code>stars_proxy</code> objects, respectively.</li>
