@@ -266,19 +266,19 @@ The \code{iteration} argument is unavailable because it is hard-coded to
 \examples{
 \dontshow{if (rlang::is_installed("stars")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
- targets::tar_dir({ # tar_dir() runs code from a temporary directory.
-   library(geotargets)
-   targets::tar_script({
-     list(
-       geotargets::tar_stars(
-         stars_example,
-         stars::read_stars(system.file("tif", "olinda_dem_utm25s.tif", package = "stars"))
-       )
-     )
-   })
-   targets::tar_make()
-   x <- targets::tar_read(stars_example)
- })
+  targets::tar_dir({ # tar_dir() runs code from a temporary directory.
+    library(geotargets)
+    targets::tar_script({
+      list(
+        geotargets::tar_stars(
+          stars_example,
+          stars::read_stars(system.file("tif", "olinda_dem_utm25s.tif", package = "stars"))
+        )
+      )
+    })
+    targets::tar_make()
+    x <- targets::tar_read(stars_example)
+  })
 }
 \dontshow{\}) # examplesIf}
 }

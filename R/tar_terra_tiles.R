@@ -350,7 +350,12 @@ tile_blocksize <- function(raster, n_blocks_row = 1, n_blocks_col = 1) {
 #' @rdname tile_helpers
 tile_n <- function(raster, n) {
     if (!rlang::is_integerish(n)) {
-        rlang::abort("`n` must be an integer.")
+        cli::cli_abort(
+            c(
+                "{.val {n}} must be an integer.",
+                "We see that {.val n} is: {n}"
+                )
+        )
     }
     sq <- sqrt(n)
     sq_round <- floor(sq)
