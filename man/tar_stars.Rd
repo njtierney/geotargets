@@ -131,9 +131,7 @@ stops and throws an error. Options:
 \item \code{"continue"}: the whole pipeline keeps going.
 \item \code{"null"}: The errored target continues and returns \code{NULL}.
 The data hash is deliberately wrong so the target is not
-up to date for the next run of the pipeline. In addition,
-as of version 1.8.0.9011, a value of \code{NULL} is given
-to upstream dependencies with \code{error = "null"} if loading fails.
+up to date for the next run of the pipeline.
 \item \code{"abridge"}: any currently running targets keep running,
 but no new targets launch after that.
 \item \code{"trim"}: all currently running targets stay running. A queued
@@ -152,26 +150,19 @@ to begin running.
 to learn how to debug targets using saved workspaces.)
 }}
 
-\item{memory}{Character of length 1, memory strategy. Possible values:
-\itemize{
-\item \code{"auto"}: new in \code{targets} version 1.8.0.9011, \code{memory = "auto"}
-is equivalent to \code{memory = "transient"} for dynamic branching
-(a non-null \code{pattern} argument) and \code{memory = "persistent"}
-for targets that do not use dynamic branching.
-\item \code{"persistent"}: the target stays in memory
+\item{memory}{Character of length 1, memory strategy.
+If \code{"persistent"}, the target stays in memory
 until the end of the pipeline (unless \code{storage} is \code{"worker"},
 in which case \code{targets} unloads the value from memory
 right after storing it in order to avoid sending
 copious data over a network).
-\item \code{"transient"}: the target gets unloaded
+If \code{"transient"}, the target gets unloaded
 after every new target completes.
 Either way, the target gets automatically loaded into memory
 whenever another target needs the value.
-}
-
 For cloud-based dynamic files
 (e.g. \code{format = "file"} with \code{repository = "aws"}),
-the \code{memory} option applies to the
+this memory strategy applies to the
 temporary local copy of the file:
 \code{"persistent"} means it remains until the end of the pipeline
 and is then deleted,
@@ -179,17 +170,8 @@ and \code{"transient"} means it gets deleted as soon as possible.
 The former conserves bandwidth,
 and the latter conserves local storage.}
 
-\item{garbage_collection}{Logical: \code{TRUE} to run \code{base::gc()}
-just before the target runs,
-\code{FALSE} to omit garbage collection.
-In the case of high-performance computing,
-\code{gc()} runs both locally and on the parallel worker.
-All this garbage collection is skipped if the actual target
-is skipped in the pipeline.
-Non-logical values of \code{garbage_collection} are converted to \code{TRUE} or
-\code{FALSE} using \code{isTRUE()}. In other words, non-logical values are
-converted \code{FALSE}. For example, \code{garbage_collection = 2}
-is equivalent to \code{garbage_collection = FALSE}.}
+\item{garbage_collection}{Logical, whether to run \code{base::gc()}
+just before the target runs.}
 
 \item{deployment}{Character of length 1. If \code{deployment} is
 \code{"main"}, then the target will run on the central controlling R process.
@@ -210,33 +192,47 @@ functionality, alternative data storage formats,
 and other optional capabilities of \code{targets}.
 See \code{tar_resources()} for details.}
 
-\item{storage}{Character string to control when the output of the target
-is saved to storage. Only relevant when using \code{targets}
-with parallel workers (\url{https://books.ropensci.org/targets/crew.html}).
+\item{storage}{Character of length 1, only relevant to
+\code{\link[targets:tar_make_clustermq]{tar_make_clustermq()}} and \code{\link[targets:tar_make_future]{tar_make_future()}}.
 Must be one of the following values:
 \itemize{
 \item \code{"main"}: the target's return value is sent back to the
 host machine and saved/uploaded locally.
 \item \code{"worker"}: the worker saves/uploads the value.
-\item \code{"none"}: \code{targets} makes no attempt to save the result
-of the target to storage in the location where \code{targets}
-expects it to be. Saving to storage is the responsibility
-of the user. Use with caution.
+\item \code{"none"}: almost never recommended. It is only for
+niche situations, e.g. the data needs to be loaded
+explicitly from another language. If you do use it,
+then the return value of the target is totally ignored
+when the target ends, but
+each downstream target still attempts to load the data file
+(except when \code{retrieval = "none"}).
+
+If you select \code{storage = "none"}, then
+the return value of the target's command is ignored,
+and the data is not saved automatically.
+As with dynamic files (\code{format = "file"}) it is the
+responsibility of the user to write to
+the data store from inside the target.
+
+The distinguishing feature of \code{storage = "none"}
+(as opposed to \code{format = "file"})
+is that in the general case,
+downstream targets will automatically try to load the data
+from the data store as a dependency. As a corollary, \code{storage = "none"}
+is completely unnecessary if \code{format} is \code{"file"}.
 }}
 
-\item{retrieval}{Character string to control when the current target
-loads its dependencies into memory before running.
-(Here, a "dependency" is another target upstream that the current one
-depends on.) Only relevant when using \code{targets}
-with parallel workers (\url{https://books.ropensci.org/targets/crew.html}).
+\item{retrieval}{Character of length 1, only relevant to
+\code{\link[targets:tar_make_clustermq]{tar_make_clustermq()}} and \code{\link[targets:tar_make_future]{tar_make_future()}}.
 Must be one of the following values:
 \itemize{
 \item \code{"main"}: the target's dependencies are loaded on the host machine
 and sent to the worker before the target runs.
-\item \code{"worker"}: the worker loads the target's dependencies.
-\item \code{"none"}: \code{targets} makes no attempt to load its
-dependencies. With \code{retrieval = "none"}, loading dependencies
-is the responsibility of the user. Use with caution.
+\item \code{"worker"}: the worker loads the targets dependencies.
+\item \code{"none"}: the dependencies are not loaded at all.
+This choice is almost never recommended. It is only for
+niche situations, e.g. the data needs to be loaded
+explicitly from another language.
 }}
 
 \item{cue}{An optional object from \code{tar_cue()} to customize the
@@ -250,6 +246,9 @@ functions like \code{\link[targets:tar_make]{tar_make()}}. For example,
 \code{tar_manifest(names = tar_described_as(starts_with("survival model")))}
 lists all the targets whose descriptions start with the character
 string \code{"survival model"}.}
+}
+\value{
+target class "tar_stem" for use in a target pipeline
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
@@ -267,19 +266,19 @@ The \code{iteration} argument is unavailable because it is hard-coded to
 \examples{
 \dontshow{if (rlang::is_installed("stars")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
- targets::tar_dir({ # tar_dir() runs code from a temporary directory.
-   library(geotargets)
-   targets::tar_script({
-     list(
-       geotargets::tar_stars(
-         stars_example,
-         stars::read_stars(system.file("tif", "olinda_dem_utm25s.tif", package = "stars"))
-       )
-     )
-   })
-   targets::tar_make()
-   x <- targets::tar_read(stars_example)
- })
+  targets::tar_dir({ # tar_dir() runs code from a temporary directory.
+    library(geotargets)
+    targets::tar_script({
+      list(
+        geotargets::tar_stars(
+          stars_example,
+          stars::read_stars(system.file("tif", "olinda_dem_utm25s.tif", package = "stars"))
+        )
+      )
+    })
+    targets::tar_make()
+    x <- targets::tar_read(stars_example)
+  })
 }
 \dontshow{\}) # examplesIf}
 }

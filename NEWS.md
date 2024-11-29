@@ -1,5 +1,9 @@
 # geotargets (development version)
 
+* bugfix by @brownag that fixes use of `file.rename()` in `tar_terra_rast(..., preserve_metadata = "zip")`, which does not work when the temporary directory is on a different partition. (#121, PR #122).
+
+# geotargets 0.2.0 (29 November 2024)
+
 * Created `tar_stars()` and `tar_stars_proxy()` that create `stars` and `stars_proxy` objects, respectively.
 * Created `tar_terra_tiles()`, a "target factory" for splitting a raster into multiple tiles with dynamic branching (#69).
 * Created two helper functions for use in `tar_terra_tiles()`: `tile_grid()`, `tile_n()`, and `tile_blocksize()` (#69, #86, #87, #89).

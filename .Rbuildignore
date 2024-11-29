@@ -20,3 +20,5 @@
 ^logo$
 ^doc$
 ^Meta$
+^codemeta\.json$
+^\.covrignore$

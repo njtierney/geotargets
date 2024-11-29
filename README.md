@@ -1,18 +1,19 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# geotargets <a href="https://njtierney.github.io/geotargets/"><img src="man/figures/logo.png" alt="geotargets website" align="right" height="139"/></a>
+# geotargets <a href="http://geotargets.njtierney.com/"><img src="man/figures/logo.png" alt="geotargets website" align="right" height="139"/></a>
 
 <!-- badges: start -->
 
-[![Project Status: WIP – Initial development is in progress, but there
-has not yet been a stable, usable release suitable for the
-public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![R
 Targetopia](https://img.shields.io/badge/R_Targetopia-member-blue?style=flat&labelColor=gray)](https://wlandau.github.io/targetopia/)
 [![R-CMD-check](https://github.com/njtierney/geotargets/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/njtierney/geotargets/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/njtierney/geotargets/branch/master/graph/badge.svg)](https://app.codecov.io/gh/njtierney/geotargets?branch=master)
+[![pkgcheck](https://github.com/njtierney/geotargets/workflows/pkgcheck/badge.svg)](https://github.com/njtierney/geotargets/actions?query=workflow%3Apkgcheck)
 <!-- badges: end -->
 
 `geotargets` extends [`targets`](https://github.com/ropensci/targets) to
@@ -82,11 +83,11 @@ library(targets)
 tar_dir({ # tar_dir() runs code from a temporary directory.
   tar_script({
     library(geotargets)
-    
+
     get_elev <- function() {
-        terra::rast(system.file("ex", "elev.tif", package = "terra"))
+      terra::rast(system.file("ex", "elev.tif", package = "terra"))
     }
-    
+
     list(
       tar_terra_rast(
         terra_rast_example,
@@ -94,14 +95,14 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
       )
     )
   })
-  
+
   tar_make()
   x <- tar_read(terra_rast_example)
   x
 })
 #> ▶ dispatched target terra_rast_example
-#> ● completed target terra_rast_example [0.018 seconds]
-#> ▶ ended pipeline [0.168 seconds]
+#> ● completed target terra_rast_example [0.018 seconds, 7.992 kilobytes]
+#> ▶ ended pipeline [0.081 seconds]
 #> class       : SpatRaster 
 #> dimensions  : 90, 95, 1  (nrow, ncol, nlyr)
 #> resolution  : 0.008333333, 0.008333333  (x, y)
@@ -119,13 +120,16 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
 tar_dir({ # tar_dir() runs code from a temporary directory.
   tar_script({
     library(geotargets)
-    
+
     lux_area <- function(projection = "EPSG:4326") {
-      terra::project(terra::vect(system.file("ex", "lux.shp",
-                                             package = "terra")),
-                     projection)
+      terra::project(
+        terra::vect(system.file("ex", "lux.shp",
+          package = "terra"
+        )),
+        projection
+      )
     }
-    
+
     list(
       tar_terra_vect(
         terra_vect_example,
@@ -133,14 +137,14 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
       )
     )
   })
-  
+
   tar_make()
   x <- tar_read(terra_vect_example)
   x
 })
 #> ▶ dispatched target terra_vect_example
-#> ● completed target terra_vect_example [0.037 seconds]
-#> ▶ ended pipeline [0.183 seconds]
+#> ● completed target terra_vect_example [0.021 seconds, 117.622 kilobytes]
+#> ▶ ended pipeline [0.059 seconds]
 #>  class       : SpatVector 
 #>  geometry    : polygons 
 #>  dimensions  : 12, 6  (geometries, attributes)
@@ -159,16 +163,15 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
 ``` r
 tar_dir({ # tar_dir() runs code from a temporary directory.
   tar_script({
-    
     library(geotargets)
-    
+
     elev_scale <- function(z = 1, projection = "EPSG:4326") {
       terra::project(
         terra::rast(system.file("ex", "elev.tif", package = "terra")) * z,
         projection
       )
     }
-    
+
     list(
       tar_terra_sprc(
         raster_elevs,
@@ -181,17 +184,14 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
       )
     )
   })
-  
+
   tar_make()
   x <- tar_read(raster_elevs)
   x
 })
 #> ▶ dispatched target raster_elevs
-#> ● completed target raster_elevs [0.128 seconds]
-#> ▶ ended pipeline [0.266 seconds]
-#> Warning message:
-#> [rast] skipped sub-datasets (see 'describe(sds=TRUE)'):
-#> /private/var/folders/wr/by_lst2d2fngf67mknmgf4340000gn/T/RtmpjrYMSQ/targets_80c86866e24b/_targets/scratch/raster_elevs
+#> ● completed target raster_elevs [0.056 seconds, 36.423 kilobytes]
+#> ▶ ended pipeline [0.11 seconds]
 #> class       : SpatRasterCollection 
 #> length      : 2 
 #> nrow        : 90, 115 
@@ -208,7 +208,7 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
 tar_dir({ # tar_dir() runs code from a temporary directory.
   tar_script({
     library(geotargets)
-    
+
     list(
       tar_stars(
         test_stars,
@@ -216,17 +216,14 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
       )
     )
   })
-  
+
   tar_make()
   x <- tar_read(test_stars)
   x
 })
 #> ▶ dispatched target test_stars
-#> ● completed target test_stars [0.031 seconds]
-#> ▶ ended pipeline [0.139 seconds]
-#> Warning message:
-#> In CPL_write_gdal(mat, file, driver, options, type, dims, from,  :
-#>   GDAL Message 6: creation option '' is not formatted with the key=value format
+#> ● completed target test_stars [0.018 seconds, 49.9 kilobytes]
+#> ▶ ended pipeline [0.06 seconds]
 #> stars object with 2 dimensions and 1 attribute
 #> attribute(s):
 #>             Min. 1st Qu. Median     Mean 3rd Qu. Max.
