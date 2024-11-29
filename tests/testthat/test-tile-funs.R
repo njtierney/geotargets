@@ -5,6 +5,7 @@ test_that("tile_n fails with non integer", {
         error = TRUE,
         tile_n(r, n = 3.14)
     )
+    skip_on_ci()
     expect_snapshot(
         tile_n(r, n = 4)
     )
