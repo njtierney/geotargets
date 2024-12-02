@@ -152,7 +152,7 @@ tar_rast_read <- function(preserve_metadata) {
           terra::rast(file.path(tmp, basename(path)))
       },
       gdalraster_sozip = function(path) {
-        terra::rast(paste0("/vsizip/{", path, "}/"), basename(path))
+        terra::rast(paste0("/vsizip/{", path, "}/", basename(path)))
       },
       drop = function(path) terra::rast(path)
   )
