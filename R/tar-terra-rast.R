@@ -164,7 +164,9 @@ tar_rast_write <- function(filetype, gdal, preserve_metadata) {
         zip = function(object, path) {
             #write the raster in a fresh local tempdir() that disappears when function is done
             tmp <- withr::local_tempdir()
-            dir.create(file.path(tmp, dirname(path)), recursive = TRUE)
+            dirpath <- file.path(tmp, dirname(path))
+            tmppath <- file.path(tmp, basename(path))
+            dir.create(dirpath, recursive = TRUE)
             terra::writeRaster(
                 object,
                 file.path(tmp, path),
@@ -173,9 +175,9 @@ tar_rast_write <- function(filetype, gdal, preserve_metadata) {
                 gdal = gdal
             )
             #package files into a zip file using `zip::zip()`
-            raster_files <- list.files(file.path(tmp, dirname(path)), full.names = TRUE)
+            raster_files <- list.files(dirpath, full.names = TRUE)
             zip::zip(
-                file.path(tmp, basename(path)),
+                tmppath,
                 files = raster_files,
                 compression_level = 1,
                 mode = "cherry-pick",
@@ -183,8 +185,8 @@ tar_rast_write <- function(filetype, gdal, preserve_metadata) {
             )
 
           # move the zip file to the expected place
-          file.copy(file.path(tmp, basename(path)), path)
-          unlink(file.path(tmp, basename(path)))
+          file.copy(tmppath, path)
+          unlink(tmppath)
         },
         gdalraster_sozip = function(object, path) {
 
