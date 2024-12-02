@@ -89,7 +89,7 @@ tar_terra_rast <- function(name,
 
   # ensure that user-passed `resources` doesn't include `custom_format`
   check_user_resources(resources)
-  
+
   if (preserve_metadata == "gdalraster_sozip") {
       check_pkg_installed("gdalraster")
   }
@@ -164,7 +164,8 @@ tar_rast_write <- function(filetype, gdal, preserve_metadata) {
         zip = function(object, path) {
             #write the raster in a fresh local tempdir() that disappears when function is done
             tmp <- withr::local_tempdir()
-            dir.create(file.path(tmp, dirname(path)), recursive = TRUE)
+            tmppath <- file.path(tmp, dirname(path))
+            dir.create(tmppath, recursive = TRUE)
             terra::writeRaster(
                 object,
                 file.path(tmp, path),
@@ -173,7 +174,7 @@ tar_rast_write <- function(filetype, gdal, preserve_metadata) {
                 gdal = gdal
             )
             #package files into a zip file using `zip::zip()`
-            raster_files <- list.files(file.path(tmp, dirname(path)), full.names = TRUE)
+            raster_files <- list.files(tmppath, full.names = TRUE)
             zip::zip(
                 file.path(tmp, basename(path)),
                 files = raster_files,
@@ -183,14 +184,14 @@ tar_rast_write <- function(filetype, gdal, preserve_metadata) {
             )
 
           # move the zip file to the expected place
-          file.copy(file.path(tmp, basename(path)), path)
-          unlink(file.path(tmp, basename(path)))
+          file.copy(tmppath, path)
+          unlink(tmppath)
         },
         gdalraster_sozip = function(object, path) {
 
             tmp <- withr::local_tempdir()
-
-            dir.create(file.path(tmp, dirname(path)), recursive = TRUE)
+            tmppath <- file.path(tmp, dirname(path))
+            dir.create(tmppath, recursive = TRUE)
 
             terra::writeRaster(
                 object,
@@ -200,7 +201,7 @@ tar_rast_write <- function(filetype, gdal, preserve_metadata) {
                 gdal = gdal
             )
 
-            raster_files <- list.files(file.path(tmp, dirname(path)), full.names = TRUE)
+            raster_files <- list.files(tmppath, full.names = TRUE)
 
             # create seek-optimized zip file using gdalraster
             gdalraster::addFilesInZip(
@@ -216,7 +217,7 @@ tar_rast_write <- function(filetype, gdal, preserve_metadata) {
             # TODO: allow user control of number of threads?
             #       how does num_threads interact multiple workers etc.?
 
-            unlink(file.path(tmp, path))
+            unlink(tmppath)
         },
         drop = function(object, path) {
             terra::writeRaster(
