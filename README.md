@@ -65,15 +65,19 @@ Below we show three examples of target factories:
 - `tar_terra_rast()`
 - `tar_terra_vect()`
 - `tar_terra_sprc()`
+- `tar_terra_sds()`
+- `tar_tera_tiles()`
 - `tar_stars()`
 
 You would use these in place of `tar_target()` in your targets pipeline,
-when you are doing work with `terra` raster, vector, or raster
+e.g., when you are doing work with `terra` raster, vector, or raster
 collection data.
 
 If you would like to see and download working examples for yourself, see
-the repo,
-[demo-geotargets](https://github.com/njtierney/demo-geotargets).
+the repos:
+
+- [demo-geotargets](https://github.com/njtierney/demo-geotargets)
+- [icebreaker](https://github.com/njtierney/icebreaker)
 
 ## `tar_terra_rast()`: targets with terra rasters
 
@@ -101,8 +105,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target terra_rast_example
-#> ● completed target terra_rast_example [0.018 seconds, 7.992 kilobytes]
-#> ▶ ended pipeline [0.081 seconds]
+#> ● completed target terra_rast_example [0.008 seconds, 7.992 kilobytes]
+#> ▶ ended pipeline [0.064 seconds]
 #> class       : SpatRaster 
 #> dimensions  : 90, 95, 1  (nrow, ncol, nlyr)
 #> resolution  : 0.008333333, 0.008333333  (x, y)
@@ -143,8 +147,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target terra_vect_example
-#> ● completed target terra_vect_example [0.021 seconds, 117.622 kilobytes]
-#> ▶ ended pipeline [0.059 seconds]
+#> ● completed target terra_vect_example [0.017 seconds, 117.622 kilobytes]
+#> ▶ ended pipeline [0.054 seconds]
 #>  class       : SpatVector 
 #>  geometry    : polygons 
 #>  dimensions  : 12, 6  (geometries, attributes)
@@ -190,8 +194,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target raster_elevs
-#> ● completed target raster_elevs [0.056 seconds, 36.423 kilobytes]
-#> ▶ ended pipeline [0.11 seconds]
+#> ● completed target raster_elevs [0.065 seconds, 36.423 kilobytes]
+#> ▶ ended pipeline [0.119 seconds]
 #> class       : SpatRasterCollection 
 #> length      : 2 
 #> nrow        : 90, 115 
@@ -223,7 +227,7 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
 })
 #> ▶ dispatched target test_stars
 #> ● completed target test_stars [0.018 seconds, 49.9 kilobytes]
-#> ▶ ended pipeline [0.06 seconds]
+#> ▶ ended pipeline [0.059 seconds]
 #> stars object with 2 dimensions and 1 attribute
 #> attribute(s):
 #>             Min. 1st Qu. Median     Mean 3rd Qu. Max.
@@ -240,14 +244,6 @@ Please note that the geotargets project is released with a [Contributor
 Code of
 Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.
-
-## A note on development
-
-`geotargets` is still undergoing development. We currently consider the
-extensions with `terra` maturing and approaching stability. We would
-love for people to use the package to kick the tyres. We are using it in
-our own work, but want users to know that the API could change in subtle
-or breaking ways.
 
 ## Acknowledgements
 
