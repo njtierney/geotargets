@@ -143,11 +143,13 @@ tar_test("metadata is maintained", {
       r
     }
     list(
-      tar_terra_rast(r, make_rast())
+      tar_terra_rast(r, make_rast()),
+      tar_terra_rast(r2, make_rast(), preserve_metadata = "drop")
     )
   })
   tar_make()
   x <- tar_read(r)
   expect_equal(terra::units(x), rep("m", 3))
   expect_equal(terra::time(x), as.Date("2024-10-01") + c(0, 1, 2))
+  expect_equal(head(terra::values(x)), head(terra::values(tar_read(r2))))
 })
