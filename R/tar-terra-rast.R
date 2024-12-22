@@ -159,75 +159,67 @@ tar_rast_read <- function(preserve_metadata) {
 }
 
 tar_rast_write <- function(filetype, gdal, preserve_metadata) {
-  switch(
-      preserve_metadata,
-      zip = function(object, path) {
-          #write the raster in a fresh local tempdir() that disappears when function is done
-          tmp <- withr::local_tempdir()
-          dirpath <- file.path(tmp, dirname(path))
-          tmppath <- file.path(tmp, basename(path))
-          dir.create(dirpath, recursive = TRUE)
-          terra::writeRaster(
-              object,
-              file.path(tmp, path),
-              filetype = filetype,
-              overwrite = TRUE,
-              gdal = gdal
-          )
-          #package files into a zip file using `zip::zip()`
-          raster_files <- list.files(dirpath, full.names = TRUE)
-          zip::zip(
-              tmppath,
-              files = raster_files,
-              compression_level = 1,
-              mode = "cherry-pick",
-              root = dirname(raster_files)[1]
-          )
-
-        # move the zip file to the expected place
-        file.copy(tmppath, path)
-        unlink(tmppath)
-      },
-      gdalraster_sozip = function(object, path) {
-
-        tmp <- withr::local_tempdir()
-        dirpath <- file.path(tmp, dirname(path))
-        tmppath <- file.path(tmp, path)
-        dir.create(dirpath, recursive = TRUE)
-
-        terra::writeRaster(
-          object,
-          tmppath,
-          filetype = filetype,
-          overwrite = TRUE,
-          gdal = gdal
-        )
-        raster_files <- list.files(dirpath, full.names = TRUE)
-
-        # create seek-optimized zip file using gdalraster
-        gdalraster::addFilesInZip(
-            path,
-            raster_files,
-            full_paths = FALSE,
-            overwrite = TRUE,
-            sozip_enabled = "YES",
-            num_threads = 1,
-            quiet = TRUE
-        )
-        # always create sozip regardless of file size (sozip_enabled = "YES")
-        # TODO: allow user control of number of threads?
-        #       how does num_threads interact multiple workers etc.?
-
-        unlink(tmppath)
+  switch(preserve_metadata,
+    zip = function(object, path) {
+      # write the raster in a fresh local tempdir() that disappears when function is done
+      tmp <- withr::local_tempdir()
+      raster_tmp_file <- file.path(tmp, basename(path))
+      zip_tmp_file <- file.path(tmp, "object.zip")
+      terra::writeRaster(
+        object,
+        filename = raster_tmp_file,
+        filetype = filetype,
+        overwrite = TRUE,
+        gdal = gdal
+      )
+      # package files into a zip file using `zip::zip()`
+      raster_files <- list.files(path = tmp, full.names = TRUE)
+      zip::zip(
+        zipfile = zip_tmp_file,
+        files = raster_files,
+        compression_level = 1,
+        mode = "cherry-pick",
+        root = tmp
+      )
+      # move the zip file to the expected place
+      file.copy(zip_tmp_file, path)
     },
     drop = function(object, path) {
-        terra::writeRaster(
-            object,
-            path,
-            filetype = filetype,
-            overwrite = TRUE,
-            gdal = gdal
-        )
+      terra::writeRaster(
+        object,
+        filename = path,
+        filetype = filetype,
+        overwrite = TRUE,
+        gdal = gdal
+      )
+    },
+    gdalraster_sozip = function(object, path) {
+      tmp <- withr::local_tempdir()
+      dirpath <- file.path(tmp, dirname(path))
+      tmppath <- file.path(tmp, path)
+      dir.create(dirpath, recursive = TRUE)
+      terra::writeRaster(
+        object,
+        tmppath,
+        filetype = filetype,
+        overwrite = TRUE,
+        gdal = gdal
+      )
+      raster_files <- list.files(dirpath, full.names = TRUE)
+      # create seek-optimized zip file using gdalraster
+      # always create sozip regardless of file size (sozip_enabled = "YES")
+      gdalraster::addFilesInZip(
+        path,
+        raster_files,
+        full_paths = FALSE,
+        overwrite = TRUE,
+        sozip_enabled = "YES",
+        num_threads = 1,
+        quiet = TRUE
+      )
+      # TODO: allow user control of number of threads?
+      #       how does num_threads interact multiple workers etc.?
+      unlink(tmppath)
     }
   )
 }
