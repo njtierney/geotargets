@@ -83,12 +83,21 @@ tar_terra_rast <- function(name,
   drv <- get_gdal_available_driver_list("raster")
   filetype <- rlang::arg_match0(filetype, drv$name)
 
-  # currently only "drop" and "zip" are valid options
+  # various methods for packaging geospatial data and auxiliary files
   preserve_metadata <- preserve_metadata %||% "drop"
-  preserve_metadata <- rlang::arg_match0(preserve_metadata, c("drop", "zip"))
+  preserve_metadata <- rlang::arg_match0(preserve_metadata, c("drop", "zip", "gdalraster_sozip"))
 
   # ensure that user-passed `resources` doesn't include `custom_format`
   check_user_resources(resources)
+
+  if (preserve_metadata == "gdalraster_sozip") {
+      check_pkg_installed("gdalraster")
+  }
+
+  # ensure that user-passed `resources` doesn't include `custom_format`
+  if ("custom_format" %in% names(resources)) {
+      cli::cli_abort("{.val custom_format} cannot be supplied to targets created with {.fn tar_terra_rast}")
+  }
 
   name <- targets::tar_deparse_language(substitute(name))
 
@@ -135,13 +144,17 @@ tar_terra_rast <- function(name,
 }
 
 tar_rast_read <- function(preserve_metadata) {
-  switch(preserve_metadata,
-    zip = function(path) {
-      tmp <- withr::local_tempdir()
-      zip::unzip(zipfile = path, exdir = tmp)
-      terra::rast(file.path(tmp, basename(path)))
-    },
-    drop = function(path) terra::rast(path)
+  switch(
+      preserve_metadata,
+      zip = function(path) {
+          tmp <- withr::local_tempdir()
+          zip::unzip(zipfile = path, exdir = tmp)
+          terra::rast(file.path(tmp, basename(path)))
+      },
+      gdalraster_sozip = function(path) {
+        terra::rast(paste0("/vsizip/{", path, "}/", basename(path)))
+      },
+      drop = function(path) terra::rast(path)
   )
 }
 
@@ -179,6 +192,34 @@ tar_rast_write <- function(filetype, gdal, preserve_metadata) {
         overwrite = TRUE,
         gdal = gdal
       )
+    },
+    gdalraster_sozip = function(object, path) {
+      tmp <- withr::local_tempdir()
+      dirpath <- file.path(tmp, dirname(path))
+      tmppath <- file.path(tmp, path)
+      dir.create(dirpath, recursive = TRUE)
+      terra::writeRaster(
+        object,
+        tmppath,
+        filetype = filetype,
+        overwrite = TRUE,
+        gdal = gdal
+      )
+      raster_files <- list.files(dirpath, full.names = TRUE)
+      # create seek-optimized zip file using gdalraster
+      # always create sozip regardless of file size (sozip_enabled = "YES")
+      gdalraster::addFilesInZip(
+        path,
+        raster_files,
+        full_paths = FALSE,
+        overwrite = TRUE,
+        sozip_enabled = "YES",
+        num_threads = 1,
+        quiet = TRUE
+      )
+      # TODO: allow user control of number of threads?
+      #       how does num_threads interact multiple workers etc.?
+      unlink(tmppath)
     }
   )
 }
