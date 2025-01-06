@@ -14,6 +14,8 @@ Targetopia](https://img.shields.io/badge/R_Targetopia-member-blue?style=flat&lab
 [![Codecov test
 coverage](https://codecov.io/gh/njtierney/geotargets/branch/master/graph/badge.svg)](https://app.codecov.io/gh/njtierney/geotargets?branch=master)
 [![pkgcheck](https://github.com/njtierney/geotargets/workflows/pkgcheck/badge.svg)](https://github.com/njtierney/geotargets/actions?query=workflow%3Apkgcheck)
+[![Status at rOpenSci Software Peer
+Review](https://badges.ropensci.org/675_status.svg)](https://github.com/ropensci/software-review/issues/675)
 <!-- badges: end -->
 
 `geotargets` extends [`targets`](https://github.com/ropensci/targets) to
@@ -105,8 +107,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target terra_rast_example
-#> ● completed target terra_rast_example [0.008 seconds, 7.992 kilobytes]
-#> ▶ ended pipeline [0.064 seconds]
+#> ● completed target terra_rast_example [0.074 seconds, 7.992 kilobytes]
+#> ▶ ended pipeline [0.316 seconds]
 #> class       : SpatRaster 
 #> dimensions  : 90, 95, 1  (nrow, ncol, nlyr)
 #> resolution  : 0.008333333, 0.008333333  (x, y)
@@ -147,19 +149,19 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target terra_vect_example
-#> ● completed target terra_vect_example [0.017 seconds, 117.622 kilobytes]
-#> ▶ ended pipeline [0.054 seconds]
+#> ● completed target terra_vect_example [0.078 seconds, 117.646 kilobytes]
+#> ▶ ended pipeline [0.259 seconds]
 #>  class       : SpatVector 
 #>  geometry    : polygons 
 #>  dimensions  : 12, 6  (geometries, attributes)
 #>  extent      : 5.74414, 6.528252, 49.44781, 50.18162  (xmin, xmax, ymin, ymax)
 #>  source      : terra_vect_example
 #>  coord. ref. : lon/lat WGS 84 (EPSG:4326) 
-#>  names       :  ID_1   NAME_1  ID_2   NAME_2  AREA   POP
-#>  type        : <num>    <chr> <num>    <chr> <num> <int>
-#>  values      :     1 Diekirch     1 Clervaux   312 18081
-#>                    1 Diekirch     2 Diekirch   218 32543
-#>                    1 Diekirch     3  Redange   259 18664
+#>  names       :  ID_1   NAME_1  ID_2   NAME_2  AREA       POP
+#>  type        : <num>    <chr> <num>    <chr> <num>     <num>
+#>  values      :     1 Diekirch     1 Clervaux   312 1.808e+04
+#>                    1 Diekirch     2 Diekirch   218 3.254e+04
+#>                    1 Diekirch     3  Redange   259 1.866e+04
 ```
 
 ## `tar_terra_sprc()`: targets with terra raster collections
@@ -194,8 +196,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target raster_elevs
-#> ● completed target raster_elevs [0.065 seconds, 36.423 kilobytes]
-#> ▶ ended pipeline [0.119 seconds]
+#> ● completed target raster_elevs [0.14 seconds, 36.423 kilobytes]
+#> ▶ ended pipeline [0.33 seconds]
 #> class       : SpatRasterCollection 
 #> length      : 2 
 #> nrow        : 90, 115 
@@ -226,8 +228,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target test_stars
-#> ● completed target test_stars [0.018 seconds, 49.9 kilobytes]
-#> ▶ ended pipeline [0.059 seconds]
+#> ● completed target test_stars [0.053 seconds, 49.9 kilobytes]
+#> ▶ ended pipeline [0.192 seconds]
 #> stars object with 2 dimensions and 1 attribute
 #> attribute(s):
 #>             Min. 1st Qu. Median     Mean 3rd Qu. Max.
