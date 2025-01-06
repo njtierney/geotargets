@@ -28,8 +28,8 @@
 #' @examples
 #' if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
 #'   targets::tar_dir({ # tar_dir() runs code from a temporary directory.
-#'     library(geotargets)
 #'     targets::tar_script({
+#'       library(geotargets)
 #'       elev_scale <- function(z = 1, projection = "EPSG:4326") {
 #'         terra::project(
 #'           terra::rast(system.file("ex", "elev.tif", package = "terra")) * z,
@@ -49,7 +49,7 @@
 #'       )
 #'     })
 #'     targets::tar_make()
-#'     x <- targets::tar_read(raster_elevs)
+#'     targets::tar_read(raster_elevs)
 #'   })
 #' }
 tar_terra_sprc <- function(name,
@@ -153,8 +153,8 @@ tar_terra_sprc <- function(name,
 #' @examples
 #' if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
 #'   targets::tar_dir({ # tar_dir() runs code from a temporary directory.
-#'     library(geotargets)
 #'     targets::tar_script({
+#'       library(geotargets)
 #'       elev_scale <- function(z = 1) {
 #'         terra::rast(system.file("ex", "elev.tif", package = "terra")) * z
 #'       }

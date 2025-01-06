@@ -248,8 +248,7 @@ if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
             tar_terra_tiles(
                 name = rast_split,
                 raster = my_map,
-                ncol = 2,
-                nrow = 2
+                tile_fun = \(x) tile_grid(x, ncol = 2, nrow = 2)
             )
         )
     })
