@@ -130,8 +130,8 @@
 <span>  <span class="va">x</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ▶ dispatched target terra_rast_example</span></span>
-<span><span class="co">#&gt; ● completed target terra_rast_example [0.008 seconds, 7.992 kilobytes]</span></span>
-<span><span class="co">#&gt; ▶ ended pipeline [0.064 seconds]</span></span>
+<span><span class="co">#&gt; ● completed target terra_rast_example [0.074 seconds, 7.992 kilobytes]</span></span>
+<span><span class="co">#&gt; ▶ ended pipeline [0.316 seconds]</span></span>
 <span><span class="co">#&gt; class       : SpatRaster </span></span>
 <span><span class="co">#&gt; dimensions  : 90, 95, 1  (nrow, ncol, nlyr)</span></span>
 <span><span class="co">#&gt; resolution  : 0.008333333, 0.008333333  (x, y)</span></span>
@@ -173,19 +173,19 @@
 <span>  <span class="va">x</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ▶ dispatched target terra_vect_example</span></span>
-<span><span class="co">#&gt; ● completed target terra_vect_example [0.017 seconds, 117.622 kilobytes]</span></span>
-<span><span class="co">#&gt; ▶ ended pipeline [0.054 seconds]</span></span>
+<span><span class="co">#&gt; ● completed target terra_vect_example [0.078 seconds, 117.646 kilobytes]</span></span>
+<span><span class="co">#&gt; ▶ ended pipeline [0.259 seconds]</span></span>
 <span><span class="co">#&gt;  class       : SpatVector </span></span>
 <span><span class="co">#&gt;  geometry    : polygons </span></span>
 <span><span class="co">#&gt;  dimensions  : 12, 6  (geometries, attributes)</span></span>
 <span><span class="co">#&gt;  extent      : 5.74414, 6.528252, 49.44781, 50.18162  (xmin, xmax, ymin, ymax)</span></span>
 <span><span class="co">#&gt;  source      : terra_vect_example</span></span>
 <span><span class="co">#&gt;  coord. ref. : lon/lat WGS 84 (EPSG:4326) </span></span>
-<span><span class="co">#&gt;  names       :  ID_1   NAME_1  ID_2   NAME_2  AREA   POP</span></span>
-<span><span class="co">#&gt;  type        : &lt;num&gt;    &lt;chr&gt; &lt;num&gt;    &lt;chr&gt; &lt;num&gt; &lt;int&gt;</span></span>
-<span><span class="co">#&gt;  values      :     1 Diekirch     1 Clervaux   312 18081</span></span>
-<span><span class="co">#&gt;                    1 Diekirch     2 Diekirch   218 32543</span></span>
-<span><span class="co">#&gt;                    1 Diekirch     3  Redange   259 18664</span></span></code></pre></div>
+<span><span class="co">#&gt;  names       :  ID_1   NAME_1  ID_2   NAME_2  AREA       POP</span></span>
+<span><span class="co">#&gt;  type        : &lt;num&gt;    &lt;chr&gt; &lt;num&gt;    &lt;chr&gt; &lt;num&gt;     &lt;num&gt;</span></span>
+<span><span class="co">#&gt;  values      :     1 Diekirch     1 Clervaux   312 1.808e+04</span></span>
+<span><span class="co">#&gt;                    1 Diekirch     2 Diekirch   218 3.254e+04</span></span>
+<span><span class="co">#&gt;                    1 Diekirch     3  Redange   259 1.866e+04</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="tar_terra_sprc-targets-with-terra-raster-collections">
@@ -221,8 +221,8 @@
 <span>  <span class="va">x</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ▶ dispatched target raster_elevs</span></span>
-<span><span class="co">#&gt; ● completed target raster_elevs [0.065 seconds, 36.423 kilobytes]</span></span>
-<span><span class="co">#&gt; ▶ ended pipeline [0.119 seconds]</span></span>
+<span><span class="co">#&gt; ● completed target raster_elevs [0.14 seconds, 36.423 kilobytes]</span></span>
+<span><span class="co">#&gt; ▶ ended pipeline [0.33 seconds]</span></span>
 <span><span class="co">#&gt; class       : SpatRasterCollection </span></span>
 <span><span class="co">#&gt; length      : 2 </span></span>
 <span><span class="co">#&gt; nrow        : 90, 115 </span></span>
@@ -254,8 +254,8 @@
 <span>  <span class="va">x</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ▶ dispatched target test_stars</span></span>
-<span><span class="co">#&gt; ● completed target test_stars [0.018 seconds, 49.9 kilobytes]</span></span>
-<span><span class="co">#&gt; ▶ ended pipeline [0.059 seconds]</span></span>
+<span><span class="co">#&gt; ● completed target test_stars [0.053 seconds, 49.9 kilobytes]</span></span>
+<span><span class="co">#&gt; ▶ ended pipeline [0.192 seconds]</span></span>
 <span><span class="co">#&gt; stars object with 2 dimensions and 1 attribute</span></span>
 <span><span class="co">#&gt; attribute(s):</span></span>
 <span><span class="co">#&gt;             Min. 1st Qu. Median     Mean 3rd Qu. Max.</span></span>
@@ -325,6 +325,7 @@
 <li><a href="https://github.com/njtierney/geotargets/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/njtierney/geotargets/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://app.codecov.io/gh/njtierney/geotargets?branch=master" class="external-link"><img src="https://codecov.io/gh/njtierney/geotargets/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
 <li><a href="https://github.com/njtierney/geotargets/actions?query=workflow%3Apkgcheck" class="external-link"><img src="https://github.com/njtierney/geotargets/workflows/pkgcheck/badge.svg" alt="pkgcheck"></a></li>
+<li><a href="https://github.com/ropensci/software-review/issues/675" class="external-link"><img src="https://badges.ropensci.org/675_status.svg" alt="Status at rOpenSci Software Peer Review"></a></li>
 </ul>
 </div>
 
