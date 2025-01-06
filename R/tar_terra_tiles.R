@@ -1,5 +1,22 @@
 #' Split a raster into tiles that can be iterated over with dynamic branching
 #'
+#' Creates two targets, a list of extents defining tiles and a downstream
+#' pattern that maps over these extents to create a list of `SpatRaster` objects
+#' that can be used with [dynamic
+#' branching](https://books.ropensci.org/targets/dynamic.html).
+#'
+#' @details When a raster is too large or too high resolution to work on
+#'   in-memory, one possible solution is to iterate over tiles. Raster tiles can
+#'   then be operated on one at a time, or possibly in parallel if resources are
+#'   available, and then the results can be aggregated. A natural way to do this
+#'   in the context of a `targets` pipeline is to split the raster into multiple
+#'   raster targets with dynamic branching so that downstream targets can be
+#'   applied to each branch of the upstream target with the `pattern` argument
+#'   to `tar_terra_rast()` or `tar_target()`. `tar_terra_tiles()` facilitates
+#'   creation of such a dynamically branched target. This workflow isn't
+#'   appropriate for operations that aggregate spatially, only pixel-wise
+#'   operations (possibly aggregating across multiple layers).
+#'
 #' This target factory is useful when a raster is too large or too high
 #' resolution to work on in-memory. It can instead be split into tiles that can
 #' be iterated over using dynamic branching.
