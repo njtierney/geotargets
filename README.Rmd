@@ -21,6 +21,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/njtierney/geotargets/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/njtierney/geotargets/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/njtierney/geotargets/branch/master/graph/badge.svg)](https://app.codecov.io/gh/njtierney/geotargets?branch=master)
 [![pkgcheck](https://github.com/njtierney/geotargets/workflows/pkgcheck/badge.svg)](https://github.com/njtierney/geotargets/actions?query=workflow%3Apkgcheck)
+[![Status at rOpenSci Software Peer Review](https://badges.ropensci.org/675_status.svg)](https://github.com/ropensci/software-review/issues/675)
 <!-- badges: end -->
 
 `geotargets` extends [`targets`](https://github.com/ropensci/targets) to work with geospatial data formats, such as rasters and vectors (e.g., shapefiles). Currently we support raster and vector formats for the [`terra`](https://github.com/rspatial/terra) package
