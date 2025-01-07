@@ -137,7 +137,10 @@ tar_terra_rast <- function(name,
 tar_rast_read <- function(preserve_metadata) {
   switch(preserve_metadata,
     zip = function(path) {
-      tmp <- withr::local_tempdir()
+      tmp <- tempdir()
+      # NOTE: cannot use withr::local_tempdir() because the unzipped files need
+      # to persist so that the resulting `SpatRaster` object doesn't have a
+      # broken file pointer
       zip::unzip(zipfile = path, exdir = tmp)
       terra::rast(file.path(tmp, basename(path)))
     },
