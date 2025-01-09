@@ -21,7 +21,7 @@
 #'   to [terra::writeVector()]. See 'Note' for more details.
 #' @param gdal character. GDAL driver specific datasource creation options
 #'   passed to [terra::writeVector()].
-#' @param ... Additional arguments not yet used.
+#' @param ... Additional arguments passed to [terra::writeVector()]
 #' @inheritParams targets::tar_target
 #'
 #' @note The `iteration` argument is unavailable because it is hard-coded to
@@ -121,20 +121,23 @@ tar_terra_vect <- function(name,
         }
       },
       write = function(object, path) {
-        terra::writeVector(
-          object,
-          filename = ifelse(filetype == "ESRI Shapefile", paste0(path, ".shz"), path),
-          filetype = filetype,
-          overwrite = TRUE,
-          options = gdal
-        )
+        do.call(terra::writeVector, c(
+          list(
+            x = object,
+            filename = ifelse(filetype == "ESRI Shapefile", paste0(path, ".shz"), path),
+            filetype = filetype,
+            overwrite = TRUE,
+            options = gdal,
+            args
+          )
+        ))
         if (filetype == "ESRI Shapefile") {
           file.rename(paste0(path, ".shz"), path)
         }
       },
       marshal = function(object) terra::wrap(object),
       unmarshal = function(object) terra::unwrap(object),
-      substitute = list(filetype = filetype, gdal = gdal)
+      substitute = list(filetype = filetype, gdal = gdal, args = list(...))
     ),
     repository = repository,
     iteration = "list", # only "list" works for now
