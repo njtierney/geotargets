@@ -127,9 +127,9 @@ tar_terra_vect <- function(name,
             filename = ifelse(filetype == "ESRI Shapefile", paste0(path, ".shz"), path),
             filetype = filetype,
             overwrite = TRUE,
-            options = gdal,
-            args
-          )
+            options = gdal
+          ),
+          args
         ))
         if (filetype == "ESRI Shapefile") {
           file.rename(paste0(path, ".shz"), path)
