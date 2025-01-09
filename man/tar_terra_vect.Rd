@@ -43,7 +43,7 @@ to \code{\link[terra:writeVector]{terra::writeVector()}}. See 'Note' for more de
 \item{gdal}{character. GDAL driver specific datasource creation options
 passed to \code{\link[terra:writeVector]{terra::writeVector()}}.}
 
-\item{...}{Additional arguments not yet used.}
+\item{...}{Additional arguments passed to \code{\link[terra:writeVector]{terra::writeVector()}}}
 
 \item{packages}{Character vector of packages to load right before
 the target runs or the output data is reloaded for
