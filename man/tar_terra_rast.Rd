@@ -52,7 +52,7 @@ are retained by archiving all written files as a zip file upon writing and
 unzipping them upon reading. This adds extra overhead and will slow
 pipelines.}
 
-\item{...}{Additional arguments not yet used}
+\item{...}{Additional arguments passed to \code{\link[terra:writeRaster]{terra::writeRaster()}}}
 
 \item{tidy_eval}{Logical, whether to enable tidy evaluation
 when interpreting \code{command} and \code{pattern}. If \code{TRUE}, you can use the

@@ -29,7 +29,7 @@
 #'   are retained by archiving all written files as a zip file upon writing and
 #'   unzipping them upon reading. This adds extra overhead and will slow
 #'   pipelines.
-#' @param ... Additional arguments not yet used
+#' @param ... Additional arguments passed to [terra::writeRaster()]
 #'
 #' @inheritParams targets::tar_target
 #'
@@ -114,10 +114,10 @@ tar_terra_rast <- function(name,
     library = library,
     format = targets::tar_format(
       read = tar_rast_read(preserve_metadata = preserve_metadata),
-      write = tar_rast_write(filetype = filetype, gdal = gdal, preserve_metadata = preserve_metadata),
+      write = tar_rast_write(filetype = filetype, gdal = gdal, preserve_metadata = preserve_metadata, args = args),
       marshal = function(object) terra::wrap(object),
       unmarshal = function(object) terra::unwrap(object),
-      substitute = list(filetype = filetype, gdal = gdal, preserve_metadata = preserve_metadata)
+      substitute = list(filetype = filetype, gdal = gdal, preserve_metadata = preserve_metadata, args = list(...))
     ),
     repository = repository,
     iteration = "list", # only "list" works right now
@@ -148,20 +148,23 @@ tar_rast_read <- function(preserve_metadata) {
   )
 }
 
-tar_rast_write <- function(filetype, gdal, preserve_metadata) {
+tar_rast_write <- function(filetype, gdal, preserve_metadata, args) {
   switch(preserve_metadata,
     zip = function(object, path) {
       # write the raster in a fresh local tempdir() that disappears when function is done
       tmp <- withr::local_tempdir()
       raster_tmp_file <- file.path(tmp, basename(path))
       zip_tmp_file <- file.path(tmp, "object.zip")
-      terra::writeRaster(
-        object,
-        filename = raster_tmp_file,
-        filetype = filetype,
-        overwrite = TRUE,
-        gdal = gdal
-      )
+      do.call(terra::writeRaster, c(
+        list(
+          x = object,
+          filename = raster_tmp_file,
+          filetype = filetype,
+          overwrite = TRUE,
+          gdal = gdal
+        ),
+        args
+      ))
       # package files into a zip file using `zip::zip()`
       raster_files <- list.files(path = tmp, full.names = TRUE)
       zip::zip(
@@ -175,13 +178,16 @@ tar_rast_write <- function(filetype, gdal, preserve_metadata) {
       file.copy(zip_tmp_file, path)
     },
     drop = function(object, path) {
-      terra::writeRaster(
-        object,
-        filename = path,
-        filetype = filetype,
-        overwrite = TRUE,
-        gdal = gdal
-      )
+      do.call(terra::writeRaster, c(
+        list(
+          object,
+          filename = path,
+          filetype = filetype,
+          overwrite = TRUE,
+          gdal = gdal
+        ),
+        args
+      ))
     }
   )
 }
