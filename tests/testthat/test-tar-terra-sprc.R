@@ -22,8 +22,6 @@ targets::tar_test("tar_terra_sprc() works", {
       # so this may be as easy as assigning some of these attributes in the
       # test SPRC/SDS and adding those fields in the snapshot.
       terra::units(rast_elev_scale) <- "m"
-      terra::varnames(rast_elev_scale) <- "elev"
-      terra::longnames(rast_elev_scale) <- "really-long-name"
       terra::time(rast_elev_scale) <- as.Date("2025-01-15")
       rast_elev_scale
     }
