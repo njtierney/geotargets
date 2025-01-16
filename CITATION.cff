@@ -1,17 +1,18 @@
-# -----------------------------------------------------------
-# CITATION file created with {cffr} R package, v0.5.0
+# --------------------------------------------
+# CITATION file created with {cffr} R package
 # See also: https://docs.ropensci.org/cffr/
-# -----------------------------------------------------------
+# --------------------------------------------
  
 cff-version: 1.2.0
 message: 'To cite package "geotargets" in publications use:'
 type: software
 license: MIT
-title: 'geotargets: Targets extensions for geospatial formats'
-version: 0.0.0.9000
+title: 'geotargets: ''Targets'' Extensions for Geospatial Formats'
+version: 0.2.0.9000
 abstract: Provides extensions for various geospatial file formats, such as shapefiles
-  and rasters. See the vignettes for worked examples and demonstrations and explanations
-  of how to use the various package extensions.
+  and rasters. Currently provides support for the 'terra' geospatial formats. See
+  the vignettes for worked examples, demonstrations, and explanations of how to use
+  the various package extensions.
 authors:
 - family-names: Tierney
   given-names: Nicholas
@@ -24,7 +25,7 @@ authors:
   given-names: Andrew
   orcid: https://orcid.org/0000-0002-4565-533X
 repository-code: https://github.com/njtierney/geotargets
-url: https://njtierney.github.io/geotargets/
+url: http://geotargets.njtierney.com
 contact:
 - family-names: Tierney
   given-names: Nicholas
@@ -43,3 +44,255 @@ keywords:
 - targets
 - vector
 - workflow
+references:
+- type: software
+  title: targets
+  abstract: 'targets: Dynamic Function-Oriented ''Make''-Like Declarative Pipelines'
+  notes: Imports
+  url: https://docs.ropensci.org/targets/
+  repository: https://CRAN.R-project.org/package=targets
+  authors:
+  - family-names: Landau
+    given-names: William Michael
+    email: will.landau.oss@gmail.com
+    orcid: https://orcid.org/0000-0003-1878-3253
+  year: '2025'
+  doi: 10.32614/CRAN.package.targets
+  version: '>= 1.8.0'
+- type: software
+  title: rlang
+  abstract: 'rlang: Functions for Base Types and Core R and ''Tidyverse'' Features'
+  notes: Imports
+  url: https://rlang.r-lib.org
+  repository: https://CRAN.R-project.org/package=rlang
+  authors:
+  - family-names: Henry
+    given-names: Lionel
+    email: lionel@posit.co
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  year: '2025'
+  doi: 10.32614/CRAN.package.rlang
+  version: '>= 1.1.3'
+- type: software
+  title: cli
+  abstract: 'cli: Helpers for Developing Command Line Interfaces'
+  notes: Imports
+  url: https://cli.r-lib.org
+  repository: https://CRAN.R-project.org/package=cli
+  authors:
+  - family-names: Csárdi
+    given-names: Gábor
+    email: csardi.gabor@gmail.com
+  year: '2025'
+  doi: 10.32614/CRAN.package.cli
+  version: '>= 3.6.2'
+- type: software
+  title: terra
+  abstract: 'terra: Spatial Data Analysis'
+  notes: Imports
+  url: https://rspatial.org/
+  repository: https://CRAN.R-project.org/package=terra
+  authors:
+  - family-names: Hijmans
+    given-names: Robert J.
+    email: r.hijmans@gmail.com
+    orcid: https://orcid.org/0000-0001-5872-2872
+  year: '2025'
+  doi: 10.32614/CRAN.package.terra
+  version: '>= 1.7.71'
+- type: software
+  title: withr
+  abstract: 'withr: Run Code ''With'' Temporarily Modified Global State'
+  notes: Imports
+  url: https://withr.r-lib.org
+  repository: https://CRAN.R-project.org/package=withr
+  authors:
+  - family-names: Hester
+    given-names: Jim
+  - family-names: Henry
+    given-names: Lionel
+    email: lionel@posit.co
+  - family-names: Müller
+    given-names: Kirill
+    email: krlmlr+r@mailbox.org
+  - family-names: Ushey
+    given-names: Kevin
+    email: kevinushey@gmail.com
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  - family-names: Chang
+    given-names: Winston
+  year: '2025'
+  doi: 10.32614/CRAN.package.withr
+  version: '>= 3.0.0'
+- type: software
+  title: zip
+  abstract: 'zip: Cross-Platform ''zip'' Compression'
+  notes: Imports
+  url: https://r-lib.github.io/zip/
+  repository: https://CRAN.R-project.org/package=zip
+  authors:
+  - family-names: Csárdi
+    given-names: Gábor
+    email: csardi.gabor@gmail.com
+  year: '2025'
+  doi: 10.32614/CRAN.package.zip
+- type: software
+  title: lifecycle
+  abstract: 'lifecycle: Manage the Life Cycle of your Package Functions'
+  notes: Imports
+  url: https://lifecycle.r-lib.org/
+  repository: https://CRAN.R-project.org/package=lifecycle
+  authors:
+  - family-names: Henry
+    given-names: Lionel
+    email: lionel@posit.co
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+    orcid: https://orcid.org/0000-0003-4757-117X
+  year: '2025'
+  doi: 10.32614/CRAN.package.lifecycle
+- type: software
+  title: crew
+  abstract: 'crew: A Distributed Worker Launcher Framework'
+  notes: Suggests
+  url: https://wlandau.github.io/crew/
+  repository: https://CRAN.R-project.org/package=crew
+  authors:
+  - family-names: Landau
+    given-names: William Michael
+    email: will.landau.oss@gmail.com
+    orcid: https://orcid.org/0000-0003-1878-3253
+  year: '2025'
+  doi: 10.32614/CRAN.package.crew
+  version: '>= 0.9.2'
+- type: software
+  title: knitr
+  abstract: 'knitr: A General-Purpose Package for Dynamic Report Generation in R'
+  notes: Suggests
+  url: https://yihui.org/knitr/
+  repository: https://CRAN.R-project.org/package=knitr
+  authors:
+  - family-names: Xie
+    given-names: Yihui
+    email: xie@yihui.name
+    orcid: https://orcid.org/0000-0003-0645-5666
+  year: '2025'
+  doi: 10.32614/CRAN.package.knitr
+- type: software
+  title: ncmeta
+  abstract: 'ncmeta: Straightforward ''NetCDF'' Metadata'
+  notes: Suggests
+  url: https://hypertidy.github.io/ncmeta/
+  repository: https://CRAN.R-project.org/package=ncmeta
+  authors:
+  - family-names: Sumner
+    given-names: Michael
+    email: mdsumner@gmail.com
+  year: '2025'
+  doi: 10.32614/CRAN.package.ncmeta
+- type: software
+  title: rmarkdown
+  abstract: 'rmarkdown: Dynamic Documents for R'
+  notes: Suggests
+  url: https://pkgs.rstudio.com/rmarkdown/
+  repository: https://CRAN.R-project.org/package=rmarkdown
+  authors:
+  - family-names: Allaire
+    given-names: JJ
+    email: jj@posit.co
+  - family-names: Xie
+    given-names: Yihui
+    email: xie@yihui.name
+    orcid: https://orcid.org/0000-0003-0645-5666
+  - family-names: Dervieux
+    given-names: Christophe
+    email: cderv@posit.co
+    orcid: https://orcid.org/0000-0003-4474-2498
+  - family-names: McPherson
+    given-names: Jonathan
+    email: jonathan@posit.co
+  - family-names: Luraschi
+    given-names: Javier
+  - family-names: Ushey
+    given-names: Kevin
+    email: kevin@posit.co
+  - family-names: Atkins
+    given-names: Aron
+    email: aron@posit.co
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  - family-names: Cheng
+    given-names: Joe
+    email: joe@posit.co
+  - family-names: Chang
+    given-names: Winston
+    email: winston@posit.co
+  - family-names: Iannone
+    given-names: Richard
+    email: rich@posit.co
+    orcid: https://orcid.org/0000-0003-3925-190X
+  year: '2025'
+  doi: 10.32614/CRAN.package.rmarkdown
+- type: software
+  title: sf
+  abstract: 'sf: Simple Features for R'
+  notes: Suggests
+  url: https://r-spatial.github.io/sf/
+  repository: https://CRAN.R-project.org/package=sf
+  authors:
+  - family-names: Pebesma
+    given-names: Edzer
+    email: edzer.pebesma@uni-muenster.de
+    orcid: https://orcid.org/0000-0001-8049-7069
+  year: '2025'
+  doi: 10.32614/CRAN.package.sf
+- type: software
+  title: stars
+  abstract: 'stars: Spatiotemporal Arrays, Raster and Vector Data Cubes'
+  notes: Suggests
+  url: https://r-spatial.github.io/stars/
+  repository: https://CRAN.R-project.org/package=stars
+  authors:
+  - family-names: Pebesma
+    given-names: Edzer
+    email: edzer.pebesma@uni-muenster.de
+    orcid: https://orcid.org/0000-0001-8049-7069
+  year: '2025'
+  doi: 10.32614/CRAN.package.stars
+- type: software
+  title: testthat
+  abstract: 'testthat: Unit Testing for R'
+  notes: Suggests
+  url: https://testthat.r-lib.org
+  repository: https://CRAN.R-project.org/package=testthat
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  year: '2025'
+  doi: 10.32614/CRAN.package.testthat
+  version: '>= 3.0.0'
+- type: software
+  title: fs
+  abstract: 'fs: Cross-Platform File System Operations Based on ''libuv'''
+  notes: Suggests
+  url: https://fs.r-lib.org
+  repository: https://CRAN.R-project.org/package=fs
+  authors:
+  - family-names: Hester
+    given-names: Jim
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  - family-names: Csárdi
+    given-names: Gábor
+    email: csardi.gabor@gmail.com
+  year: '2025'
+  doi: 10.32614/CRAN.package.fs
+
