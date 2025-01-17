@@ -44,7 +44,13 @@ raster metadata such as units and datetimes are lost (note that this does
 not include layer names set with \verb{names() <-}).  When \code{"zip"}, these
 metadata are retained by archiving all written files as a zip file upon
 writing and unzipping them upon reading. This adds extra overhead and will
-slow pipelines.}
+slow pipelines. Also note metadata may be impacted by different versions
+of GDAL and different drivers. If you have an issue with retaining
+metadata for your setup, please file an issue at
+\url{https://github.com/njtierney/geotargets/issues/} and we will try and
+get this working for you. Also note that you can specify this option for
+individual targets, e.g., inside \code{\link[=tar_terra_rast]{tar_terra_rast()}} there is the option
+\code{preserve_metadata}.}
 
 \item{name}{character; option name to get.}
 }

@@ -27,7 +27,13 @@
 #'   not include layer names set with `names() <-`).  When `"zip"`, these
 #'   metadata are retained by archiving all written files as a zip file upon
 #'   writing and unzipping them upon reading. This adds extra overhead and will
-#'   slow pipelines.
+#'   slow pipelines. Also note metadata may be impacted by different versions
+#'   of GDAL and different drivers. If you have an issue with retaining
+#'   metadata for your setup, please file an issue at
+#'   \url{https://github.com/njtierney/geotargets/issues/} and we will try and
+#'   get this working for you. Also note that you can specify this option for
+#'   individual targets, e.g., inside [tar_terra_rast()] there is the option
+#'   `preserve_metadata`.
 #'
 #' @details
 #' These options can also be set using `options()`.  For example,
