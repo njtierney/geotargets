@@ -12,9 +12,9 @@
 #' the `SpatRaster` object itself.
 #'
 #'
-#' @param name Symbol, name of the target. A target
-#'   name must be a valid name for a symbol in R, and it
-#'   must not start with a dot. See [targets::tar_target()] for more information.
+#' @param name Symbol, name of the target. A target name must be a valid name
+#'   for a symbol in R, and it must not start with a dot. See
+#'   [targets::tar_target()] for more information.
 #' @param command R code to run the target.
 #' @param pattern Code to define a dynamic branching pattern for a target. See
 #'   [targets::tar_target()] for more information.
@@ -56,27 +56,29 @@
 #'     x <- targets::tar_read(terra_rast_example)
 #'   })
 #' }
-tar_terra_rast <- function(name,
-                           command,
-                           pattern = NULL,
-                           filetype = geotargets_option_get("gdal.raster.driver"),
-                           gdal = geotargets_option_get("gdal.raster.creation.options"),
-                           preserve_metadata = geotargets_option_get("terra.preserve.metadata"),
-                           ...,
-                           tidy_eval = targets::tar_option_get("tidy_eval"),
-                           packages = targets::tar_option_get("packages"),
-                           library = targets::tar_option_get("library"),
-                           repository = targets::tar_option_get("repository"),
-                           error = targets::tar_option_get("error"),
-                           memory = targets::tar_option_get("memory"),
-                           garbage_collection = targets::tar_option_get("garbage_collection"),
-                           deployment = targets::tar_option_get("deployment"),
-                           priority = targets::tar_option_get("priority"),
-                           resources = targets::tar_option_get("resources"),
-                           storage = targets::tar_option_get("storage"),
-                           retrieval = targets::tar_option_get("retrieval"),
-                           cue = targets::tar_option_get("cue"),
-                           description = targets::tar_option_get("description")) {
+tar_terra_rast <- function(
+        name,
+        command,
+        pattern = NULL,
+        filetype = geotargets_option_get("gdal.raster.driver"),
+        gdal = geotargets_option_get("gdal.raster.creation.options"),
+        preserve_metadata = geotargets_option_get("terra.preserve.metadata"),
+        ...,
+        tidy_eval = targets::tar_option_get("tidy_eval"),
+        packages = targets::tar_option_get("packages"),
+        library = targets::tar_option_get("library"),
+        repository = targets::tar_option_get("repository"),
+        error = targets::tar_option_get("error"),
+        memory = targets::tar_option_get("memory"),
+        garbage_collection = targets::tar_option_get("garbage_collection"),
+        deployment = targets::tar_option_get("deployment"),
+        priority = targets::tar_option_get("priority"),
+        resources = targets::tar_option_get("resources"),
+        storage = targets::tar_option_get("storage"),
+        retrieval = targets::tar_option_get("retrieval"),
+        cue = targets::tar_option_get("cue"),
+        description = targets::tar_option_get("description")
+) {
   filetype <- filetype %||% "GTiff"
 
   # check that filetype option is available
@@ -114,10 +116,18 @@ tar_terra_rast <- function(name,
     library = library,
     format = targets::tar_format(
       read = tar_rast_read(preserve_metadata = preserve_metadata),
-      write = tar_rast_write(filetype = filetype, gdal = gdal, preserve_metadata = preserve_metadata),
+      write = tar_rast_write(
+          filetype = filetype,
+          gdal = gdal,
+          preserve_metadata = preserve_metadata
+          ),
       marshal = function(object) terra::wrap(object),
       unmarshal = function(object) terra::unwrap(object),
-      substitute = list(filetype = filetype, gdal = gdal, preserve_metadata = preserve_metadata)
+      substitute = list(
+          filetype = filetype,
+          gdal = gdal,
+          preserve_metadata = preserve_metadata
+          )
     ),
     repository = repository,
     iteration = "list", # only "list" works right now
@@ -151,7 +161,8 @@ tar_rast_read <- function(preserve_metadata) {
 tar_rast_write <- function(filetype, gdal, preserve_metadata) {
   switch(preserve_metadata,
     zip = function(object, path) {
-      # write the raster in a fresh local tempdir() that disappears when function is done
+      # write the raster in a fresh local tempdir() that disappears when
+      # function is done
       tmp <- withr::local_tempdir()
       raster_tmp_file <- file.path(tmp, basename(path))
       zip_tmp_file <- file.path(tmp, "object.zip")

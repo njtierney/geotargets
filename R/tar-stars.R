@@ -8,9 +8,9 @@
 #' `tar_stars()` has the same limitations as [stars::write_stars()], so use with
 #' caution.
 #'
-#' @param name Symbol, name of the target. A target name must be a valid name for
-#'  a symbol in R, and it must not start with a dot. See [targets::tar_target()]
-#'  for more information.
+#' @param name Symbol, name of the target. A target name must be a valid name
+#'  for a symbol in R, and it must not start with a dot. See
+#'  [targets::tar_target()] for more information.
 #' @param command R code to run the target.
 #' @param pattern Code to define a dynamic branching pattern for a target. See
 #'  [targets::tar_target()] for more information.
@@ -45,7 +45,9 @@
 #'       list(
 #'         geotargets::tar_stars(
 #'           stars_example,
-#'           stars::read_stars(system.file("tif", "olinda_dem_utm25s.tif", package = "stars"))
+#'           stars::read_stars(
+#'           system.file("tif", "olinda_dem_utm25s.tif", package = "stars")
+#'           )
 #'         )
 #'       )
 #'     })
@@ -53,29 +55,31 @@
 #'     x <- targets::tar_read(stars_example)
 #'   })
 #' }
-tar_stars <- function(name,
-                      command,
-                      pattern = NULL,
-                      proxy = FALSE,
-                      mdim = FALSE,
-                      ncdf = FALSE,
-                      driver = geotargets_option_get("gdal.raster.driver"),
-                      options = geotargets_option_get("gdal.raster.creation.options"),
-                      ...,
-                      tidy_eval = targets::tar_option_get("tidy_eval"),
-                      packages = targets::tar_option_get("packages"),
-                      library = targets::tar_option_get("library"),
-                      repository = targets::tar_option_get("repository"),
-                      error = targets::tar_option_get("error"),
-                      memory = targets::tar_option_get("memory"),
-                      garbage_collection = targets::tar_option_get("garbage_collection"),
-                      deployment = targets::tar_option_get("deployment"),
-                      priority = targets::tar_option_get("priority"),
-                      resources = targets::tar_option_get("resources"),
-                      storage = targets::tar_option_get("storage"),
-                      retrieval = targets::tar_option_get("retrieval"),
-                      cue = targets::tar_option_get("cue"),
-                      description = targets::tar_option_get("description")) {
+tar_stars <- function(
+        name,
+        command,
+        pattern = NULL,
+        proxy = FALSE,
+        mdim = FALSE,
+        ncdf = FALSE,
+        driver = geotargets_option_get("gdal.raster.driver"),
+        options = geotargets_option_get("gdal.raster.creation.options"),
+        ...,
+        tidy_eval = targets::tar_option_get("tidy_eval"),
+        packages = targets::tar_option_get("packages"),
+        library = targets::tar_option_get("library"),
+        repository = targets::tar_option_get("repository"),
+        error = targets::tar_option_get("error"),
+        memory = targets::tar_option_get("memory"),
+        garbage_collection = targets::tar_option_get("garbage_collection"),
+        deployment = targets::tar_option_get("deployment"),
+        priority = targets::tar_option_get("priority"),
+        resources = targets::tar_option_get("resources"),
+        storage = targets::tar_option_get("storage"),
+        retrieval = targets::tar_option_get("retrieval"),
+        cue = targets::tar_option_get("cue"),
+        description = targets::tar_option_get("description")
+) {
   check_pkg_installed("stars")
   if (ncdf) {
     check_pkg_installed("ncmeta")
@@ -124,28 +128,30 @@ tar_stars <- function(name,
 
 #' @export
 #' @rdname tar_stars
-tar_stars_proxy <- function(name,
-                            command,
-                            pattern = NULL,
-                            mdim = FALSE,
-                            ncdf = FALSE,
-                            driver = geotargets_option_get("gdal.raster.driver"),
-                            options = geotargets_option_get("gdal.raster.creation.options"),
-                            ...,
-                            tidy_eval = targets::tar_option_get("tidy_eval"),
-                            packages = targets::tar_option_get("packages"),
-                            library = targets::tar_option_get("library"),
-                            repository = targets::tar_option_get("repository"),
-                            error = targets::tar_option_get("error"),
-                            memory = targets::tar_option_get("memory"),
-                            garbage_collection = targets::tar_option_get("garbage_collection"),
-                            deployment = targets::tar_option_get("deployment"),
-                            priority = targets::tar_option_get("priority"),
-                            resources = targets::tar_option_get("resources"),
-                            storage = targets::tar_option_get("storage"),
-                            retrieval = targets::tar_option_get("retrieval"),
-                            cue = targets::tar_option_get("cue"),
-                            description = targets::tar_option_get("description")) {
+tar_stars_proxy <- function(
+        name,
+        command,
+        pattern = NULL,
+        mdim = FALSE,
+        ncdf = FALSE,
+        driver = geotargets_option_get("gdal.raster.driver"),
+        options = geotargets_option_get("gdal.raster.creation.options"),
+        ...,
+        tidy_eval = targets::tar_option_get("tidy_eval"),
+        packages = targets::tar_option_get("packages"),
+        library = targets::tar_option_get("library"),
+        repository = targets::tar_option_get("repository"),
+        error = targets::tar_option_get("error"),
+        memory = targets::tar_option_get("memory"),
+        garbage_collection = targets::tar_option_get("garbage_collection"),
+        deployment = targets::tar_option_get("deployment"),
+        priority = targets::tar_option_get("priority"),
+        resources = targets::tar_option_get("resources"),
+        storage = targets::tar_option_get("storage"),
+        retrieval = targets::tar_option_get("retrieval"),
+        cue = targets::tar_option_get("cue"),
+        description = targets::tar_option_get("description")
+) {
   check_pkg_installed("stars")
   if (ncdf) {
     check_pkg_installed("ncmeta")
@@ -196,29 +202,31 @@ tar_stars_proxy <- function(name,
 
 #' tar_stars method with no tidy eval etc.
 #' @noRd
-tar_stars_raw <- function(name,
-                          command,
-                          pattern = NULL,
-                          proxy,
-                          mdim = FALSE,
-                          ncdf = FALSE,
-                          driver = geotargets_option_get("gdal.raster.driver"),
-                          options = geotargets_option_get("gdal.raster.creation.options"),
-                          ...,
-                          tidy_eval = targets::tar_option_get("tidy_eval"),
-                          packages = targets::tar_option_get("packages"),
-                          library = targets::tar_option_get("library"),
-                          repository = targets::tar_option_get("repository"),
-                          error = targets::tar_option_get("error"),
-                          memory = targets::tar_option_get("memory"),
-                          garbage_collection = targets::tar_option_get("garbage_collection"),
-                          deployment = targets::tar_option_get("deployment"),
-                          priority = targets::tar_option_get("priority"),
-                          resources = targets::tar_option_get("resources"),
-                          storage = targets::tar_option_get("storage"),
-                          retrieval = targets::tar_option_get("retrieval"),
-                          cue = targets::tar_option_get("cue"),
-                          description = targets::tar_option_get("description")) {
+tar_stars_raw <- function(
+        name,
+        command,
+        pattern = NULL,
+        proxy,
+        mdim = FALSE,
+        ncdf = FALSE,
+        driver = geotargets_option_get("gdal.raster.driver"),
+        options = geotargets_option_get("gdal.raster.creation.options"),
+        ...,
+        tidy_eval = targets::tar_option_get("tidy_eval"),
+        packages = targets::tar_option_get("packages"),
+        library = targets::tar_option_get("library"),
+        repository = targets::tar_option_get("repository"),
+        error = targets::tar_option_get("error"),
+        memory = targets::tar_option_get("memory"),
+        garbage_collection = targets::tar_option_get("garbage_collection"),
+        deployment = targets::tar_option_get("deployment"),
+        priority = targets::tar_option_get("priority"),
+        resources = targets::tar_option_get("resources"),
+        storage = targets::tar_option_get("storage"),
+        retrieval = targets::tar_option_get("retrieval"),
+        cue = targets::tar_option_get("cue"),
+        description = targets::tar_option_get("description")
+) {
   driver <- driver %||% "GTiff"
   options <- options %||% character(0)
 

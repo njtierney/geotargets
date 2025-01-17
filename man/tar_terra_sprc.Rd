@@ -28,9 +28,9 @@ tar_terra_sprc(
 )
 }
 \arguments{
-\item{name}{Symbol, name of the target. A target
-name must be a valid name for a symbol in R, and it
-must not start with a dot. See \code{\link[targets:tar_target]{targets::tar_target()}} for more information.}
+\item{name}{Symbol, name of the target. A target name must be a valid name
+for a symbol in R, and it must not start with a dot. See
+\code{\link[targets:tar_target]{targets::tar_target()}} for more information.}
 
 \item{command}{R code to run the target.}
 

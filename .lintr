@@ -1,0 +1,8 @@
+linters: linters_with_defaults(
+  infix_spaces_linter = NULL,
+  object_length_linter = NULL,
+  object_name_linter = NULL,
+  object_usage_linter = NULL,
+  indentation_linter = NULL)
+exclusions: list("inst/notes/preserver_metadata_benchmarking.Qmd")
+encoding: "UTF-8"

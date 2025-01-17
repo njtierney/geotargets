@@ -1,4 +1,5 @@
-targets::tar_test("geotargets_options_get() retrieves options in correct priority", {
+targets::tar_test(
+    "geotargets_options_get() retrieves options in correct priority", {
   # options takes precedent over env var
   withr::with_envvar(
     c("GEOTARGETS_GDAL_RASTER_DRIVER" = "COG"),
@@ -12,7 +13,9 @@ targets::tar_test("geotargets_options_get() retrieves options in correct priorit
         )
       })
       targets::tar_make()
-      expect_equal(geotargets::geotargets_option_get("gdal.raster.driver"), "GIF")
+      expect_equal(
+          geotargets::geotargets_option_get("gdal.raster.driver"), "GIF"
+          )
     })
   )
 })
@@ -28,7 +31,8 @@ test_that("geotargets_option_set() works", {
   expect_equal(geotargets_option_get("gdal_raster_driver"), "COG")
 })
 
-test_that("options aren't reset with multiple calls to geotargets_option_set()", {
+test_that(
+    "options aren't reset with multiple calls to geotargets_option_set()", {
   op_rast <- getOption("geotargets.gdal.raster.driver")
   withr::defer(options("geotargets.gdal.raster.driver" = op_rast))
   op_vect <- getOption("geotargets.gdal.vector.driver")

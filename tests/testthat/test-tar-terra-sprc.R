@@ -1,4 +1,4 @@
-# test_that() #Included to make RStudio recognize this file as a test
+# test_that() #Included to make RStudio recognize this file as a test # nolint
 targets::tar_test("tar_terra_sprc() works", {
   geotargets::geotargets_option_set(
     gdal_raster_creation_options =
@@ -67,9 +67,9 @@ targets::tar_test("tar_terra_sds() works", {
   expect_snapshot(x)
 })
 
-# difficult to test for this warning from tar_terra_sprc() because it doesn't end
-# up in tar_meta() in current version of `targets`.  Added in dev version:
-# https://github.com/ropensci/targets/discussions/1345#discussioncomment-10908585.
+# difficult to test for this warning from tar_terra_sprc() because it doesn't
+# end up in tar_meta() in current version of `targets`.  Added in dev version:
+# https://github.com/ropensci/targets/discussions/1345
 # Once this is released, this test can be replaced with a targets pipeline and a
 # check on `tar_meta(target, warnings)`
 

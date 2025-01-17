@@ -34,7 +34,7 @@ check_gdal_shz <- function(min_version = "3.1",
 }
 
 get_gdal_available_driver_list <- function(driver_type) {
-  # get list of drivers available for writing depending on what the user's GDAL supports
+  # get list of drivers available for writing based on what user's GDAL supports
   drv <- terra::gdal(drivers = TRUE)
   if (utils::packageVersion("terra") > "1.7-74") {
     drv <- drv[drv[[driver_type]] & grepl("write", drv$can), ]
@@ -45,7 +45,7 @@ get_gdal_available_driver_list <- function(driver_type) {
 }
 
 check_user_resources <- function(resources,
-                                 call = rlang::caller_env()){
+                                 call = rlang::caller_env()) {
     if ("custom_format" %in% names(resources)) {
         cli::cli_abort(
             message = c(
