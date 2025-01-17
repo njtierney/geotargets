@@ -6,7 +6,7 @@ targets::tar_test("tar_terra_sprc() works", {
   )
   targets::tar_script({
     elev_scale <- function(z = 1, projection = "EPSG:4326") {
-      terra::project(
+      rast_elev_scale <- terra::project(
         terra::rast(
           system.file(
             "ex",
@@ -16,6 +16,14 @@ targets::tar_test("tar_terra_sprc() works", {
         ) * z,
         projection
       )
+      # test to ensure metadata comes along.
+      # e.g., layer names, units, time, variables
+      # The snapshots for these tests do not include those metadata
+      # so this may be as easy as assigning some of these attributes in the
+      # test SPRC/SDS and adding those fields in the snapshot.
+      terra::units(rast_elev_scale) <- "m"
+      terra::time(rast_elev_scale) <- as.Date("2025-01-15")
+      rast_elev_scale
     }
     list(
       geotargets::tar_terra_sprc(
@@ -33,6 +41,8 @@ targets::tar_test("tar_terra_sprc() works", {
   x <- targets::tar_read(raster_elevs)
   expect_s4_class(x, "SpatRasterCollection")
   expect_snapshot(x)
+  expect_snapshot(x[1])
+  expect_snapshot(x[2])
 })
 
 targets::tar_test("tar_terra_sds() works", {
@@ -42,13 +52,24 @@ targets::tar_test("tar_terra_sds() works", {
   )
   targets::tar_script({
     elev_scale <- function(z = 1) {
-      terra::rast(
+        rast_elev_scale <- terra::rast(
         system.file(
           "ex",
           "elev.tif",
           package = "terra"
         )
       ) * z
+
+        # test to ensure metadata comes along.
+        # e.g., layer names, units, time, variables
+        # The snapshots for these tests do not include those metadata
+        # so this may be as easy as assigning some of these attributes in the
+        # test SPRC/SDS and adding those fields in the snapshot.
+        terra::units(rast_elev_scale) <- "m"
+        terra::varnames(rast_elev_scale) <- "elev"
+        terra::longnames(rast_elev_scale) <- "really-long-name"
+        terra::time(rast_elev_scale) <- as.Date("2025-01-15")
+        rast_elev_scale
     }
     list(
       geotargets::tar_terra_sds(
@@ -65,6 +86,12 @@ targets::tar_test("tar_terra_sds() works", {
   x <- targets::tar_read(raster_elevs)
   expect_s4_class(x, "SpatRasterDataset")
   expect_snapshot(x)
+  expect_snapshot(x[1])
+  expect_equal(terra::units(x[1]), "m")
+  expect_equal(terra::time(x[1]), as.Date("2025-01-15"))
+  expect_snapshot(x[2])
+  expect_equal(terra::units(x[2]), "m")
+  expect_equal(terra::time(x[2]), as.Date("2025-01-15"))
 })
 
 # difficult to test for this warning from tar_terra_sprc() because it doesn't end

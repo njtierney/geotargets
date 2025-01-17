@@ -312,6 +312,8 @@ set_window <- function(raster, window) {
 #' )
 #' }
 tile_grid <- function(raster, ncol, nrow) {
+    check_is_integerish(ncol)
+    check_is_integerish(nrow)
     template <- terra::rast(
         x = terra::ext(raster),
         ncol = ncol,
@@ -333,6 +335,8 @@ tile_grid <- function(raster, ncol, nrow) {
 #' @export
 #' @rdname tile_helpers
 tile_blocksize <- function(raster, n_blocks_row = 1, n_blocks_col = 1) {
+    check_is_integerish(n_blocks_row)
+    check_is_integerish(n_blocks_col)
     tile_ext <-
         terra::getTileExtents(
             raster,
@@ -349,14 +353,7 @@ tile_blocksize <- function(raster, n_blocks_row = 1, n_blocks_col = 1) {
 #' @export
 #' @rdname tile_helpers
 tile_n <- function(raster, n) {
-    if (!rlang::is_integerish(n)) {
-        cli::cli_abort(
-            c(
-                "{.val {n}} must be an integer.",
-                "We see that {.val n} is: {n}"
-                )
-        )
-    }
+    check_is_integerish(n)
     sq <- sqrt(n)
     sq_round <- floor(sq)
     quotient <- n/sq_round
