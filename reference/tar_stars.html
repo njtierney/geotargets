@@ -115,9 +115,9 @@ caution.</p>
 
 
 <dl><dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
-<dd><p>Symbol, name of the target. A target name must be a valid name for
-a symbol in R, and it must not start with a dot. See <code><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">targets::tar_target()</a></code>
-for more information.</p></dd>
+<dd><p>Symbol, name of the target. A target name must be a valid name
+for a symbol in R, and it must not start with a dot. See
+<code><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">targets::tar_target()</a></code> for more information.</p></dd>
 
 
 <dt id="arg-command">command<a class="anchor" aria-label="anchor" href="#arg-command"></a></dt>
@@ -359,7 +359,9 @@ string <code>"survival model"</code>.</p></dd>
 <span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>        <span class="fu">geotargets</span><span class="fu">::</span><span class="fu">tar_stars</span><span class="op">(</span></span></span>
 <span class="r-in"><span>          <span class="va">stars_example</span>,</span></span>
-<span class="r-in"><span>          <span class="fu">stars</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/stars/reference/read_stars.html" class="external-link">read_stars</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"tif"</span>, <span class="st">"olinda_dem_utm25s.tif"</span>, package <span class="op">=</span> <span class="st">"stars"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>          <span class="fu">stars</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/stars/reference/read_stars.html" class="external-link">read_stars</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>          <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"tif"</span>, <span class="st">"olinda_dem_utm25s.tif"</span>, package <span class="op">=</span> <span class="st">"stars"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>          <span class="op">)</span></span></span>
 <span class="r-in"><span>        <span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="op">}</span><span class="op">)</span></span></span>
