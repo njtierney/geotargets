@@ -11,9 +11,9 @@
 #' the target as a geospatial file (specified by `filetype`) rather than saving
 #' the `SpatVector` object itself.
 #'
-#' @param name Symbol, name of the target. A target
-#'   name must be a valid name for a symbol in R, and it
-#'   must not start with a dot. See [targets::tar_target()] for more information.
+#' @param name Symbol, name of the target. A target name must be a valid name
+#'   for a symbol in R, and it must not start with a dot. See
+#'   [targets::tar_target()] for more information.
 #' @param command R code to run the target.
 #' @param pattern Code to define a dynamic branching pattern for a target. See
 #'   [targets::tar_target()] for more information.
@@ -57,28 +57,30 @@
 #'     x <- targets::tar_read(terra_vect_example)
 #'   })
 #' }
-tar_terra_vect <- function(name,
-                           command,
-                           pattern = NULL,
-                           filetype = geotargets_option_get("gdal.vector.driver"),
-                           gdal = geotargets_option_get("gdal.vector.creation.options"),
-                           ...,
-                           packages = targets::tar_option_get("packages"),
-                           tidy_eval = targets::tar_option_get("tidy_eval"),
-                           library = targets::tar_option_get("library"),
-                           repository = targets::tar_option_get("repository"),
-                           error = targets::tar_option_get("error"),
-                           memory = targets::tar_option_get("memory"),
-                           garbage_collection = targets::tar_option_get("garbage_collection"),
-                           deployment = targets::tar_option_get("deployment"),
-                           priority = targets::tar_option_get("priority"),
-                           resources = targets::tar_option_get("resources"),
-                           storage = targets::tar_option_get("storage"),
-                           retrieval = targets::tar_option_get("retrieval"),
-                           cue = targets::tar_option_get("cue"),
-                           description = targets::tar_option_get("description")) {
-  filetype <- filetype %||% "GeoJSON"
-  gdal <- gdal %||% "ENCODING=UTF-8"
+tar_terra_vect <- function(
+        name,
+        command,
+        pattern = NULL,
+        filetype = geotargets_option_get("gdal.vector.driver"),
+        gdal = geotargets_option_get("gdal.vector.creation.options"),
+        ...,
+        packages = targets::tar_option_get("packages"),
+        tidy_eval = targets::tar_option_get("tidy_eval"),
+        library = targets::tar_option_get("library"),
+        repository = targets::tar_option_get("repository"),
+        error = targets::tar_option_get("error"),
+        memory = targets::tar_option_get("memory"),
+        garbage_collection = targets::tar_option_get("garbage_collection"),
+        deployment = targets::tar_option_get("deployment"),
+        priority = targets::tar_option_get("priority"),
+        resources = targets::tar_option_get("resources"),
+        storage = targets::tar_option_get("storage"),
+        retrieval = targets::tar_option_get("retrieval"),
+        cue = targets::tar_option_get("cue"),
+        description = targets::tar_option_get("description")
+        ) {
+    filetype <- filetype %||% "GeoJSON"
+    gdal <- gdal %||% "ENCODING=UTF-8"
 
   # Check that filetype is available
   drv <- get_gdal_available_driver_list("vector")
@@ -123,7 +125,9 @@ tar_terra_vect <- function(name,
       write = function(object, path) {
         terra::writeVector(
           object,
-          filename = ifelse(filetype == "ESRI Shapefile", paste0(path, ".shz"), path),
+          filename = ifelse(filetype == "ESRI Shapefile",
+                            yes = paste0(path, ".shz"),
+                            no = path),
           filetype = filetype,
           overwrite = TRUE,
           options = gdal

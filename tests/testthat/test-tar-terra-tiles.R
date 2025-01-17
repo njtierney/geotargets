@@ -1,4 +1,4 @@
-# test_that() #Included to make RStudio recognize this file as a test
+# test_that() #Included to make RStudio recognize this file as a test # nolint
 targets::tar_test("tar_terra_tiles() works", {
   targets::tar_script({
     library(targets)
@@ -7,7 +7,6 @@ targets::tar_test("tar_terra_tiles() works", {
     list(
       tar_target(
         my_file,
-        # system.file("ex/elev.tif", package="terra"),
         system.file("ex/logo.tif", package = "terra"),
         format = "file"
       ),
@@ -39,7 +38,8 @@ targets::tar_test("tar_terra_tiles() works", {
     "tile_blocksize(my_map)"
   )
   # expect_equal(manifest[manifest$name == "rast_split_n_exts", ][["command"]],
-  #              "tile_grid(my_map, ncol = 2, nrow = 2)") #TODO: haven't figured out how to make the manifest look nice with anonymous funs yet
+  #              "tile_grid(my_map, ncol = 2, nrow = 2)")
+   #TODO: haven't figured out how to make manifest look nice with anon funs yet
   expect_equal(
     manifest[manifest$name == "rast_split", ][["command"]],
     "set_window(my_map, terra::ext(rast_split_exts))"

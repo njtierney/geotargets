@@ -1,4 +1,4 @@
-# test_that()
+# test_that() # nolint
 targets::tar_test("tar_terra_vect() works", {
   targets::tar_script({
     lux_area <- function(projection = "EPSG:4326") {
@@ -54,9 +54,12 @@ targets::tar_test("tar_terra_vect() works with dynamic branching", {
   expect_length(targets::tar_read(my_vect_subs), 2)
 })
 
-targets::tar_test("tar_terra_vect() works with multiple workers (tests marshaling/unmarshaling)", {
+targets::tar_test(
+    "tar_terra_vect() works with multiple workers (tests un/marshaling)", {
   targets::tar_script({
-    targets::tar_option_set(controller = crew::crew_controller_local(workers = 2))
+    targets::tar_option_set(
+        controller = crew::crew_controller_local(workers = 2)
+        )
     list(
       geotargets::tar_terra_vect(
         vect1,
