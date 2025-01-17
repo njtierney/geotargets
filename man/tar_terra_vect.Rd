@@ -217,13 +217,17 @@ target class "tar_stem" for use in a target pipeline
 Provides a target format for \link[terra:SpatVector-class]{terra::SpatVector} objects.
 }
 \details{
-\link[terra:SpatVector-class]{terra::SpatVector} objects do not contain vector data directly—they
-contain a C++ pointer to memory where the data is stored.  As a result, these
-objects are not portable between R sessions without special handling, which
-causes problems when including them in \code{targets} pipelines with
-\code{tar_target()}. \code{tar_terra_rast()} handles this issue by writing and reading
-the target as a geospatial file (specified by \code{filetype}) rather than saving
-the \code{SpatVector} object itself.
+The terra package uses objects like \link[terra:SpatRaster-class]{terra::SpatRaster},
+\link[terra:SpatVector-class]{terra::SpatVector}, and \link[terra:SpatRaster-class]{terra::SpatRasterDataset} (SDS) objects -
+these do not contain the data directly—they contain a C++ pointer to memory
+where the data is stored.  As a result, these objects are not portable
+between R sessions without special handling, which causes problems when
+including them in \code{targets} pipelines with \code{\link[targets:tar_target]{targets::tar_target()}}.
+The functions, \code{\link[=tar_terra_rast]{tar_terra_rast()}}, \code{\link[=tar_terra_sds]{tar_terra_sds()}},
+\code{\link[=tar_terra_sprc]{tar_terra_sprc()}}, \code{\link[=tar_terra_tiles]{tar_terra_tiles()}}, and \code{\link[=tar_terra_vect]{tar_terra_vect()}} handle this
+issue by writing and reading the target as a geospatial file (specified by
+\code{filetype}) rather than saving the relevant object (e.g., \code{SpatRaster},
+\code{SpatVector}, etc.), itself.
 }
 \note{
 The \code{iteration} argument is unavailable because it is hard-coded to
