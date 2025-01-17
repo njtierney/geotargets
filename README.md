@@ -23,6 +23,16 @@ work with geospatial data formats, such as rasters and vectors (e.g.,
 shapefiles). Currently we support raster and vector formats for the
 [`terra`](https://github.com/rspatial/terra) package
 
+## How to cite geotargets
+
+One example citation of geotargets could be as follows: “R packages used
+in this analysis included (list R packages used), targets, and
+geotargets (Tierney, N., Scott, E., & Brown, A, 2024). Here is the full
+bibliographic reference for your references:
+
+> Tierney N, Scott E, Brown A (2024). “geotargets: ‘Targets’ Extensions
+> for Geospatial Formats.” <http://geotargets.njtierney.com>.
+
 ## Installation
 
 You can install the development version of geotargets like so:
@@ -107,8 +117,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target terra_rast_example
-#> ● completed target terra_rast_example [0.074 seconds, 7.992 kilobytes]
-#> ▶ ended pipeline [0.316 seconds]
+#> ● completed target terra_rast_example [0.011 seconds, 7.992 kilobytes]
+#> ▶ ended pipeline [0.085 seconds]
 #> class       : SpatRaster 
 #> dimensions  : 90, 95, 1  (nrow, ncol, nlyr)
 #> resolution  : 0.008333333, 0.008333333  (x, y)
@@ -149,8 +159,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target terra_vect_example
-#> ● completed target terra_vect_example [0.078 seconds, 117.646 kilobytes]
-#> ▶ ended pipeline [0.259 seconds]
+#> ● completed target terra_vect_example [0.018 seconds, 117.646 kilobytes]
+#> ▶ ended pipeline [0.08 seconds]
 #>  class       : SpatVector 
 #>  geometry    : polygons 
 #>  dimensions  : 12, 6  (geometries, attributes)
@@ -196,8 +206,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target raster_elevs
-#> ● completed target raster_elevs [0.14 seconds, 36.423 kilobytes]
-#> ▶ ended pipeline [0.33 seconds]
+#> ● completed target raster_elevs [0.054 seconds, 36.423 kilobytes]
+#> ▶ ended pipeline [0.111 seconds]
 #> class       : SpatRasterCollection 
 #> length      : 2 
 #> nrow        : 90, 115 
@@ -228,8 +238,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target test_stars
-#> ● completed target test_stars [0.053 seconds, 49.9 kilobytes]
-#> ▶ ended pipeline [0.192 seconds]
+#> ● completed target test_stars [0.021 seconds, 49.9 kilobytes]
+#> ▶ ended pipeline [0.067 seconds]
 #> stars object with 2 dimensions and 1 attribute
 #> attribute(s):
 #>             Min. 1st Qu. Median     Mean 3rd Qu. Max.

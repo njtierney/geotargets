@@ -26,6 +26,16 @@ knitr::opts_chunk$set(
 
 `geotargets` extends [`targets`](https://github.com/ropensci/targets) to work with geospatial data formats, such as rasters and vectors (e.g., shapefiles). Currently we support raster and vector formats for the [`terra`](https://github.com/rspatial/terra) package
 
+## How to cite geotargets
+
+One example citation of geotargets could be as follows: "R packages used in this analysis included (list R packages used), targets, and geotargets (Tierney, N., Scott, E., & Brown, A, 2024). Here is the full bibliographic reference for your references:
+
+> Tierney N, Scott E, Brown A
+  (2024). "geotargets: 'Targets'
+  Extensions for Geospatial
+  Formats."
+  <http://geotargets.njtierney.com>.
+
 ## Installation
 
 You can install the development version of geotargets like so:
