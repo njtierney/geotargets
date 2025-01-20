@@ -98,13 +98,19 @@ passed to <code><a href="https://rspatial.github.io/terra/reference/writeRaster.
 
 
 <dt id="arg-preserve-metadata">preserve_metadata<a class="anchor" aria-label="anchor" href="#arg-preserve-metadata"></a></dt>
-<dd><p>character. When <code>"drop"</code> (default), any auxiliary
-files that would be written by <code><a href="https://rspatial.github.io/terra/reference/writeRaster.html" class="external-link">terra::writeRaster()</a></code> containing raster
-metadata such as units and datetimes are lost (note that this does not
-include layer names set with <code>names() &lt;-</code>).  When <code>"zip"</code>, these metadata
-are retained by archiving all written files as a zip file upon writing and
-unzipping them upon reading. This adds extra overhead and will slow
-pipelines.</p></dd>
+<dd><p>character. When <code>"drop"</code> (default), any
+auxiliary files that would be written by <code><a href="https://rspatial.github.io/terra/reference/writeRaster.html" class="external-link">terra::writeRaster()</a></code> containing
+raster metadata such as units and datetimes are lost (note that this does
+not include layer names set with <code>names() &lt;-</code>).  When <code>"zip"</code>, these
+metadata are retained by archiving all written files as a zip file upon
+writing and unzipping them upon reading. This adds extra overhead and will
+slow pipelines. Also note metadata may be impacted by different versions
+of GDAL and different drivers. If you have an issue with retaining
+metadata for your setup, please file an issue at
+<a href="https://github.com/njtierney/geotargets/issues/" class="external-link">https://github.com/njtierney/geotargets/issues/</a> and we will try and
+get this working for you. Also note that you can specify this option
+inside <code><a href="geotargets-options.html">geotargets_option_set()</a></code> if you want to set this for the entire
+pipeline.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

@@ -98,7 +98,10 @@ raster metadata such as units and datetimes are lost (note that this does
 not include layer names set with <code>names() &lt;-</code>).  When <code>"zip"</code>, these
 metadata are retained by archiving all written files as a zip file upon
 writing and unzipping them upon reading. This adds extra overhead and will
-slow pipelines.</p></dd>
+slow pipelines. Also note metadata may be impacted by different versions
+of GDAL and different drivers. Note that you can specify this option for
+individual targets, e.g., inside <code><a href="tar_terra_rast.html">tar_terra_rast()</a></code> there is the option,
+<code>preserve_metadata</code>.</p></dd>
 
 
 <dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
@@ -116,6 +119,16 @@ more information.</p>
 <code>geotargets_options_set(gdal_raster_driver = "GTiff")</code> is equivalent to
 <code>options("geotargets.gdal.raster.driver" = "GTiff")</code>.</p>
     </div>
+    <div class="section level2">
+    <h2 id="potential-issues-retaining-metdatadata">Potential issues retaining metdatadata<a class="anchor" aria-label="anchor" href="#potential-issues-retaining-metdatadata"></a></h2>
+    <p>If you have an issue with retaining metadata (such as units, time, etc),
+this could be due to the versions of GDAL and terra on your machine. We
+recommend exploring if this issue persists outside of geotargets. That is,
+try saving the file out and reading it back in using regular R code. If you
+find that this is an issue with geotargets, please file an issues at
+<a href="https://github.com/njtierney/geotargets/issues/" class="external-link">https://github.com/njtierney/geotargets/issues/</a> and we will try and
+get this working for you.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -124,17 +137,27 @@ more information.</p>
 <span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/njtierney/geotargets" class="external-link">geotargets</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="va">op</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"geotargets.gdal.raster.driver"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/defer.html" class="external-link">defer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"geotargets.gdal.raster.driver"</span> <span class="op">=</span> <span class="va">op</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu">geotargets_option_set</span><span class="op">(</span>gdal_raster_driver <span class="op">=</span> <span class="st">"COG"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu">geotargets_option_set</span><span class="op">(</span></span></span>
+<span class="r-in"><span>      gdal_raster_driver <span class="op">=</span> <span class="st">"COG"</span>,</span></span>
+<span class="r-in"><span>      terra_preserve_metadata <span class="op">=</span> <span class="st">"zip"</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_script.html" class="external-link">tar_script</a></span><span class="op">(</span><span class="op">{</span></span></span>
 <span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>        <span class="fu">geotargets</span><span class="fu">::</span><span class="fu"><a href="tar_terra_rast.html">tar_terra_rast</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>          <span class="va">terra_rast_example</span>,</span></span>
-<span class="r-in"><span>          <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"ex/elev.tif"</span>, package <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>          <span class="op">{</span></span></span>
+<span class="r-in"><span>            <span class="va">new_rast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"ex/elev.tif"</span>, package <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>              <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>            <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/units.html" class="external-link">units</a></span><span class="op">(</span><span class="va">new_rast</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"m"</span></span></span>
+<span class="r-in"><span>            <span class="va">new_rast</span></span></span>
+<span class="r-in"><span>          <span class="op">}</span></span></span>
 <span class="r-in"><span>        <span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html" class="external-link">tar_make</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_read.html" class="external-link">tar_read</a></span><span class="op">(</span><span class="va">terra_rast_example</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">x</span></span></span>
+<span class="r-in"><span>    <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/units.html" class="external-link">units</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
