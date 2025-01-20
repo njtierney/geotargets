@@ -118,7 +118,111 @@ and total tiles created.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"ex/elev.tif"</span>, package<span class="op">=</span><span class="st">"terra"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">tile_grid</span><span class="op">(</span><span class="va">r</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      xmin      xmax      ymin      ymax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5.741667  6.141667 49.816667 50.191667 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      xmin      xmax      ymin      ymax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6.141667  6.533333 49.816667 50.191667 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      xmin      xmax      ymin      ymax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5.741667  6.141667 49.441667 49.816667 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[4]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      xmin      xmax      ymin      ymax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6.141667  6.533333 49.441667 49.816667 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="fu">tile_blocksize</span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      xmin      xmax      ymin      ymax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5.741667  6.533333 49.833333 50.191667 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      xmin      xmax      ymin      ymax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5.741667  6.533333 49.475000 49.833333 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      xmin      xmax      ymin      ymax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5.741667  6.533333 49.441667 49.475000 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="fu">tile_n</span><span class="op">(</span><span class="va">r</span>, <span class="fl">8</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> creating 2 * 4 = 8 tile extents</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      xmin      xmax      ymin      ymax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5.741667  5.941667 49.816667 50.191667 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      xmin      xmax      ymin      ymax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5.941667  6.133333 49.816667 50.191667 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      xmin      xmax      ymin      ymax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6.133333  6.333333 49.816667 50.191667 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[4]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      xmin      xmax      ymin      ymax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6.333333  6.533333 49.816667 50.191667 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[5]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      xmin      xmax      ymin      ymax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5.741667  5.941667 49.441667 49.816667 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[6]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      xmin      xmax      ymin      ymax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5.941667  6.133333 49.441667 49.816667 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[7]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      xmin      xmax      ymin      ymax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6.133333  6.333333 49.441667 49.816667 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[8]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      xmin      xmax      ymin      ymax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6.333333  6.533333 49.441667 49.816667 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co">#usage with tar_terra_tiles</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="tar_terra_rast.html">tar_terra_rast</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="va">my_map</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"ex/logo.tif"</span>, package <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="tar_terra_tiles.html">tar_terra_tiles</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        name <span class="op">=</span> <span class="va">rast_split</span>,</span></span>
+<span class="r-in"><span>        raster <span class="op">=</span> <span class="va">my_map</span>,</span></span>
+<span class="r-in"><span>        tile_fun <span class="op">=</span> <span class="va">tile_blocksize</span>,</span></span>
+<span class="r-in"><span>        description <span class="op">=</span> <span class="st">"Each tile is 1 block"</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="tar_terra_tiles.html">tar_terra_tiles</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        name <span class="op">=</span> <span class="va">rast_split_2blocks</span>,</span></span>
+<span class="r-in"><span>        raster <span class="op">=</span> <span class="va">my_map</span>,</span></span>
+<span class="r-in"><span>        tile_fun <span class="op">=</span> \<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">tile_blocksize</span><span class="op">(</span></span></span>
+<span class="r-in"><span>          <span class="va">x</span>,</span></span>
+<span class="r-in"><span>          n_blocks_row <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>          n_blocks_col <span class="op">=</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span>          <span class="op">)</span>,</span></span>
+<span class="r-in"><span>        description <span class="op">=</span> <span class="st">"Each tile is 2 blocks tall, 1 block wide"</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="tar_terra_tiles.html">tar_terra_tiles</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        name <span class="op">=</span> <span class="va">rast_split_grid</span>,</span></span>
+<span class="r-in"><span>        raster <span class="op">=</span> <span class="va">my_map</span>,</span></span>
+<span class="r-in"><span>        tile_fun <span class="op">=</span> \<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">tile_grid</span><span class="op">(</span><span class="va">x</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        description <span class="op">=</span> <span class="st">"Split into 4 tiles in a 2x2 grid"</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="tar_terra_tiles.html">tar_terra_tiles</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        name <span class="op">=</span> <span class="va">rast_split_n</span>,</span></span>
+<span class="r-in"><span>        raster <span class="op">=</span> <span class="va">my_map</span>,</span></span>
+<span class="r-in"><span>        tile_fun <span class="op">=</span> \<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">tile_n</span><span class="op">(</span><span class="va">x</span>, n <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        description <span class="op">=</span> <span class="st">"Split into 6 tiles"</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
