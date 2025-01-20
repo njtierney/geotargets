@@ -137,12 +137,44 @@ tar_test("That changing filetype invalidates a target", {
   expect_equal(tar_outdated(), "r")
 })
 
-tar_test("metadata is maintained", {
+tar_test("metadata is maintained for GTiff", {
   tar_script({
     library(targets)
     library(geotargets)
     library(terra)
-    geotargets_option_set(terra_preserve_metadata = "zip")
+    geotargets_option_set(
+        terra_preserve_metadata = "zip",
+        gdal_raster_driver = "GTiff" # default
+        )
+    make_rast <- function() {
+      f <- system.file("ex/elev.tif", package = "terra")
+      r <- terra::rast(f)
+      r <- c(r, r + 10, r / 2)
+      terra::units(r) <- rep("m", 3)
+      terra::time(r) <- as.Date("2024-10-01") + c(0, 1, 2)
+      r
+    }
+    list(
+      tar_terra_rast(r, make_rast()),
+      tar_terra_rast(r2, make_rast(), preserve_metadata = "drop")
+    )
+  })
+  tar_make()
+  x <- tar_read(r)
+  expect_equal(terra::units(x), rep("m", 3))
+  expect_equal(terra::time(x), as.Date("2024-10-01") + c(0, 1, 2))
+  expect_equal(head(terra::values(x)), head(terra::values(tar_read(r2))))
+})
+
+tar_test("metadata is maintained for COG", {
+  tar_script({
+    library(targets)
+    library(geotargets)
+    library(terra)
+    geotargets_option_set(
+        terra_preserve_metadata = "zip",
+        gdal_raster_driver = "COG"
+        )
     make_rast <- function() {
       f <- system.file("ex/elev.tif", package = "terra")
       r <- terra::rast(f)
