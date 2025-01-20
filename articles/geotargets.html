@@ -129,12 +129,12 @@ set this option on a target-by-target basis with the
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html" class="external-link">tar_make</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">▶ dispatched target tif_file</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target tif_file [0.008 seconds, 7.994 kilobytes]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target tif_file [0.009 seconds, 7.994 kilobytes]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ▶ dispatched target r</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target r [0.003 seconds, 10.433 kilobytes]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ▶ dispatched target r_agg</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target r_agg [0.003 seconds, 6.303 kilobytes]</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ▶ ended pipeline [0.14 seconds]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target r_agg [0.002 seconds, 6.303 kilobytes]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ▶ ended pipeline [0.142 seconds]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; </span></span></span>
 <span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_read.html" class="external-link">tar_read</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span>
 <span><span class="co">#&gt; class       : SpatRaster </span></span>
@@ -200,8 +200,8 @@ default <code>preserve_metadata = "drop"</code>.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html" class="external-link">tar_make</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BB0000;">✔ skipping targets (1 so far)...</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ▶ dispatched target r</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target r [0.003 seconds, 10.252 kilobytes]</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ▶ ended pipeline [0.118 seconds]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target r [0.004 seconds, 10.252 kilobytes]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ▶ ended pipeline [0.126 seconds]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; </span></span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/units.html" class="external-link">units</a></span><span class="op">(</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_read.html" class="external-link">tar_read</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "m"</span></span></code></pre></div>
@@ -244,8 +244,8 @@ specific options with <code><a href="../reference/geotargets-options.html">geota
 <span><span class="co"><span style="color: #BB0000;">#&gt; ▶ dispatched target v</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target v [0.008 seconds, 117.629 kilobytes]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ▶ dispatched target v_proj</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target v_proj [0.016 seconds, 213.534 kilobytes]</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ▶ ended pipeline [0.13 seconds]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target v_proj [0.017 seconds, 213.534 kilobytes]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ▶ ended pipeline [0.133 seconds]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; </span></span></span>
 <span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_read.html" class="external-link">tar_read</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  class       : SpatVector </span></span>
@@ -320,8 +320,8 @@ one file per target rule.</p>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ▶ dispatched target r</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target r [0.003 seconds, 947.265 kilobytes]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ▶ dispatched target raster_elevs</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target raster_elevs [0.052 seconds, 37.904 kilobytes]</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ▶ ended pipeline [1.043 seconds]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target raster_elevs [0.054 seconds, 37.904 kilobytes]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ▶ ended pipeline [1.059 seconds]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; </span></span></span>
 <span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_read.html" class="external-link">tar_read</a></span><span class="op">(</span><span class="va">raster_elevs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; class       : SpatRasterCollection </span></span>
@@ -366,8 +366,8 @@ have the same projection and extent</p>
 <span><span class="co">#&gt; <span style="color: #BB0000;">▶ dispatched target logo_file</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target logo_file [0.009 seconds, 22.458 kilobytes]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; ▶ dispatched target raster_dataset</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target raster_dataset [0.031 seconds, 54.735 kilobytes]</span></span></span>
-<span><span class="co"><span style="color: #BB0000;">#&gt; ▶ ended pipeline [0.136 seconds]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ● completed target raster_dataset [0.03 seconds, 54.735 kilobytes]</span></span></span>
+<span><span class="co"><span style="color: #BB0000;">#&gt; ▶ ended pipeline [0.139 seconds]</span></span></span>
 <span><span class="co"><span style="color: #BB0000;">#&gt; </span></span></span>
 <span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_read.html" class="external-link">tar_read</a></span><span class="op">(</span><span class="va">raster_dataset</span><span class="op">)</span></span>
 <span><span class="co">#&gt; class       : SpatRasterDataset </span></span>
