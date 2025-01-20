@@ -28,12 +28,20 @@
 #'   metadata are retained by archiving all written files as a zip file upon
 #'   writing and unzipping them upon reading. This adds extra overhead and will
 #'   slow pipelines. Also note metadata may be impacted by different versions
-#'   of GDAL and different drivers. If you have an issue with retaining
-#'   metadata for your setup, please file an issue at
-#'   \url{https://github.com/njtierney/geotargets/issues/} and we will try and
-#'   get this working for you. Also note that you can specify this option for
-#'   individual targets, e.g., inside [tar_terra_rast()] there is the option
+#'   of GDAL and different drivers. Note that you can specify this option for
+#'   individual targets, e.g., inside [tar_terra_rast()] there is the option,
 #'   `preserve_metadata`.
+#'
+#' @details
+#' # Potential issues retaining metdatadata
+#'
+#'   If you have an issue with retaining metadata (such as units, time, etc),
+#'   this could be due to the versions of GDAL and terra on your machine. We
+#'   recommend exploring if this issue persists outside of geotargets. That is,
+#'   try saving the file out and reading it back in using regular R code. If you
+#'   find that this is an issue with geotargets, please file an issues at
+#'   \url{https://github.com/njtierney/geotargets/issues/} and we will try and
+#'   get this working for you.
 #'
 #' @details
 #' These options can also be set using `options()`.  For example,
@@ -51,17 +59,27 @@
 #'     library(geotargets)
 #'     op <- getOption("geotargets.gdal.raster.driver")
 #'     withr::defer(options("geotargets.gdal.raster.driver" = op))
-#'     geotargets_option_set(gdal_raster_driver = "COG")
+#'     geotargets_option_set(
+#'       gdal_raster_driver = "COG",
+#'       terra_preserve_metadata = "zip"
+#'     )
 #'     targets::tar_script({
 #'       list(
 #'         geotargets::tar_terra_rast(
 #'           terra_rast_example,
-#'           system.file("ex/elev.tif", package = "terra") |> terra::rast()
+#'           {
+#'             new_rast <- system.file("ex/elev.tif", package = "terra") |>
+#'               terra::rast()
+#'             terra::units(new_rast) <- "m"
+#'             new_rast
+#'           }
 #'         )
 #'       )
 #'     })
 #'     targets::tar_make()
 #'     x <- targets::tar_read(terra_rast_example)
+#'     x
+#'     terra::units(x)
 #'   })
 #' }
 #'
