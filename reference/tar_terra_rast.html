@@ -298,13 +298,17 @@ string <code>"survival model"</code>.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">terra::SpatRaster</a> objects do not contain raster data directly—they
-contain a C++ pointer to memory where the data is stored.  As a result, these
-objects are not portable between R sessions without special handling, which
-causes problems when including them in <code>targets</code> pipelines with
-<code><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">tar_target()</a></code>. <code>tar_terra_rast()</code> handles this issue by writing and reading
-the target as a geospatial file (specified by <code>filetype</code>) rather than saving
-the <code>SpatRaster</code> object itself.</p>
+    <p>The terra package uses objects like <a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">terra::SpatRaster</a>,
+<a href="https://rspatial.github.io/terra/reference/SpatVector-class.html" class="external-link">terra::SpatVector</a>, and <a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">terra::SpatRasterDataset</a> (SDS), which do
+not contain the data directly–they contain a C++ pointer to memory where
+the data is stored.  As a result, these objects are not portable between
+R sessions without special handling, which causes problems when including
+them in <code>targets</code> pipelines with <code><a href="https://docs.ropensci.org/targets/reference/tar_target.html" class="external-link">targets::tar_target()</a></code>. The functions,
+<code>tar_terra_rast()</code>, <code><a href="tar_terra_sds.html">tar_terra_sds()</a></code>, <code><a href="tar_terra_sprc.html">tar_terra_sprc()</a></code>,
+<code><a href="tar_terra_tiles.html">tar_terra_tiles()</a></code>, and <code><a href="tar_terra_vect.html">tar_terra_vect()</a></code> handle this issue by writing and
+reading the target as a geospatial file (specified by <code>filetype</code>) rather
+than saving the relevant object (e.g., <code>SpatRaster</code>, <code>SpatVector</code>, etc.),
+itself.</p>
     </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
