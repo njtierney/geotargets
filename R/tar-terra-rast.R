@@ -3,14 +3,17 @@
 #' Provides a target format for [terra::SpatRaster-class] objects.
 #'
 #' @details
-#' [terra::SpatRaster-class] objects do not contain raster data directly—they
-#' contain a C++ pointer to memory where the data is stored.  As a result, these
-#' objects are not portable between R sessions without special handling, which
-#' causes problems when including them in `targets` pipelines with
-#' `tar_target()`. `tar_terra_rast()` handles this issue by writing and reading
-#' the target as a geospatial file (specified by `filetype`) rather than saving
-#' the `SpatRaster` object itself.
-#'
+#' The terra package uses objects like [terra::SpatRaster-class],
+#' [terra::SpatVector-class], and [terra::SpatRasterDataset] (SDS), which do
+#' not contain the data directly--they contain a C++ pointer to memory where
+#' the data is stored.  As a result, these objects are not portable between
+#' R sessions without special handling, which causes problems when including
+#' them in `targets` pipelines with [targets::tar_target()]. The functions,
+#' [tar_terra_rast()], [tar_terra_sds()], [tar_terra_sprc()],
+#' [tar_terra_tiles()], and [tar_terra_vect()] handle this issue by writing and
+#' reading the target as a geospatial file (specified by `filetype`) rather
+#' than saving the relevant object (e.g., `SpatRaster`, `SpatVector`, etc.),
+#' itself.
 #'
 #' @param name Symbol, name of the target. A target name must be a valid name
 #'   for a symbol in R, and it must not start with a dot. See

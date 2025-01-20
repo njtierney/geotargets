@@ -3,6 +3,8 @@
 #' Provides a target format for [terra::SpatRasterCollection] objects,
 #'   which have no restriction in the extent or other geometric parameters.
 #'
+#' @inherit tar_terra_rast details
+#'
 #' @param name Symbol, name of the target. A target name must be a valid name
 #'   for a symbol in R, and it must not start with a dot. See
 #'   [targets::tar_target()] for more information.
@@ -128,6 +130,8 @@ tar_terra_sprc <- function(
 #'
 #' Provides a target format for [terra::SpatRasterDataset] objects,
 #'   which hold sub-datasets, each a `SpatRaster` that can have multiple layers.
+#'
+#' @inherit tar_terra_rast details
 #'
 #' @param name Symbol, name of the target. A target name must be a valid name
 #'   for a symbol in R, and it must not start with a dot. See

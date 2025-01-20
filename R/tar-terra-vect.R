@@ -2,14 +2,7 @@
 #'
 #' Provides a target format for [terra::SpatVector-class] objects.
 #'
-#' @details
-#' [terra::SpatVector-class] objects do not contain vector data directly—they
-#' contain a C++ pointer to memory where the data is stored.  As a result, these
-#' objects are not portable between R sessions without special handling, which
-#' causes problems when including them in `targets` pipelines with
-#' `tar_target()`. `tar_terra_rast()` handles this issue by writing and reading
-#' the target as a geospatial file (specified by `filetype`) rather than saving
-#' the `SpatVector` object itself.
+#' @inherit tar_terra_rast details
 #'
 #' @param name Symbol, name of the target. A target name must be a valid name
 #'   for a symbol in R, and it must not start with a dot. See
