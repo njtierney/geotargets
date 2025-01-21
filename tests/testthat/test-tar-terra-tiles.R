@@ -65,17 +65,46 @@ targets::tar_test("recombined tiles are equal to original", {
         rast(c(my_file, my_file))
       ),
       tar_terra_tiles(
-        name = rast_split,
+        name = rast_split_blocksize,
         raster = my_map,
         tile_fun = tile_blocksize
+      ),
+      tar_terra_tiles(
+        name = rast_split_grid,
+        raster = my_map,
+        tile_fun = \(x) tile_grid(x, ncol = 2, nrow = 2),
+        description = "Split into 4 tiles in a 2x2 grid"
+      ),
+      tar_terra_tiles(
+          name = rast_split_n,
+          raster = my_map,
+          tile_fun = \(x) tile_n(x, n = 6),
+          description = "Split into 6 tiles"
       )
     )
   })
   targets::tar_make()
-  targets::tar_load(c(my_map, rast_split))
-  recombined <- terra::merge(terra::sprc(rast_split))
+  targets::tar_load(
+      c(
+          my_map,
+          rast_split_blocksize,
+          rast_split_grid,
+          rast_split_n
+          )
+      )
+  recombined_blocksize <- terra::merge(terra::sprc(rast_split_blocksize))
+  recombined_grid <- terra::merge(terra::sprc(rast_split_grid))
+  recombined_n <- terra::merge(terra::sprc(rast_split_n))
   expect_equal(
     terra::values(my_map),
-    terra::values(recombined)
+    terra::values(recombined_blocksize)
+  )
+  expect_equal(
+    terra::values(my_map),
+    terra::values(recombined_grid)
+  )
+  expect_equal(
+    terra::values(my_map),
+    terra::values(recombined_n)
   )
 })
