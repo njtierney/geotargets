@@ -107,7 +107,7 @@ targets::tar_test("user resources are passed correctly", {
 
 tar_test("That changing filetype invalidates a target", {
   targets::tar_script({
-    library(targets)
+    library(targets) # nolint
     library(geotargets)
     library(terra)
 
@@ -134,7 +134,7 @@ tar_test("That changing filetype invalidates a target", {
       )
     )
   })
-  expect_equal(tar_outdated(), "r")
+  expect_identical(tar_outdated(), "r")
 })
 
 tar_test("metadata is maintained for GTiff", {
@@ -161,9 +161,9 @@ tar_test("metadata is maintained for GTiff", {
   })
   tar_make()
   x <- tar_read(r)
-  expect_equal(terra::units(x), rep("m", 3))
-  expect_equal(terra::time(x), as.Date("2024-10-01") + c(0, 1, 2))
-  expect_equal(head(terra::values(x)), head(terra::values(tar_read(r2))))
+  expect_identical(terra::units(x), rep("m", 3))
+  expect_identical(terra::time(x), as.Date("2024-10-01") + c(0, 1, 2))
+  expect_identical(head(terra::values(x)), head(terra::values(tar_read(r2))))
 })
 
 tar_test("metadata is maintained for COG", {
@@ -190,7 +190,7 @@ tar_test("metadata is maintained for COG", {
   })
   tar_make()
   x <- tar_read(r)
-  expect_equal(terra::units(x), rep("m", 3))
-  expect_equal(terra::time(x), as.Date("2024-10-01") + c(0, 1, 2))
-  expect_equal(head(terra::values(x)), head(terra::values(tar_read(r2))))
+  expect_identical(terra::units(x), rep("m", 3))
+  expect_identical(terra::time(x), as.Date("2024-10-01") + c(0, 1, 2))
+  expect_identical(head(terra::values(x)), head(terra::values(tar_read(r2))))
 })

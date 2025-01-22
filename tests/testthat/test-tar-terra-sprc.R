@@ -87,11 +87,11 @@ targets::tar_test("tar_terra_sds() works", {
   expect_s4_class(x, "SpatRasterDataset")
   expect_snapshot(x)
   expect_snapshot(x[1])
-  expect_equal(terra::units(x[1]), "m")
-  expect_equal(terra::time(x[1]), as.Date("2025-01-15"))
+  expect_identical(terra::units(x[1]), "m")
+  expect_identical(terra::time(x[1]), as.Date("2025-01-15"))
   expect_snapshot(x[2])
-  expect_equal(terra::units(x[2]), "m")
-  expect_equal(terra::time(x[2]), as.Date("2025-01-15"))
+  expect_identical(terra::units(x[2]), "m")
+  expect_identical(terra::time(x[2]), as.Date("2025-01-15"))
 })
 
 # difficult to test for this warning from tar_terra_sprc() because it doesn't
