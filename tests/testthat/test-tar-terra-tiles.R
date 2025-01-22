@@ -33,17 +33,17 @@ targets::tar_test("tar_terra_tiles() works", {
   })
   manifest <- targets::tar_manifest()
   # check that the command is correct
-  expect_equal(
-    manifest[manifest$name == "rast_split_exts", ][["command"]],
-    "tile_blocksize(my_map)"
-  )
+  expect_identical(
+      manifest[manifest$name == "rast_split_exts", ][["command"]],
+      "tile_blocksize(my_map)"
+      )
   # expect_equal(manifest[manifest$name == "rast_split_n_exts", ][["command"]],
   #              "tile_grid(my_map, ncol = 2, nrow = 2)")
    #TODO: haven't figured out how to make manifest look nice with anon funs yet
-  expect_equal(
-    manifest[manifest$name == "rast_split", ][["command"]],
-    "set_window(my_map, terra::ext(rast_split_exts))"
-  )
+  expect_identical(
+      manifest[manifest$name == "rast_split", ][["command"]],
+      "set_window(my_map, terra::ext(rast_split_exts))"
+      )
   targets::tar_make()
   expect_true(all(is.na(targets::tar_meta()$error)))
 })
@@ -95,16 +95,7 @@ targets::tar_test("recombined tiles are equal to original", {
   recombined_blocksize <- terra::merge(terra::sprc(rast_split_blocksize))
   recombined_grid <- terra::merge(terra::sprc(rast_split_grid))
   recombined_n <- terra::merge(terra::sprc(rast_split_n))
-  expect_equal(
-    terra::values(my_map),
-    terra::values(recombined_blocksize)
-  )
-  expect_equal(
-    terra::values(my_map),
-    terra::values(recombined_grid)
-  )
-  expect_equal(
-    terra::values(my_map),
-    terra::values(recombined_n)
-  )
+  expect_identical(terra::values(my_map), terra::values(recombined_blocksize))
+  expect_identical(terra::values(my_map), terra::values(recombined_grid))
+  expect_identical(terra::values(my_map), terra::values(recombined_n))
 })

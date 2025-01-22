@@ -90,17 +90,27 @@ geotargets_option_set <- function(gdal_raster_driver = NULL,
                                   terra_preserve_metadata = NULL) {
     # TODO do this programmatically with formals() or something?
     # `options()` also accepts a named list
+    gdal_raster_driver <- gdal_raster_driver %||%
+        geotargets_option_get("gdal.raster.driver")
+
+    gdal_raster_creation_options <- gdal_raster_creation_options %||%
+        geotargets_option_get("gdal.raster.creation.options")
+
+    gdal_vector_driver <- gdal_vector_driver %||%
+        geotargets_option_get("gdal.vector.driver")
+
+    gdal_vector_creation_options <- gdal_vector_creation_options %||%
+        geotargets_option_get("gdal.vector.creation.options")
+
+    terra_preserve_metadata <- terra_preserve_metadata %||%
+        geotargets_option_get("terra.preserve.metadata")
+
   options(
-    "geotargets.gdal.raster.driver" = gdal_raster_driver %||% # nolint
-      geotargets_option_get("gdal.raster.driver"),
-    "geotargets.gdal.raster.creation.options" = gdal_raster_creation_options %||% # nolint
-      geotargets_option_get("gdal.raster.creation.options"),
-    "geotargets.gdal.vector.driver" = gdal_vector_driver %||%
-      geotargets_option_get("gdal.vector.driver"),
-    "geotargets.gdal.vector.creation.options" = gdal_vector_creation_options %||% #nolint
-      geotargets_option_get("gdal.vector.creation.options"),
-    "geotargets.terra.preserve.metadata" = terra_preserve_metadata %||%
-      geotargets_option_get("terra.preserve.metadata")
+    "geotargets.gdal.raster.driver" = gdal_raster_driver,
+    "geotargets.gdal.raster.creation.options" = gdal_raster_creation_options,
+    "geotargets.gdal.vector.driver" = gdal_vector_driver,
+    "geotargets.gdal.vector.creation.options" = gdal_vector_creation_options,
+    "geotargets.terra.preserve.metadata" = terra_preserve_metadata
   )
 }
 

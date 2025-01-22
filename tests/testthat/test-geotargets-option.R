@@ -13,9 +13,7 @@ targets::tar_test(
         )
       })
       targets::tar_make()
-      expect_equal(
-          geotargets::geotargets_option_get("gdal.raster.driver"), "GIF"
-          )
+      expect_identical(geotargets::geotargets_option_get("gdal.raster.driver"), "GIF")
     })
   )
 })
@@ -26,9 +24,9 @@ test_that("geotargets_option_set() works", {
   withr::defer(options("geotargets.gdal.raster.driver" = op))
 
   geotargets_option_set(gdal_raster_driver = "COG")
-  expect_equal(getOption("geotargets.gdal.raster.driver"), "COG")
-  expect_equal(geotargets_option_get("gdal.raster.driver"), "COG")
-  expect_equal(geotargets_option_get("gdal_raster_driver"), "COG")
+  expect_identical(getOption("geotargets.gdal.raster.driver"), "COG")
+  expect_identical(geotargets_option_get("gdal.raster.driver"), "COG")
+  expect_identical(geotargets_option_get("gdal_raster_driver"), "COG")
 })
 
 test_that(
@@ -40,6 +38,6 @@ test_that(
 
   geotargets_option_set(gdal_raster_driver = "GPKG")
   geotargets_option_set(gdal_vector_driver = "GPKG")
-  expect_equal(geotargets_option_get("gdal_vector_driver"), "GPKG")
-  expect_equal(geotargets_option_get("gdal_raster_driver"), "GPKG")
+  expect_identical(geotargets_option_get("gdal_vector_driver"), "GPKG")
+  expect_identical(geotargets_option_get("gdal_raster_driver"), "GPKG")
 })
