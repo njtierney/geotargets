@@ -165,14 +165,18 @@ tar_test("metadata is maintained (gdalraster SOZip)", {
       r <- c(r, r + 10, r / 2)
       terra::units(r) <- rep("m", 3)
       terra::time(r) <- as.Date("2024-10-01") + c(0, 1, 2)
+      terra::metags(r) <- "FOO=BAR"
+      terra::metags(r, layer = 1) <- "asdf=hjkl"
       r
     }
     list(
-      tar_terra_rast(r, make_rast())
+      tar_terra_rast(r, make_rast(), filetype = "HFA")
     )
   })
   tar_make()
   x <- tar_read(r)
   expect_equal(terra::units(x), rep("m", 3))
   expect_equal(terra::time(x), as.Date("2024-10-01") + c(0, 1, 2))
+  expect_equal(terra::metags(x), c(FOO = "BAR"))
+  expect_equal(terra::metags(x, 1), data.frame(layer = 1, name = "asdf", value = "hjkl"))
 })
