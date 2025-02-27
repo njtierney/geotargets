@@ -181,6 +181,14 @@ sources(r2)
 tile_blocksize(r2)
 ```
 
+# How to run targets examples from vignettes
+
+The way targets typically works is you write a file named `_targets.R`, which describes the pipeline. See for example, the [`_targets.R` file in the demo-geotargets repo](https://github.com/njtierney/demo-geotargets/blob/main/_targets.R).
+
+However, in order to demonstrate many of the features with `targets` and `geotargets`, we don't want to have to create many `_targets.R` files. So instead we use a targets function [`targets::tar_script()`](https://docs.ropensci.org/targets/reference/tar_script.html). This allows you to write the code you would have put in a `_targets.R` file. 
+
+What this means for you is you can essentially just "copy and paste" the examples we provide in this vignette. When running the `tar_script` code, it will ask you each time if you want to overwrite the `_targets.R` file. This means if you are exploring these examples and copying the entire examples, it is worthwhile doing this in a separate repository to avoid overwriting your own `_targets.R` file.
+
 ## Example targets pipeline
 
 When developing a `targets` pipeline using `tar_terra_tiles()` with `tile_blocksize()`, it's a good idea to figure out how many tiles `tile_blocksize()` will create before implementing `tar_terra_tiles()`.
@@ -188,9 +196,7 @@ We'll start by making a bigger raster to experiment with using `terra::disagg()`
 
 ```{r}
 #| label: tar_script
-#| echo: false
-#| eval: true
-
+#| echo: true
 targets::tar_script({
   # contents of _targets.R
   library(targets)
@@ -215,34 +221,6 @@ targets::tar_script({
     )
   )
 })
-```
-
-```{r}
-#| label: _targets
-#| eval: false
-#| echo: true
-# contents of _targets.R
-library(targets)
-library(geotargets)
-library(terra)
-geotargets_option_set(gdal_raster_driver = "COG")
-list(
-  tar_target(
-    raster_file,
-    system.file("ex/elev.tif", package = "terra"),
-    format = "file"
-  ),
-  tar_terra_rast(
-    r,
-    disagg(rast(raster_file), fact = 10)
-  ),
-  # add more layers
-  tar_terra_rast(
-    r_big,
-    c(r, r + 100, r * 10, r / 2),
-    memory = "transient"
-  )
-)
 ```
 
 ```{r}
@@ -272,7 +250,7 @@ The process that happens from here can be thought of as `split-apply-combine`.
 ```{r}
 #| label: tar_script2
 #| eval: true
-#| echo: false
+#| echo: true
 targets::tar_script({
   # contents of _targets.R
   library(targets)
@@ -295,18 +273,21 @@ targets::tar_script({
       c(r, r + 100, r * 10, r / 2),
       memory = "transient"
     ),
+    # split
     tar_terra_tiles(
       tiles,
       raster = r_big,
       tile_fun = tile_blocksize,
       description = "split raster into tiles"
     ),
+    # apply
     tar_terra_rast(
       tiles_mean,
       app(tiles, \(x) mean(x, na.rm = TRUE)),
       pattern = map(tiles),
       description = "some computationaly intensive task performed on each tile"
     ),
+    # combine
     tar_terra_rast(
       merged_mean,
       merge(sprc(tiles_mean)),
@@ -314,51 +295,6 @@ targets::tar_script({
     )
   )
 })
-```
-
-```{r}
-#| label: _targets2
-#| eval: false
-#| echo: true
-# contents of _targets.R
-library(targets)
-library(geotargets)
-library(terra)
-geotargets_option_set(gdal_raster_driver = "COG")
-tar_option_set(memory = "transient")
-list(
-  tar_target(
-    raster_file,
-    system.file("ex/elev.tif", package = "terra"),
-    format = "file"
-  ),
-  tar_terra_rast(
-    r,
-    disagg(rast(raster_file), fact = 10)
-  ),
-  tar_terra_rast(
-    r_big,
-    c(r, r + 100, r * 10, r / 2),
-    memory = "transient"
-  ),
-  tar_terra_tiles(
-    tiles,
-    raster = r_big,
-    tile_fun = tile_blocksize,
-    description = "split raster into tiles"
-  ),
-  tar_terra_rast(
-    tiles_mean,
-    app(tiles, \(x) mean(x, na.rm = TRUE)),
-    pattern = map(tiles),
-    description = "some computationaly intensive task performed on each tile"
-  ),
-  tar_terra_rast(
-    merged_mean,
-    merge(sprc(tiles_mean)),
-    description = "merge tiles into a single SpatRaster"
-  )
-)
 ```
 
 ```{r}
