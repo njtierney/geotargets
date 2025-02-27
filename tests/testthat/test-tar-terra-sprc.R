@@ -1,8 +1,7 @@
 # test_that() #Included to make RStudio recognize this file as a test # nolint
 targets::tar_test("tar_terra_sprc() works", {
   geotargets::geotargets_option_set(
-    gdal_raster_creation_options =
-      c("COMPRESS=DEFLATE", "TFW=YES")
+    gdal_raster_creation_options = c("COMPRESS=DEFLATE", "TFW=YES")
   )
   targets::tar_script({
     elev_scale <- function(z = 1, projection = "EPSG:4326") {
@@ -13,7 +12,8 @@ targets::tar_test("tar_terra_sprc() works", {
             "elev.tif",
             package = "terra"
           )
-        ) * z,
+        ) *
+          z,
         projection
       )
       # test to ensure metadata comes along.
@@ -47,29 +47,29 @@ targets::tar_test("tar_terra_sprc() works", {
 
 targets::tar_test("tar_terra_sds() works", {
   geotargets::geotargets_option_set(
-    gdal_raster_creation_options =
-      c("COMPRESS=DEFLATE", "TFW=YES")
+    gdal_raster_creation_options = c("COMPRESS=DEFLATE", "TFW=YES")
   )
   targets::tar_script({
     elev_scale <- function(z = 1) {
-        rast_elev_scale <- terra::rast(
+      rast_elev_scale <- terra::rast(
         system.file(
           "ex",
           "elev.tif",
           package = "terra"
         )
-      ) * z
+      ) *
+        z
 
-        # test to ensure metadata comes along.
-        # e.g., layer names, units, time, variables
-        # The snapshots for these tests do not include those metadata
-        # so this may be as easy as assigning some of these attributes in the
-        # test SPRC/SDS and adding those fields in the snapshot.
-        terra::units(rast_elev_scale) <- "m"
-        terra::varnames(rast_elev_scale) <- "elev"
-        terra::longnames(rast_elev_scale) <- "really-long-name"
-        terra::time(rast_elev_scale) <- as.Date("2025-01-15")
-        rast_elev_scale
+      # test to ensure metadata comes along.
+      # e.g., layer names, units, time, variables
+      # The snapshots for these tests do not include those metadata
+      # so this may be as easy as assigning some of these attributes in the
+      # test SPRC/SDS and adding those fields in the snapshot.
+      terra::units(rast_elev_scale) <- "m"
+      terra::varnames(rast_elev_scale) <- "elev"
+      terra::longnames(rast_elev_scale) <- "really-long-name"
+      terra::time(rast_elev_scale) <- as.Date("2025-01-15")
+      rast_elev_scale
     }
     list(
       geotargets::tar_terra_sds(

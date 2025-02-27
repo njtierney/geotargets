@@ -57,29 +57,29 @@
 #'   })
 #' }
 tar_terra_sprc <- function(
-        name,
-        command,
-        pattern = NULL,
-        filetype = geotargets_option_get("gdal.raster.driver"),
-        gdal = geotargets_option_get("gdal.raster.creation.options"),
-        ...,
-        tidy_eval = targets::tar_option_get("tidy_eval"),
-        packages = targets::tar_option_get("packages"),
-        library = targets::tar_option_get("library"),
-        repository = targets::tar_option_get("repository"),
-        error = targets::tar_option_get("error"),
-        memory = targets::tar_option_get("memory"),
-        garbage_collection = targets::tar_option_get("garbage_collection"),
-        deployment = targets::tar_option_get("deployment"),
-        priority = targets::tar_option_get("priority"),
-        resources = targets::tar_option_get("resources"),
-        storage = targets::tar_option_get("storage"),
-        retrieval = targets::tar_option_get("retrieval"),
-        cue = targets::tar_option_get("cue"),
-        description = targets::tar_option_get("description")
+  name,
+  command,
+  pattern = NULL,
+  filetype = geotargets_option_get("gdal.raster.driver"),
+  gdal = geotargets_option_get("gdal.raster.creation.options"),
+  ...,
+  tidy_eval = targets::tar_option_get("tidy_eval"),
+  packages = targets::tar_option_get("packages"),
+  library = targets::tar_option_get("library"),
+  repository = targets::tar_option_get("repository"),
+  error = targets::tar_option_get("error"),
+  memory = targets::tar_option_get("memory"),
+  garbage_collection = targets::tar_option_get("garbage_collection"),
+  deployment = targets::tar_option_get("deployment"),
+  priority = targets::tar_option_get("priority"),
+  resources = targets::tar_option_get("resources"),
+  storage = targets::tar_option_get("storage"),
+  retrieval = targets::tar_option_get("retrieval"),
+  cue = targets::tar_option_get("cue"),
+  description = targets::tar_option_get("description")
 ) {
   # ensure that user-passed `resources` doesn't include `custom_format`
-    check_user_resources(resources)
+  check_user_resources(resources)
 
   gdal <- gdal %||% character(0)
   filetype <- filetype %||% "GTiff"
@@ -184,29 +184,29 @@ tar_terra_sprc <- function(
 #'   })
 #' }
 tar_terra_sds <- function(
-        name,
-        command,
-        pattern = NULL,
-        filetype = geotargets_option_get("gdal.raster.driver"),
-        gdal = geotargets_option_get("gdal.raster.creation.options"),
-        ...,
-        tidy_eval = targets::tar_option_get("tidy_eval"),
-        packages = targets::tar_option_get("packages"),
-        library = targets::tar_option_get("library"),
-        repository = targets::tar_option_get("repository"),
-        error = targets::tar_option_get("error"),
-        memory = targets::tar_option_get("memory"),
-        garbage_collection = targets::tar_option_get("garbage_collection"),
-        deployment = targets::tar_option_get("deployment"),
-        priority = targets::tar_option_get("priority"),
-        resources = targets::tar_option_get("resources"),
-        storage = targets::tar_option_get("storage"),
-        retrieval = targets::tar_option_get("retrieval"),
-        cue = targets::tar_option_get("cue"),
-        description = targets::tar_option_get("description")
+  name,
+  command,
+  pattern = NULL,
+  filetype = geotargets_option_get("gdal.raster.driver"),
+  gdal = geotargets_option_get("gdal.raster.creation.options"),
+  ...,
+  tidy_eval = targets::tar_option_get("tidy_eval"),
+  packages = targets::tar_option_get("packages"),
+  library = targets::tar_option_get("library"),
+  repository = targets::tar_option_get("repository"),
+  error = targets::tar_option_get("error"),
+  memory = targets::tar_option_get("memory"),
+  garbage_collection = targets::tar_option_get("garbage_collection"),
+  deployment = targets::tar_option_get("deployment"),
+  priority = targets::tar_option_get("priority"),
+  resources = targets::tar_option_get("resources"),
+  storage = targets::tar_option_get("storage"),
+  retrieval = targets::tar_option_get("retrieval"),
+  cue = targets::tar_option_get("cue"),
+  description = targets::tar_option_get("description")
 ) {
   # ensure that user-passed `resources` doesn't include `custom_format`
-    check_user_resources(resources)
+  check_user_resources(resources)
 
   gdal <- gdal %||% character(0)
   filetype <- filetype %||% "GTiff"
@@ -255,38 +255,37 @@ tar_terra_sds <- function(
 }
 
 
-
-
 #' @noRd
 tar_terra_collection_raw <- function(
-        name,
-        command,
-        type = type,
-        filetype = geotargets_option_get("gdal.raster.driver"),
-        gdal = geotargets_option_get("gdal.raster.creation.options"),
-        pattern = NULL,
-        packages = targets::tar_option_get("packages"),
-        library = targets::tar_option_get("library"),
-        repository = targets::tar_option_get("repository"),
-        error = targets::tar_option_get("error"),
-        memory = targets::tar_option_get("memory"),
-        garbage_collection = targets::tar_option_get("garbage_collection"),
-        deployment = targets::tar_option_get("deployment"),
-        priority = targets::tar_option_get("priority"),
-        resources = targets::tar_option_get("resources"),
-        storage = targets::tar_option_get("storage"),
-        retrieval = targets::tar_option_get("retrieval"),
-        cue = targets::tar_option_get("cue"),
-        description = targets::tar_option_get("description")
-        ) {
-    targets::tar_target_raw(
+  name,
+  command,
+  type = type,
+  filetype = geotargets_option_get("gdal.raster.driver"),
+  gdal = geotargets_option_get("gdal.raster.creation.options"),
+  pattern = NULL,
+  packages = targets::tar_option_get("packages"),
+  library = targets::tar_option_get("library"),
+  repository = targets::tar_option_get("repository"),
+  error = targets::tar_option_get("error"),
+  memory = targets::tar_option_get("memory"),
+  garbage_collection = targets::tar_option_get("garbage_collection"),
+  deployment = targets::tar_option_get("deployment"),
+  priority = targets::tar_option_get("priority"),
+  resources = targets::tar_option_get("resources"),
+  storage = targets::tar_option_get("storage"),
+  retrieval = targets::tar_option_get("retrieval"),
+  cue = targets::tar_option_get("cue"),
+  description = targets::tar_option_get("description")
+) {
+  targets::tar_target_raw(
     name = name,
     command = command,
     pattern = pattern,
     packages = packages,
     library = library,
     format = targets::tar_format(
-      read = switch(type,
+      read = switch(
+        type,
         "sprc" = function(path) terra::sprc(path),
         "sds" = function(path) terra::sds(path)
       ),

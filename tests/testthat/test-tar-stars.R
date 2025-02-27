@@ -4,14 +4,14 @@ skip_if_not_installed("stars")
 
 targets::tar_test("tar_stars() works", {
   geotargets::geotargets_option_set(
-      gdal_raster_creation_options = c("COMPRESS=DEFLATE", "TFW=YES")
-      )
+    gdal_raster_creation_options = c("COMPRESS=DEFLATE", "TFW=YES")
+  )
   targets::tar_script({
     list(geotargets::tar_stars(
       test_stars,
       stars::read_stars(
-          system.file("tif", "olinda_dem_utm25s.tif", package = "stars")
-          )
+        system.file("tif", "olinda_dem_utm25s.tif", package = "stars")
+      )
     ))
   })
   targets::tar_make()
@@ -24,14 +24,14 @@ targets::tar_test("tar_stars() works", {
 
 targets::tar_test("tar_stars_proxy() works", {
   geotargets::geotargets_option_set(
-      gdal_raster_creation_options = c("COMPRESS=DEFLATE", "TFW=YES")
-      )
+    gdal_raster_creation_options = c("COMPRESS=DEFLATE", "TFW=YES")
+  )
   targets::tar_script({
     list(geotargets::tar_stars_proxy(
       test_stars_proxy,
       stars::read_stars(
-          system.file("tif", "olinda_dem_utm25s.tif", package = "stars")
-          )
+        system.file("tif", "olinda_dem_utm25s.tif", package = "stars")
+      )
     ))
   })
   targets::tar_make()
@@ -46,7 +46,8 @@ targets::tar_test("tar_stars_proxy() works", {
 targets::tar_test("tar_stars(mdim=TRUE) works", {
   targets::tar_script({
     geotargets::geotargets_option_set(gdal_raster_driver = "netCDF")
-    list(geotargets::tar_stars(test_stars_mdim,
+    list(geotargets::tar_stars(
+      test_stars_mdim,
       {
         set.seed(135)
         m <- matrix(runif(10), 2, 5)
@@ -70,7 +71,8 @@ targets::tar_test("tar_stars(mdim=TRUE) works", {
 
 targets::tar_test("tar_stars(mdim=TRUE, ncdf=TRUE) works", {
   targets::tar_script({
-    list(geotargets::tar_stars(test_stars_mdim_ncdf,
+    list(geotargets::tar_stars(
+      test_stars_mdim_ncdf,
       {
         set.seed(135)
         m <- matrix(runif(10), 2, 5)
@@ -103,8 +105,8 @@ targets::tar_test("tar_stars() works with dynamic branching", {
       geotargets::tar_stars(
         test_stars,
         stars::read_stars(
-            system.file("tif", "olinda_dem_utm25s.tif", package = "stars")
-            )
+          system.file("tif", "olinda_dem_utm25s.tif", package = "stars")
+        )
       ),
       targets::tar_target(
         to_add,

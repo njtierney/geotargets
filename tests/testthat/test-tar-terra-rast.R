@@ -17,12 +17,11 @@ targets::tar_test("tar_terra_rast() works", {
   )
 })
 
-targets::tar_test(
-    "tar_terra_rast() works with multiple workers (tests un/marshaling)", {
+targets::tar_test("tar_terra_rast() works with multiple workers (tests un/marshaling)", {
   targets::tar_script({
     targets::tar_option_set(
-        controller = crew::crew_controller_local(workers = 2)
-        )
+      controller = crew::crew_controller_local(workers = 2)
+    )
     list(
       geotargets::tar_terra_rast(
         rast1,
@@ -78,28 +77,31 @@ targets::tar_test("user resources are passed correctly", {
   )
   testthat::expect_equal(
     tar_terra_rast(
-      x, 1,
+      x,
+      1,
       resources = tar_resources(
-          crew = tar_resources_crew(controller = "persistent")
-          )
+        crew = tar_resources_crew(controller = "persistent")
+      )
     )$settings$resources$crew,
     tar_resources_crew(controller = "persistent")
   )
   testthat::expect_equal(
     tar_terra_vect(
-      x, 1,
+      x,
+      1,
       resources = tar_resources(
-          crew = tar_resources_crew(controller = "persistent")
-          )
+        crew = tar_resources_crew(controller = "persistent")
+      )
     )$settings$resources$crew,
     tar_resources_crew(controller = "persistent")
   )
   testthat::expect_equal(
     tar_terra_sprc(
-      x, 1,
+      x,
+      1,
       resources = tar_resources(
-          crew = tar_resources_crew(controller = "persistent")
-          )
+        crew = tar_resources_crew(controller = "persistent")
+      )
     )$settings$resources$crew,
     tar_resources_crew(controller = "persistent")
   )
@@ -143,9 +145,9 @@ tar_test("metadata is maintained for GTiff", {
     library(geotargets)
     library(terra)
     geotargets_option_set(
-        terra_preserve_metadata = "zip",
-        gdal_raster_driver = "GTiff" # default
-        )
+      terra_preserve_metadata = "zip",
+      gdal_raster_driver = "GTiff" # default
+    )
     make_rast <- function() {
       f <- system.file("ex/elev.tif", package = "terra")
       r <- terra::rast(f)
@@ -172,9 +174,9 @@ tar_test("metadata is maintained for COG", {
     library(geotargets)
     library(terra)
     geotargets_option_set(
-        terra_preserve_metadata = "zip",
-        gdal_raster_driver = "COG"
-        )
+      terra_preserve_metadata = "zip",
+      gdal_raster_driver = "COG"
+    )
     make_rast <- function() {
       f <- system.file("ex/elev.tif", package = "terra")
       r <- terra::rast(f)

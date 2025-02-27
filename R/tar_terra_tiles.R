@@ -83,142 +83,141 @@
 #'   })
 #' }
 tar_terra_tiles <- function(
-        name,
-        raster,
-        tile_fun,
-        filetype = geotargets_option_get("gdal.raster.driver"),
-        gdal = geotargets_option_get("gdal.raster.creation.options"),
-        ...,
-        packages = targets::tar_option_get("packages"),
-        library = targets::tar_option_get("library"),
-        repository = targets::tar_option_get("repository"),
-        error = targets::tar_option_get("error"),
-        memory = targets::tar_option_get("memory"),
-        garbage_collection = targets::tar_option_get("garbage_collection"),
-        deployment = targets::tar_option_get("deployment"),
-        priority = targets::tar_option_get("priority"),
-        resources = targets::tar_option_get("resources"),
-        storage = targets::tar_option_get("storage"),
-        retrieval = targets::tar_option_get("retrieval"),
-        cue = targets::tar_option_get("cue"),
-        description = targets::tar_option_get("description")
+  name,
+  raster,
+  tile_fun,
+  filetype = geotargets_option_get("gdal.raster.driver"),
+  gdal = geotargets_option_get("gdal.raster.creation.options"),
+  ...,
+  packages = targets::tar_option_get("packages"),
+  library = targets::tar_option_get("library"),
+  repository = targets::tar_option_get("repository"),
+  error = targets::tar_option_get("error"),
+  memory = targets::tar_option_get("memory"),
+  garbage_collection = targets::tar_option_get("garbage_collection"),
+  deployment = targets::tar_option_get("deployment"),
+  priority = targets::tar_option_get("priority"),
+  resources = targets::tar_option_get("resources"),
+  storage = targets::tar_option_get("storage"),
+  retrieval = targets::tar_option_get("retrieval"),
+  cue = targets::tar_option_get("cue"),
+  description = targets::tar_option_get("description")
 ) {
-    name <- targets::tar_deparse_language(substitute(name))
+  name <- targets::tar_deparse_language(substitute(name))
 
-    tar_terra_tiles_raw(
-        name = name,
-        raster = rlang::enexpr(raster),
-        tile_fun = rlang::enexpr(tile_fun),
-        filetype = filetype,
-        gdal = gdal,
-        ...,
-        packages = packages,
-        library = library,
-        repository = repository,
-        error = error,
-        memory = memory,
-        garbage_collection = garbage_collection,
-        deployment = deployment,
-        priority = priority,
-        resources = resources,
-        storage = storage,
-        retrieval = retrieval,
-        cue = cue,
-        description = description
-    )
+  tar_terra_tiles_raw(
+    name = name,
+    raster = rlang::enexpr(raster),
+    tile_fun = rlang::enexpr(tile_fun),
+    filetype = filetype,
+    gdal = gdal,
+    ...,
+    packages = packages,
+    library = library,
+    repository = repository,
+    error = error,
+    memory = memory,
+    garbage_collection = garbage_collection,
+    deployment = deployment,
+    priority = priority,
+    resources = resources,
+    storage = storage,
+    retrieval = retrieval,
+    cue = cue,
+    description = description
+  )
 }
 
 
 #' @noRd
 tar_terra_tiles_raw <- function(
-        name,
-        raster,
-        tile_fun,
-        filetype = geotargets_option_get("gdal.raster.driver"),
-        gdal = geotargets_option_get("gdal.raster.creation.options"),
-        ...,
-        packages = targets::tar_option_get("packages"),
-        library = targets::tar_option_get("library"),
-        repository = targets::tar_option_get("repository"),
-        error = targets::tar_option_get("error"),
-        memory = targets::tar_option_get("memory"),
-        garbage_collection = targets::tar_option_get("garbage_collection"),
-        deployment = targets::tar_option_get("deployment"),
-        priority = targets::tar_option_get("priority"),
-        resources = targets::tar_option_get("resources"),
-        storage = targets::tar_option_get("storage"),
-        retrieval = targets::tar_option_get("retrieval"),
-        cue = targets::tar_option_get("cue"),
-        description = targets::tar_option_get("description")
+  name,
+  raster,
+  tile_fun,
+  filetype = geotargets_option_get("gdal.raster.driver"),
+  gdal = geotargets_option_get("gdal.raster.creation.options"),
+  ...,
+  packages = targets::tar_option_get("packages"),
+  library = targets::tar_option_get("library"),
+  repository = targets::tar_option_get("repository"),
+  error = targets::tar_option_get("error"),
+  memory = targets::tar_option_get("memory"),
+  garbage_collection = targets::tar_option_get("garbage_collection"),
+  deployment = targets::tar_option_get("deployment"),
+  priority = targets::tar_option_get("priority"),
+  resources = targets::tar_option_get("resources"),
+  storage = targets::tar_option_get("storage"),
+  retrieval = targets::tar_option_get("retrieval"),
+  cue = targets::tar_option_get("cue"),
+  description = targets::tar_option_get("description")
 ) {
-    targets::tar_assert_chr(name, "name must be a character.")
-    targets::tar_assert_scalar(name, "name must have length 1.")
-    filetype <- filetype %||% "GTiff"
-    gdal <- gdal %||% character(0)
+  targets::tar_assert_chr(name, "name must be a character.")
+  targets::tar_assert_scalar(name, "name must have length 1.")
+  filetype <- filetype %||% "GTiff"
+  gdal <- gdal %||% character(0)
 
-    name_exts <- paste0(name, "_exts")
-    sym_exts <- as.symbol(name_exts)
+  name_exts <- paste0(name, "_exts")
+  sym_exts <- as.symbol(name_exts)
 
+  #target to create extents to map over
+  windows <- targets::tar_target_raw(
+    name = name_exts,
+    command = rlang::call2(tile_fun, raster),
+    pattern = NULL,
+    packages = packages,
+    library = library,
+    format = "rds",
+    repository = repository,
+    iteration = "list",
+    error = error,
+    memory = memory,
+    garbage_collection = garbage_collection,
+    deployment = deployment,
+    priority = priority,
+    resources = resources,
+    storage = storage,
+    retrieval = retrieval,
+    cue = cue,
+    description = description
+  )
 
-    #target to create extents to map over
-    windows <- targets::tar_target_raw(
-        name = name_exts,
-        command = rlang::call2(tile_fun, raster),
-        pattern = NULL,
-        packages = packages,
-        library = library,
-        format = "rds",
-        repository = repository,
-        iteration = "list",
-        error = error,
-        memory = memory,
-        garbage_collection = garbage_collection,
-        deployment = deployment,
-        priority = priority,
-        resources = resources,
-        storage = storage,
-        retrieval = retrieval,
-        cue = cue,
-        description = description
-    )
+  # target to crop raster to extents, mapping over extents
+  tiles <- targets::tar_target_raw(
+    name = name,
+    command = rlang::expr(set_window(!!raster, terra::ext(!!sym_exts))),
+    pattern = as.expression(as.call(c(as.symbol("map"), sym_exts))),
+    packages = packages,
+    library = library,
+    format = targets::tar_format(
+      read = function(path) terra::rast(path),
+      write = function(object, path) {
+        terra::writeRaster(
+          object,
+          path,
+          filetype = filetype,
+          overwrite = TRUE,
+          gdal = gdal
+        )
+      },
+      marshal = function(object) terra::wrap(object),
+      unmarshal = function(object) terra::unwrap(object),
+      substitute = list(filetype = filetype, gdal = gdal)
+    ),
+    repository = repository,
+    iteration = "list", #only list works (for now at least)
+    error = error,
+    memory = memory,
+    garbage_collection = garbage_collection,
+    deployment = deployment,
+    priority = priority,
+    resources = resources,
+    storage = storage,
+    retrieval = retrieval,
+    cue = cue,
+    description = description
+  )
 
-    # target to crop raster to extents, mapping over extents
-    tiles <- targets::tar_target_raw(
-        name = name,
-        command = rlang::expr(set_window(!!raster, terra::ext(!!sym_exts))),
-        pattern = as.expression(as.call(c(as.symbol("map"), sym_exts))),
-        packages = packages,
-        library = library,
-        format = targets::tar_format(
-            read = function(path) terra::rast(path),
-            write = function(object, path) {
-                terra::writeRaster(
-                    object,
-                    path,
-                    filetype = filetype,
-                    overwrite = TRUE,
-                    gdal = gdal
-                )
-            },
-            marshal = function(object) terra::wrap(object),
-            unmarshal = function(object) terra::unwrap(object),
-            substitute = list(filetype = filetype, gdal = gdal)
-        ),
-        repository = repository,
-        iteration = "list", #only list works (for now at least)
-        error = error,
-        memory = memory,
-        garbage_collection = garbage_collection,
-        deployment = deployment,
-        priority = priority,
-        resources = resources,
-        storage = storage,
-        retrieval = retrieval,
-        cue = cue,
-        description = description
-    )
-
-    list(windows, tiles)
+  list(windows, tiles)
 }
 
 #' Copy a raster within a window
@@ -245,11 +244,11 @@ tar_terra_tiles_raw <- function(
 #' terra::ext(r2)
 #'
 set_window <- function(raster, window) {
-    # forces copying the raster, not just the R object pointing to the same
-    # raster in memory
-    raster_out <- c(raster)
-    terra::window(raster_out) <- window
-    raster_out
+  # forces copying the raster, not just the R object pointing to the same
+  # raster in memory
+  raster_out <- c(raster)
+  terra::window(raster_out) <- window
+  raster_out
 }
 
 #' Helper functions to create tiles
@@ -336,78 +335,78 @@ set_window <- function(raster, window) {
 #' )
 #' }
 tile_grid <- function(raster, ncol, nrow) {
-    check_is_integerish(ncol)
-    check_is_integerish(nrow)
-    template <- terra::rast(
-        x = terra::ext(raster),
-        ncol = ncol,
-        nrow = nrow,
-        crs = terra::crs(raster)
-    )
-    tile_ext <- terra::getTileExtents(
-        x = raster,
-        template
-    )
-    n_tiles <- seq_len(nrow(tile_ext))
-    tile_list <- lapply(
-        n_tiles,
-        \(i) tile_ext[i, ]
-    )
-    tile_list
+  check_is_integerish(ncol)
+  check_is_integerish(nrow)
+  template <- terra::rast(
+    x = terra::ext(raster),
+    ncol = ncol,
+    nrow = nrow,
+    crs = terra::crs(raster)
+  )
+  tile_ext <- terra::getTileExtents(
+    x = raster,
+    template
+  )
+  n_tiles <- seq_len(nrow(tile_ext))
+  tile_list <- lapply(
+    n_tiles,
+    \(i) tile_ext[i, ]
+  )
+  tile_list
 }
 
 #' @export
 #' @rdname tile_helpers
 tile_blocksize <- function(raster, n_blocks_row = 1, n_blocks_col = 1) {
-    check_is_integerish(n_blocks_row)
-    check_is_integerish(n_blocks_col)
-    tile_ext <-
-        terra::getTileExtents(
-            raster,
-            terra::fileBlocksize(raster)[1, ] * c(n_blocks_row, n_blocks_col)
-        )
-    n_tiles <- seq_len(nrow(tile_ext))
-    tile_list <- lapply(
-        n_tiles,
-        \(i) tile_ext[i, ]
+  check_is_integerish(n_blocks_row)
+  check_is_integerish(n_blocks_col)
+  tile_ext <-
+    terra::getTileExtents(
+      raster,
+      terra::fileBlocksize(raster)[1, ] * c(n_blocks_row, n_blocks_col)
     )
-    tile_list
+  n_tiles <- seq_len(nrow(tile_ext))
+  tile_list <- lapply(
+    n_tiles,
+    \(i) tile_ext[i, ]
+  )
+  tile_list
 }
 
 #' @export
 #' @rdname tile_helpers
 tile_n <- function(raster, n) {
-    check_is_integerish(n)
-    sq <- sqrt(n)
-    sq_round <- floor(sq)
-    quotient <- n / sq_round
-    is_even <- rlang::is_integerish(quotient)
-    is_odd <- !is_even
-    if (is_even) {
-        nrow <- sq_round
-        ncol <- n / nrow
-    }
-    if (is_odd) {
-        nrow <- sq_round
-        ncol <- ceiling(quotient) #round up
-    }
+  check_is_integerish(n)
+  sq <- sqrt(n)
+  sq_round <- floor(sq)
+  quotient <- n / sq_round
+  is_even <- rlang::is_integerish(quotient)
+  is_odd <- !is_even
+  if (is_even) {
+    nrow <- sq_round
+    ncol <- n / nrow
+  }
+  if (is_odd) {
+    nrow <- sq_round
+    ncol <- ceiling(quotient) #round up
+  }
 
-    cli::cli_inform("creating {nrow} * {ncol} = {nrow*ncol} tile extents\n")
-    template <- terra::rast(
-        x = terra::ext(raster),
-        ncol = ncol,
-        nrow = nrow,
-        crs = terra::crs(raster)
-    )
+  cli::cli_inform("creating {nrow} * {ncol} = {nrow*ncol} tile extents\n")
+  template <- terra::rast(
+    x = terra::ext(raster),
+    ncol = ncol,
+    nrow = nrow,
+    crs = terra::crs(raster)
+  )
 
-    tile_ext <- terra::getTileExtents(
-        x = raster,
-        template
-    )
-    n_tiles <- seq_len(nrow(tile_ext))
-    tile_list <- lapply(
-        n_tiles,
-        \(i) tile_ext[i, ]
-    )
-    tile_list
+  tile_ext <- terra::getTileExtents(
+    x = raster,
+    template
+  )
+  n_tiles <- seq_len(nrow(tile_ext))
+  tile_list <- lapply(
+    n_tiles,
+    \(i) tile_ext[i, ]
+  )
+  tile_list
 }
