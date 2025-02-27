@@ -246,6 +246,8 @@ argument of \code{tar_terra_tiles()}.  More details are in the help file for
 \code{\link[=tile_blocksize]{tile_blocksize()}}.
 }
 \examples{
+# For CRAN. Ensures these examples run under certain conditions.
+# To run this locally, run the code inside this if statement
 if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
   targets::tar_dir({
     targets::tar_script({

@@ -54,6 +54,8 @@
 #' @export
 #'
 #' @examples
+#' # For CRAN. Ensures these examples run under certain conditions.
+#' # To run this locally, run the code inside this if statement
 #' if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
 #'   targets::tar_dir({
 #'     targets::tar_script({

@@ -75,8 +75,11 @@ get this working for you.
 }
 
 \examples{
+# For CRAN. Ensures these examples run under certain conditions.
+# To run this locally, run the code inside this if statement
 if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
-  targets::tar_dir({ # tar_dir() runs code from a temporary directory.
+# tar_dir() runs code from a temporary directory.
+  targets::tar_dir({
     library(geotargets)
     op <- getOption("geotargets.gdal.raster.driver")
     withr::defer(options("geotargets.gdal.raster.driver" = op))
