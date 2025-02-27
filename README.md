@@ -21,7 +21,10 @@ Review](https://badges.ropensci.org/675_status.svg)](https://github.com/ropensci
 `geotargets` extends [`targets`](https://github.com/ropensci/targets) to
 work with geospatial data formats, such as rasters and vectors (e.g.,
 shapefiles). Currently we support raster and vector formats for the
-[`terra`](https://github.com/rspatial/terra) package
+[`terra`](https://github.com/rspatial/terra) package.
+
+If you are unfamiliar with targets, we recommend watching [“targets in 4
+minutes”](https://docs.ropensci.org/targets/#get-started-in-4-minutes).
 
 ## How to cite geotargets
 
@@ -117,8 +120,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target terra_rast_example
-#> ● completed target terra_rast_example [0.011 seconds, 7.992 kilobytes]
-#> ▶ ended pipeline [0.085 seconds]
+#> ● completed target terra_rast_example [0.017 seconds, 7.992 kilobytes]
+#> ▶ ended pipeline [0.099 seconds]
 #> class       : SpatRaster 
 #> dimensions  : 90, 95, 1  (nrow, ncol, nlyr)
 #> resolution  : 0.008333333, 0.008333333  (x, y)
@@ -159,8 +162,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target terra_vect_example
-#> ● completed target terra_vect_example [0.018 seconds, 117.646 kilobytes]
-#> ▶ ended pipeline [0.08 seconds]
+#> ● completed target terra_vect_example [0.021 seconds, 117.646 kilobytes]
+#> ▶ ended pipeline [0.065 seconds]
 #>  class       : SpatVector 
 #>  geometry    : polygons 
 #>  dimensions  : 12, 6  (geometries, attributes)
@@ -206,8 +209,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target raster_elevs
-#> ● completed target raster_elevs [0.054 seconds, 36.423 kilobytes]
-#> ▶ ended pipeline [0.111 seconds]
+#> ● completed target raster_elevs [0.042 seconds, 36.423 kilobytes]
+#> ▶ ended pipeline [0.114 seconds]
 #> class       : SpatRasterCollection 
 #> length      : 2 
 #> nrow        : 90, 115 
@@ -238,8 +241,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
   x
 })
 #> ▶ dispatched target test_stars
-#> ● completed target test_stars [0.021 seconds, 49.9 kilobytes]
-#> ▶ ended pipeline [0.067 seconds]
+#> ● completed target test_stars [0.016 seconds, 49.9 kilobytes]
+#> ▶ ended pipeline [0.065 seconds]
 #> stars object with 2 dimensions and 1 attribute
 #> attribute(s):
 #>             Min. 1st Qu. Median     Mean 3rd Qu. Max.
@@ -253,9 +256,8 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
 ## Code of Conduct
 
 Please note that the geotargets project is released with a [Contributor
-Code of
-Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html).
-By contributing to this project, you agree to abide by its terms.
+Code of Conduct](https://ropensci.org/code-of-conduct/). By contributing
+to this project, you agree to abide by its terms.
 
 ## Acknowledgements
 

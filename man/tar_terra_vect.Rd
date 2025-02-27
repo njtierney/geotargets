@@ -239,6 +239,8 @@ Although you may pass any supported GDAL vector driver to the
 which both appear to work generally.
 }
 \examples{
+# For CRAN. Ensures these examples run under certain conditions.
+# To run this locally, run the code inside this if statement
 if (Sys.getenv("TAR_LONG_EXAMPLES") == "true") {
   targets::tar_dir({ # tar_dir() runs code from a temporary directory.
     targets::tar_script({

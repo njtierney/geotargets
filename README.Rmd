@@ -24,7 +24,9 @@ knitr::opts_chunk$set(
 [![Status at rOpenSci Software Peer Review](https://badges.ropensci.org/675_status.svg)](https://github.com/ropensci/software-review/issues/675)
 <!-- badges: end -->
 
-`geotargets` extends [`targets`](https://github.com/ropensci/targets) to work with geospatial data formats, such as rasters and vectors (e.g., shapefiles). Currently we support raster and vector formats for the [`terra`](https://github.com/rspatial/terra) package
+`geotargets` extends [`targets`](https://github.com/ropensci/targets) to work with geospatial data formats, such as rasters and vectors (e.g., shapefiles). Currently we support raster and vector formats for the [`terra`](https://github.com/rspatial/terra) package. 
+
+If you are unfamiliar with targets, we recommend watching ["targets in 4 minutes"](https://docs.ropensci.org/targets/#get-started-in-4-minutes).
 
 ## How to cite geotargets
 
@@ -205,7 +207,7 @@ tar_dir({ # tar_dir() runs code from a temporary directory.
 
 ## Code of Conduct
 
-Please note that the geotargets project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
+Please note that the geotargets project is released with a [Contributor Code of Conduct](https://ropensci.org/code-of-conduct/). By contributing to this project, you agree to abide by its terms.
 
 ## Acknowledgements
 
